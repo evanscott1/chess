@@ -48,22 +48,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
+        return getMoves(board, myPosition);
     }
-//        PieceType type = board.getPiece(myPosition).getPieceType();
-//        switch (type) {
-//            case KING -> {
-//            }
-//            case QUEEN -> {
-//            }
-//            case BISHOP -> {
-//            }
-//            case KNIGHT -> {
-//            }
-//            case ROOK -> {
-//            }
-//            case PAWN -> {
-//            }
-//        }
-//    }
 }
