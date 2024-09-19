@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class PieceMovesCalculator {
-    private ArrayList<>() moves;
+    private Set<ChessMove> moves;
     public PieceMovesCalculator(){}
 
-    public Set<ChessMove> GetMoves(ChessBoard board, ChessPosition myPosition){
+    public Set<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
         switch (type) {
             case KING -> {
@@ -15,7 +15,7 @@ public class PieceMovesCalculator {
             case QUEEN -> {
             }
             case BISHOP -> {
-                return BishopMoves(board, myPosition);
+                return bishopMoves(board, myPosition);
             }
             case KNIGHT -> {
             }
@@ -28,7 +28,12 @@ public class PieceMovesCalculator {
     }
 
 
-    public Set<ChessMove> BishopMoves(ChessBoard board, ChessPosition myPosition){
+    public Set<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         
+    }
+
+    public Set<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        ChessPosition testPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
+        if (board.getPiece(testPosition) != null) {}
     }
 }
