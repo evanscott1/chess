@@ -15,6 +15,10 @@ public class PieceMovesCalculator {
         return moves;
     }
 
+    public boolean oppTeam(ChessBoard board, ChessPosition start, ChessPosition end) {
+        return board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor();
+    }
+
 
     public void calculateMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
@@ -50,7 +54,7 @@ public class PieceMovesCalculator {
             ChessPosition end = new ChessPosition(start.getRow(), i + 1);
             if(board.getPiece(end) == null) {
                 addMove(start, end, null);
-            } else if (board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor()) {
+            } else if (oppTeam(board, start, end)) {
                 addMove(start, end, null);
                 {break;}
             } else {break;}
@@ -60,7 +64,7 @@ public class PieceMovesCalculator {
             ChessPosition end = new ChessPosition(i + 1, start.getColumn());
             if(board.getPiece(end) == null) {
                 addMove(start, end, null);
-            } else if (board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor()) {
+            } else if (oppTeam(board, start, end)) {
                 addMove(start, end, null);
                 {break;}
             } else {break;}
@@ -70,7 +74,7 @@ public class PieceMovesCalculator {
             ChessPosition end = new ChessPosition(start.getRow(), i - 1);
             if(board.getPiece(end) == null) {
                 addMove(start, end, null);
-            } else if (board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor()) {
+            } else if (oppTeam(board, start, end)) {
                 addMove(start, end, null);
                 {break;}
             } else {break;}
@@ -80,7 +84,7 @@ public class PieceMovesCalculator {
             ChessPosition end = new ChessPosition(i - 1, start.getColumn());
             if(board.getPiece(end) == null) {
                 addMove(start, end, null);
-            } else if (board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor()) {
+            } else if (oppTeam(board, start, end)) {
                 addMove(start, end, null);
                 {break;}
             } else {break;}
@@ -134,7 +138,7 @@ public class PieceMovesCalculator {
     }
 
     public void pawnCapture(ChessBoard board, ChessPosition start, ChessPosition end, boolean promote) {
-        if(board.getPiece(end) != null && board.getPiece(end).getTeamColor() != board.getPiece(start).getTeamColor()) {
+        if(board.getPiece(end) != null && oppTeam(board, start, end)) {
             if(promote) {
                 pawnPromotion(start, end);
             } else {
