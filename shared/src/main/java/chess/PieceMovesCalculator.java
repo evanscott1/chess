@@ -19,7 +19,7 @@ public class PieceMovesCalculator {
 
     public ArrayList<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
-        ChessGame.TeamColor color = board.getPiece(myPosition).getTeamColor();
+
         switch (type) {
             case KING -> {
             }
@@ -33,12 +33,7 @@ public class PieceMovesCalculator {
             case ROOK -> {
             }
             case PAWN -> {
-                if (color == ChessGame.TeamColor.WHITE) {
-                    whitePawnMoves(board, myPosition);
-                } else if (color == ChessGame.TeamColor.BLACK) {
-                    blackPawnMoves(board, myPosition);
-                }
-
+                pawnMoves(board, myPosition);
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);
         }
@@ -50,86 +45,56 @@ public class PieceMovesCalculator {
 //
 //    }
 
-    public void whitePawnMoves(ChessBoard board, ChessPosition myPosition){
-
-        ChessPosition forwardOne = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
-        ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
-        ChessPosition forwardLeft = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
-        ChessPosition forwardRight = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
-
-
-
-        if(board.getPiece(forwardOne) == null) {
-            //Pawn promotion.
-            if(myPosition.getRow() == 7) {
-                for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
-                    if(type != ChessPiece.PieceType.KING && type != ChessPiece.PieceType.PAWN){
-                        addMove(myPosition, forwardOne, type);
-                    }
-                }
-            } else {
-                addMove(myPosition, forwardOne, null);
-                //Pawn starts.
-                if (myPosition.getRow() == 2 && board.getPiece((forwardTwo)) == null) {
-                    addMove(myPosition, forwardTwo, null);
-                }
-
-            }
-
+    public void pawnMoves(ChessBoard board, ChessPosition start) {
+        ChessGame.TeamColor color = board.getPiece(start).getTeamColor();
+        int offset = 0;
+        int startRow = 0;
+        int promoteRow = 0;
+        if (color == ChessGame.TeamColor.WHITE) {
+            offset = 1;
+            startRow = 2;
+            promoteRow = 7;
+        } else if (color == ChessGame.TeamColor.BLACK) {
+            offset = -1;
+            startRow = 7;
+            promoteRow = 2;
         }
-        //Pawn takes left diagonal.
-        if (board.getPiece(forwardLeft)!= null && board.getPiece(forwardLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-            addMove(myPosition, forwardLeft, null);
-        }
-        //Pawn takes right diagonal.
-        if(board.getPiece(forwardRight) != null && board.getPiece(forwardRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-            addMove(myPosition, forwardRight, null);
-        }
+        ChessPosition forwardOne = new ChessPosition(start.getRow() + offset, start.getColumn());
+        ChessPosition forwardTwo = new ChessPosition(start.getRow() + offset * 2, start.getColumn());
+        ChessPosition forwardLeft = new ChessPosition(start.getRow() + offset, start.getColumn() - offset);
+        ChessPosition forwardRight = new ChessPosition(start.getRow() + offset, start.getColumn() + offset);
 
-
-    }
-
-    public void blackPawnMoves(ChessBoard board, ChessPosition myPosition){
-
-        ChessPosition forwardOne = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
-        ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()-2, myPosition.getColumn());
-        ChessPosition forwardLeft = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
-        ChessPosition forwardRight = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
-
-        Boolean promote = false;
-        if(myPosition.getRow() == 2) {
+        boolean promote = false;
+        if(start.getRow() == promoteRow) {
             promote = true;
         }
 
         if(board.getPiece(forwardOne) == null) {
             //Pawn promotion.
             if(promote) {
-                pawnPromotion(myPosition, forwardOne);
+                pawnPromotion(start, forwardOne);
             } else {
-                addMove(myPosition, forwardOne, null);
+                addMove(start, forwardOne, null);
                 //Pawn starts.
-                if (myPosition.getRow() == 7 && board.getPiece((forwardTwo)) == null) {
-                    addMove(myPosition, forwardTwo, null);
+                if (start.getRow() == startRow && board.getPiece((forwardTwo)) == null) {
+                    addMove(start, forwardTwo, null);
                 }
 
             }
 
         }
         //Pawn takes left diagonal.
-        if (board.getPiece(forwardLeft)!= null && board.getPiece(forwardLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-            if(promote) {
-                pawnPromotion(myPosition, forwardLeft);
-            } else {
-                addMove(myPosition, forwardLeft, null);
-            }
-
-        }
+        pawnCapture(board, start, forwardLeft, promote);
         //Pawn takes right diagonal.
-        if(board.getPiece(forwardRight) != null && board.getPiece(forwardRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+        pawnCapture(board, start, forwardRight, promote);
+    }
+
+    public void pawnCapture(ChessBoard board, ChessPosition start, ChessPosition end, boolean promote) {
+        if(board.getPiece(end) != null && board.getPiece(end).getTeamColor() != board.getPiece(start).getTeamColor()) {
             if(promote) {
-                pawnPromotion(myPosition, forwardRight);
+                pawnPromotion(start, end);
             } else {
-                addMove(myPosition, forwardRight, null);
+                addMove(start, end, null);
             }
         }
     }
