@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.ArrayList;
 
 public class PieceMovesCalculator {
-    private ArrayList<ChessMove> moves;
+    private final ArrayList<ChessMove> moves = new ArrayList<>();
     public PieceMovesCalculator(){}
 
     public void addMove(ChessPosition start, ChessPosition end, ChessPiece.PieceType type) {
 
-        ChessMove move = new ChessMove(start, end, type);
-        moves.add(move);
+        ChessMove moveT = new ChessMove(start, end, type);
+        moves.add(moveT);
     }
     public ArrayList<ChessMove> getMoves() {
         return moves;
@@ -57,6 +57,5 @@ public class PieceMovesCalculator {
                 }
             }
         }
-//        return moves;
     }
 }
