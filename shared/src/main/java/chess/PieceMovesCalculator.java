@@ -28,6 +28,7 @@ public class PieceMovesCalculator {
                 kingMoves(board, myPosition);
             }
             case QUEEN -> {
+                queenMoves(board, myPosition);
             }
             case BISHOP -> {
                 bishopMoves(board, myPosition);
@@ -44,8 +45,12 @@ public class PieceMovesCalculator {
         }
     }
 
-    public void bishopMoves(ChessBoard board, ChessPosition start) {
+    public void queenMoves(ChessBoard board, ChessPosition start) {
+        bishopMoves(board, start);
+        rookMoves(board, start);
+    }
 
+    public void bishopMoves(ChessBoard board, ChessPosition start) {
         //topRight
         int j = start.getColumn();
         iLoop:
@@ -61,7 +66,6 @@ public class PieceMovesCalculator {
                 j++;
             }
         }
-
         //bottomRight
         j = start.getColumn();
         iLoop:
@@ -76,7 +80,6 @@ public class PieceMovesCalculator {
                 } else {break iLoop;}
                 j++;
             }
-
         }
         //topLeft
         j = start.getColumn();
@@ -92,7 +95,6 @@ public class PieceMovesCalculator {
                 } else {break iLoop;}
                 j--;
             }
-
         }
         //bottomLeft
         j = start.getColumn();
@@ -108,10 +110,7 @@ public class PieceMovesCalculator {
                 } else {break iLoop;}
                 j--;
             }
-
         }
-
-
     }
 
     public void kingMoves(ChessBoard board, ChessPosition start) {
