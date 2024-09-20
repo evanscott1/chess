@@ -1,13 +1,23 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.ArrayList;
 
 public class PieceMovesCalculator {
-    private Set<ChessMove> moves;
+    private ArrayList<ChessMove> moves;
     public PieceMovesCalculator(){}
 
-    public Set<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition){
+    public void addMove(ChessPosition start, ChessPosition end, ChessPiece.PieceType type) {
+
+        ChessMove move = new ChessMove(start, end, type);
+        moves.add(move);
+    }
+    public ArrayList<ChessMove> getMoves() {
+        return moves;
+    }
+
+
+    public ArrayList<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
         switch (type) {
             case KING -> {
@@ -15,25 +25,38 @@ public class PieceMovesCalculator {
             case QUEEN -> {
             }
             case BISHOP -> {
-                return bishopMoves(board, myPosition);
+
             }
             case KNIGHT -> {
             }
             case ROOK -> {
             }
             case PAWN -> {
+                whitePawnMoves(board, myPosition);
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);
         }
+        return moves;
     }
 
 
-    public Set<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
-        
-    }
+//    public ArrayList<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+//
+//    }
 
-    public Set<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
-        ChessPosition testPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
-        if (board.getPiece(testPosition) != null) {}
+    public void whitePawnMoves(ChessBoard board, ChessPosition myPosition){
+
+        ChessPosition forwardOne = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
+        ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
+        if (myPosition.getRow() == 2) {
+
+            if(board.getPiece(forwardOne) == null) {
+                addMove(myPosition, forwardOne, null);
+                if(board.getPiece((forwardTwo)) == null) {
+                    addMove(myPosition, forwardTwo, null);
+                }
+            }
+        }
+//        return moves;
     }
 }
