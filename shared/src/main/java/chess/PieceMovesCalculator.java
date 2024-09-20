@@ -18,13 +18,14 @@ public class PieceMovesCalculator {
     public boolean oppTeam(ChessBoard board, ChessPosition start, ChessPosition end) {
         return board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor();
     }
-
+//    public boolean addIfNull(ChessBoard)
 
     public void calculateMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
 
         switch (type) {
             case KING -> {
+                kingMoves(board, myPosition);
             }
             case QUEEN -> {
             }
@@ -43,6 +44,21 @@ public class PieceMovesCalculator {
         }
     }
 
+
+    public void kingMoves(ChessBoard board, ChessPosition start) {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                ChessPosition end = new ChessPosition(start.getRow() + i - 1, start.getColumn() + j - 1);
+                if((end.getRow() > 0 && end.getColumn() > 0) && (end.getRow() <= board.getWidth() && end.getColumn() <= board.getWidth())){
+                    if (board.getPiece(end) == null){
+                        addMove(start, end, null);
+                    } else if (oppTeam(board, start, end)) {
+                        addMove(start, end, null);
+                    }
+                }
+            }
+        }
+    }
 
 //    public ArrayList<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
 //
