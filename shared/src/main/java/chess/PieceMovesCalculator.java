@@ -96,16 +96,15 @@ public class PieceMovesCalculator {
         ChessPosition forwardLeft = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
         ChessPosition forwardRight = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
 
-
+        Boolean promote = false;
+        if(myPosition.getRow() == 2) {
+            promote = true;
+        }
 
         if(board.getPiece(forwardOne) == null) {
             //Pawn promotion.
-            if(myPosition.getRow() == 2) {
-                for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
-                    if(type != ChessPiece.PieceType.KING && type != ChessPiece.PieceType.PAWN){
-                        addMove(myPosition, forwardOne, type);
-                    }
-                }
+            if(promote) {
+                pawnPromotion(myPosition, forwardOne);
             } else {
                 addMove(myPosition, forwardOne, null);
                 //Pawn starts.
@@ -118,14 +117,29 @@ public class PieceMovesCalculator {
         }
         //Pawn takes left diagonal.
         if (board.getPiece(forwardLeft)!= null && board.getPiece(forwardLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-            addMove(myPosition, forwardLeft, null);
+            if(promote) {
+                pawnPromotion(myPosition, forwardLeft);
+            } else {
+                addMove(myPosition, forwardLeft, null);
+            }
+
         }
         //Pawn takes right diagonal.
         if(board.getPiece(forwardRight) != null && board.getPiece(forwardRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-            addMove(myPosition, forwardRight, null);
+            if(promote) {
+                pawnPromotion(myPosition, forwardRight);
+            } else {
+                addMove(myPosition, forwardRight, null);
+            }
         }
+    }
 
-
+    public void pawnPromotion(ChessPosition start, ChessPosition end) {
+        for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
+            if(type != ChessPiece.PieceType.KING && type != ChessPiece.PieceType.PAWN){
+                addMove(start, end, type);
+            }
+        }
     }
 }
 
