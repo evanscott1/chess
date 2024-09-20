@@ -18,7 +18,16 @@ public class PieceMovesCalculator {
     public boolean oppTeam(ChessBoard board, ChessPosition start, ChessPosition end) {
         return board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor();
     }
-//    public boolean addIfNull(ChessBoard)
+    public void isValidMove(ChessBoard board, ChessPosition start, ChessPosition end) {
+        if(end.getRow() - 1 < board.getWidth() && end.getRow() > 0 && end.getColumn() - 1 < board.getWidth() && end.getColumn() > 0) {
+            if(board.getPiece(end) == null) {
+                addMove(start, end, null);
+            } else if (oppTeam(board, start, end)) {
+                addMove(start, end, null);
+            }
+        }
+
+    }
 
     public void calculateMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
@@ -34,6 +43,7 @@ public class PieceMovesCalculator {
                 bishopMoves(board, myPosition);
             }
             case KNIGHT -> {
+                knightMoves(board, myPosition);
             }
             case ROOK -> {
                 rookMoves(board, myPosition);
@@ -42,6 +52,22 @@ public class PieceMovesCalculator {
                 pawnMoves(board, myPosition);
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
+
+    public void knightMoves(ChessBoard board, ChessPosition start) {
+        ArrayList<int[]> pairs = new ArrayList<>();
+        pairs.add(new int[]{1, 2});
+        pairs.add(new int[]{2, 1});
+        pairs.add(new int[]{2, -1});
+        pairs.add(new int[]{1, -2});
+        pairs.add(new int[]{-1, -2});
+        pairs.add(new int[]{-2, -1});
+        pairs.add(new int[]{-2, 1});
+        pairs.add(new int[]{-1, 2});
+        for (int[] pair: pairs) {
+            ChessPosition end = new ChessPosition(start.getRow() + pair[0], start.getColumn() + pair[1]);
+            isValidMove(board, start, end);
         }
     }
 
