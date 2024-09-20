@@ -48,14 +48,37 @@ public class PieceMovesCalculator {
 
         ChessPosition forwardOne = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
         ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
-//        ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
-        if(board.getPiece(forwardOne) == null) {
-            addMove(myPosition, forwardOne, null);
-            if (myPosition.getRow() == 2 && board.getPiece((forwardTwo)) == null) {
-                addMove(myPosition, forwardTwo, null);
-            }
-        }
+        ChessPosition forwardLeft = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
+        ChessPosition forwardRight = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
 
+
+
+        if(board.getPiece(forwardOne) == null) {
+            //Pawn promotion.
+            if(myPosition.getRow() == 7) {
+                for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
+                    if(type != ChessPiece.PieceType.KING && type != ChessPiece.PieceType.PAWN){
+                        addMove(myPosition, forwardOne, type);
+                    }
+                }
+            } else {
+                addMove(myPosition, forwardOne, null);
+                //Pawn starts.
+                if (myPosition.getRow() == 2 && board.getPiece((forwardTwo)) == null) {
+                    addMove(myPosition, forwardTwo, null);
+                }
+
+            }
+
+        }
+        //Pawn takes left diagonal.
+        if (board.getPiece(forwardLeft)!= null && board.getPiece(forwardLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+            addMove(myPosition, forwardLeft, null);
+        }
+        //Pawn takes right diagonal.
+        if(board.getPiece(forwardRight) != null && board.getPiece(forwardRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+            addMove(myPosition, forwardRight, null);
+        }
 
 
     }
