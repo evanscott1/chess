@@ -40,4 +40,9 @@ public class ChessBoard {
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
     }
+
+    public int getWidth() {
+        return squares.length;
+    }
 }
+

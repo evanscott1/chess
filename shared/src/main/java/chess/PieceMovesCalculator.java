@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.ArrayList;
 
 public class PieceMovesCalculator {
     private final ArrayList<ChessMove> moves = new ArrayList<>();
@@ -17,7 +16,7 @@ public class PieceMovesCalculator {
     }
 
 
-    public ArrayList<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition){
+    public void calculateMoves(ChessBoard board, ChessPosition myPosition){
         ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
 
         switch (type) {
@@ -31,19 +30,32 @@ public class PieceMovesCalculator {
             case KNIGHT -> {
             }
             case ROOK -> {
+                rookMoves(board, myPosition);
             }
             case PAWN -> {
                 pawnMoves(board, myPosition);
             }
             default -> throw new IllegalStateException("Unexpected value: " + type);
         }
-        return moves;
     }
 
 
 //    public ArrayList<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
 //
 //    }
+    public void rookMoves(ChessBoard board, ChessPosition start) {
+        for (int i = 0; i < board.getWidth(); i++) {
+            if(i + 1 != start.getColumn()){
+                ChessPosition end = new ChessPosition(start.getRow(), i + 1);
+                addMove(start, end, null);
+            }
+            if(i + 1 != start.getRow()){
+                ChessPosition end = new ChessPosition(i + 1, start.getColumn());
+                addMove(start, end, null);
+            }
+
+        }
+    }
 
     public void pawnMoves(ChessBoard board, ChessPosition start) {
         ChessGame.TeamColor color = board.getPiece(start).getTeamColor();
