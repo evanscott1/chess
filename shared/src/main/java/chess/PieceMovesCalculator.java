@@ -30,7 +30,7 @@ public class PieceMovesCalculator {
             case QUEEN -> {
             }
             case BISHOP -> {
-
+                bishopMoves(board, myPosition);
             }
             case KNIGHT -> {
             }
@@ -44,6 +44,75 @@ public class PieceMovesCalculator {
         }
     }
 
+    public void bishopMoves(ChessBoard board, ChessPosition start) {
+
+        //topRight
+        int j = start.getColumn();
+        iLoop:
+        for(int i = start.getRow(); i < board.getWidth(); i++) {
+            if(j < board.getWidth()){
+                ChessPosition end = new ChessPosition(i + 1, j + 1);
+                if(board.getPiece(end) == null) {
+                    addMove(start, end, null);
+                } else if (oppTeam(board, start, end)) {
+                    addMove(start, end, null);
+                    {break iLoop;}
+                } else {break iLoop;}
+                j++;
+            }
+        }
+
+        //bottomRight
+        j = start.getColumn();
+        iLoop:
+        for(int i = start.getRow(); i > 1; i--) {
+            if(j < board.getWidth()){
+                ChessPosition end = new ChessPosition(i - 1, j + 1);
+                if(board.getPiece(end) == null) {
+                    addMove(start, end, null);
+                } else if (oppTeam(board, start, end)) {
+                    addMove(start, end, null);
+                    {break iLoop;}
+                } else {break iLoop;}
+                j++;
+            }
+
+        }
+        //topLeft
+        j = start.getColumn();
+        iLoop:
+        for(int i = start.getRow(); i < board.getWidth(); i++) {
+            if(j > 1){
+                ChessPosition end = new ChessPosition(i + 1, j - 1);
+                if(board.getPiece(end) == null) {
+                    addMove(start, end, null);
+                } else if (oppTeam(board, start, end)) {
+                    addMove(start, end, null);
+                    {break iLoop;}
+                } else {break iLoop;}
+                j--;
+            }
+
+        }
+        //bottomLeft
+        j = start.getColumn();
+        iLoop:
+        for(int i = start.getRow(); i > 1; i--) {
+            if(j > 1){
+                ChessPosition end = new ChessPosition(i - 1, j - 1);
+                if(board.getPiece(end) == null) {
+                    addMove(start, end, null);
+                } else if (oppTeam(board, start, end)) {
+                    addMove(start, end, null);
+                    {break iLoop;}
+                } else {break iLoop;}
+                j--;
+            }
+
+        }
+
+
+    }
 
     public void kingMoves(ChessBoard board, ChessPosition start) {
         for(int i = 0; i < 3; i++) {
