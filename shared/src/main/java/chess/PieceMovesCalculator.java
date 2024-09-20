@@ -9,8 +9,8 @@ public class PieceMovesCalculator {
 
     public void addMove(ChessPosition start, ChessPosition end, ChessPiece.PieceType type) {
 
-        ChessMove moveT = new ChessMove(start, end, type);
-        moves.add(moveT);
+        ChessMove move = new ChessMove(start, end, type);
+        moves.add(move);
     }
     public ArrayList<ChessMove> getMoves() {
         return moves;
@@ -48,14 +48,15 @@ public class PieceMovesCalculator {
 
         ChessPosition forwardOne = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
         ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
-        if (myPosition.getRow() == 2) {
-
-            if(board.getPiece(forwardOne) == null) {
-                addMove(myPosition, forwardOne, null);
-                if(board.getPiece((forwardTwo)) == null) {
-                    addMove(myPosition, forwardTwo, null);
-                }
+//        ChessPosition forwardTwo = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
+        if(board.getPiece(forwardOne) == null) {
+            addMove(myPosition, forwardOne, null);
+            if (myPosition.getRow() == 2 && board.getPiece((forwardTwo)) == null) {
+                addMove(myPosition, forwardTwo, null);
             }
         }
+
+
+
     }
 }
