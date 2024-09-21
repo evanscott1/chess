@@ -246,15 +246,19 @@ public class PieceMovesCalculator {
         //Pawn takes right diagonal.
         pawnCapture(board, start, forwardRight, promote);
     }
-
+    //TODO: Border validation bugs around here... need to organize helpers
     public void pawnCapture(ChessBoard board, ChessPosition start, ChessPosition end, boolean promote) {
-        if(board.getPiece(end) != null && oppTeam(board, start, end)) {
-            if(promote) {
-                pawnPromotion(start, end);
-            } else {
-                addMove(start, end, null);
+        if(end.getRow() - 1 < board.getWidth() && end.getRow() > 0 && end.getColumn() - 1 < board.getWidth() && end.getColumn() > 0) {
+            if(board.getPiece(end) != null && oppTeam(board, start, end)) {
+                if(promote) {
+                    pawnPromotion(start, end);
+                } else {
+                    addMove(start, end, null);
+                }
             }
         }
+
+
     }
 
     public void pawnPromotion(ChessPosition start, ChessPosition end) {
