@@ -9,6 +9,14 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
+
+    private int row;
+    private int col;
+    public ChessPosition(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -22,10 +30,11 @@ public class ChessPosition {
         return Objects.hash(row, col);
     }
 
-    private final int row;
-    private final int col;
-    public ChessPosition(int row, int col) {
+    public void setRow(int row) {
         this.row = row;
+    }
+
+    public void setCol(int col) {
         this.col = col;
     }
 

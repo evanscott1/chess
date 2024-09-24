@@ -3,270 +3,245 @@ package chess;
 import java.util.ArrayList;
 
 public class PieceMovesCalculator {
-    private final ArrayList<ChessMove> moves = new ArrayList<>();
-    public PieceMovesCalculator(){}
 
-    public void addMove(ChessPosition start, ChessPosition end, ChessPiece.PieceType type) {
-
-        ChessMove move = new ChessMove(start, end, type);
-        moves.add(move);
+    private ChessBoard board;
+    private ChessPosition start;
+    private ChessPosition end = new ChessPosition(0,0);
+    private ArrayList<ChessMove> moves = new ArrayList<>();
+    private ChessPiece.PieceType startType;
+    private ChessGame.TeamColor startColor;
+    private ChessPiece.PieceType promotion = null;
+    private boolean endIsOppTeam = false;
+    PieceMovesCalculator(ChessBoard board, ChessPosition start) {
+        this.board = board;
+        this.start = start;
     }
-    public ArrayList<ChessMove> getMoves() {
+
+    public ArrayList<ChessMove> calculateMoves() {
+        startType = board.getPiece(start).getPieceType();
+        startColor = board.getPiece(start).getTeamColor();
+        switch (startType) {
+            case PAWN -> {
+                addPawnMoves();
+            }
+            case ROOK -> {
+                addRookMoves();
+            }
+            case KNIGHT -> {
+                addKnightMoves();
+            }
+            case BISHOP -> {
+                addBishopMoves();
+            }
+            case QUEEN -> {
+                addQueenMoves();
+            }
+            case KING -> {
+                addKingMoves();
+            }
+        }
         return moves;
     }
 
-    public boolean oppTeam(ChessBoard board, ChessPosition start, ChessPosition end) {
-        return board.getPiece(start).getTeamColor() != board.getPiece(end).getTeamColor();
+    public boolean isOnBoardEnd() {
+        return end.getRow() > 0 && end.getRow() <= board.getBoardWidth() && end.getColumn() > 0 && end.getColumn() <= board.getBoardWidth();
     }
-    public void isValidMove(ChessBoard board, ChessPosition start, ChessPosition end) {
-        if(end.getRow() - 1 < board.getWidth() && end.getRow() > 0 && end.getColumn() - 1 < board.getWidth() && end.getColumn() > 0) {
-            if(board.getPiece(end) == null) {
-                addMove(start, end, null);
-            } else if (oppTeam(board, start, end)) {
-                addMove(start, end, null);
+
+    public boolean isNullEnd() {
+        return board.getPiece(end) == null;
+    }
+
+    public boolean isOppTeamEnd() {
+        return startColor != board.getPiece(end).getTeamColor();
+    }
+
+    public void addMove() {
+        ChessPosition newEnd = new ChessPosition(end.getRow(), end.getColumn());
+        ChessPiece.PieceType newPromotion = promotion;
+        ChessMove move = new ChessMove(start, newEnd, newPromotion);
+        moves.add(move);
+    }
+
+    public void addNullAddOpp () {
+        if(isOnBoardEnd()) {
+            if(isNullEnd()) {
+                addMove();
+            } else if (isOppTeamEnd()) {
+                addMove();
+                endIsOppTeam = true;
+            } else{
+                endIsOppTeam = true;
             }
+
         }
 
     }
 
-    public void calculateMoves(ChessBoard board, ChessPosition myPosition){
-        ChessPiece.PieceType type = board.getPiece(myPosition).getPieceType();
+    public void addPawnMoves() {
+        int forward = -1;
+        if(startColor == ChessGame.TeamColor.WHITE) {
+            forward = 1;
+        }
+        end.setCol(start.getColumn());
+        end.setRow(start.getRow() + forward);
+        if(isNullEnd()) {
+            pawnPromotion();
+            if(startColor == ChessGame.TeamColor.WHITE && start.getRow() == 2) {
+                end.setRow(start.getRow() + 2 * forward);
+                if(isNullEnd()) {
+                    addMove();
+                }
+            } else if (startColor == ChessGame.TeamColor.BLACK && start.getRow() == 7) {
+                end.setRow(start.getRow() + 2 * forward);
+                if(isNullEnd()) {
+                    addMove();
+                }
+            }
+        }
+        end.setRow(start.getRow() + forward);
+        pawnCapture(-1);
+        pawnCapture(1);
 
-        switch (type) {
-            case KING -> {
-                kingMoves(board, myPosition);
-            }
-            case QUEEN -> {
-                queenMoves(board, myPosition);
-            }
-            case BISHOP -> {
-                bishopMoves(board, myPosition);
-            }
-            case KNIGHT -> {
-                knightMoves(board, myPosition);
-            }
-            case ROOK -> {
-                rookMoves(board, myPosition);
-            }
-            case PAWN -> {
-                pawnMoves(board, myPosition);
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + type);
+    }
+
+    public void pawnCapture(int i) {
+        end.setCol(start.getColumn() + i);
+        if(isOnBoardEnd() && !isNullEnd() && isOppTeamEnd()) {
+            pawnPromotion();
         }
     }
 
-    public void knightMoves(ChessBoard board, ChessPosition start) {
-        ArrayList<int[]> pairs = new ArrayList<>();
-        pairs.add(new int[]{1, 2});
-        pairs.add(new int[]{2, 1});
-        pairs.add(new int[]{2, -1});
-        pairs.add(new int[]{1, -2});
-        pairs.add(new int[]{-1, -2});
-        pairs.add(new int[]{-2, -1});
-        pairs.add(new int[]{-2, 1});
-        pairs.add(new int[]{-1, 2});
-        for (int[] pair: pairs) {
-            ChessPosition end = new ChessPosition(start.getRow() + pair[0], start.getColumn() + pair[1]);
-            isValidMove(board, start, end);
+    public void pawnPromotion() {
+        if(promotePawn()) {
+            ArrayList<ChessPiece.PieceType> types = new ArrayList<>();
+            types.add(ChessPiece.PieceType.ROOK);
+            types.add(ChessPiece.PieceType.KNIGHT);
+            types.add(ChessPiece.PieceType.BISHOP);
+            types.add(ChessPiece.PieceType.QUEEN);
+
+            for( ChessPiece.PieceType type : types) {
+                promotion = type;
+                addMove();
+            }
+            promotion = null;
+        } else {
+            addMove();
         }
     }
 
-    public void queenMoves(ChessBoard board, ChessPosition start) {
-        bishopMoves(board, start);
-        rookMoves(board, start);
+    public boolean promotePawn() {
+        int i = 1;
+        if(startColor == ChessGame.TeamColor.WHITE) {
+            i = 8;
+        }
+        return end.getRow() == i;
     }
+    public void addRookMoves() {
+        int i = 0;
+        //right
+        endIsOppTeam = false;
+        end.setRow(start.getRow());
+        for(i = start.getColumn() + 1; i <= board.getBoardWidth(); i++) {
+            end.setCol(i);
+            addNullAddOpp();
+            if(endIsOppTeam) {break;}
+        }
+        //left
+        endIsOppTeam = false;
+        end.setRow(start.getRow());
+        for(i = start.getColumn() - 1; i > 0; i--) {
+            end.setCol(i);
+            addNullAddOpp();
+            if(endIsOppTeam) {break;}
+        }
+        //up
+        endIsOppTeam = false;
+        end.setCol(start.getColumn());
+        for(i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
+            end.setRow(i);
+            addNullAddOpp();
+            if(endIsOppTeam) {break;}
+        }
+        //down
+        endIsOppTeam = false;
+        end.setCol(start.getColumn());
+        for(i = start.getRow() - 1; i > 0; i--) {
+            end.setRow(i);
+            addNullAddOpp();
+            if(endIsOppTeam) {break;}
+        }
+    }
+    public void addKnightMoves() {
+        int[][] pairs = {{1,2}, {2,1}, {2,-1}, {1,-2}, {-1,-2}, {-2,-1}, {-2,1}, {-1,2}};
 
-    public void bishopMoves(ChessBoard board, ChessPosition start) {
+        for (int[] pair : pairs) {
+            endIsOppTeam = false;
+            end.setRow(start.getRow() + pair[0]);
+            end.setCol(start.getColumn() + pair[1]);
+            addNullAddOpp();
+        }
+    }
+    public void addBishopMoves() {
+        int i = 0;
+        int j = 0;
+
         //topRight
-        int j = start.getColumn();
-        iLoop:
-        for(int i = start.getRow(); i < board.getWidth(); i++) {
-            if(j < board.getWidth()){
-                ChessPosition end = new ChessPosition(i + 1, j + 1);
-                if(board.getPiece(end) == null) {
-                    addMove(start, end, null);
-                } else if (oppTeam(board, start, end)) {
-                    addMove(start, end, null);
-                    {break iLoop;}
-                } else {break iLoop;}
-                j++;
-            }
+        endIsOppTeam = false;
+        j = start.getColumn() + 1;
+        for(i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
+            end.setRow(i);
+            end.setCol(j);
+            addNullAddOpp();
+            j++;
+            if(endIsOppTeam) {break;}
         }
-        //bottomRight
-        j = start.getColumn();
-        iLoop:
-        for(int i = start.getRow(); i > 1; i--) {
-            if(j < board.getWidth()){
-                ChessPosition end = new ChessPosition(i - 1, j + 1);
-                if(board.getPiece(end) == null) {
-                    addMove(start, end, null);
-                } else if (oppTeam(board, start, end)) {
-                    addMove(start, end, null);
-                    {break iLoop;}
-                } else {break iLoop;}
-                j++;
-            }
-        }
+
         //topLeft
-        j = start.getColumn();
-        iLoop:
-        for(int i = start.getRow(); i < board.getWidth(); i++) {
-            if(j > 1){
-                ChessPosition end = new ChessPosition(i + 1, j - 1);
-                if(board.getPiece(end) == null) {
-                    addMove(start, end, null);
-                } else if (oppTeam(board, start, end)) {
-                    addMove(start, end, null);
-                    {break iLoop;}
-                } else {break iLoop;}
-                j--;
-            }
+        endIsOppTeam = false;
+        j = start.getColumn() - 1;
+        for(i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
+            end.setRow(i);
+            end.setCol(j);
+            addNullAddOpp();
+            j--;
+            if(endIsOppTeam) {break;}
+        }
+
+        //bottomRight
+        endIsOppTeam = false;
+        j = start.getColumn() + 1;
+        for(i = start.getRow() - 1; i > 0; i--) {
+            end.setRow(i);
+            end.setCol(j);
+            addNullAddOpp();
+            j++;
+            if(endIsOppTeam) {break;}
         }
         //bottomLeft
-        j = start.getColumn();
-        iLoop:
-        for(int i = start.getRow(); i > 1; i--) {
-            if(j > 1){
-                ChessPosition end = new ChessPosition(i - 1, j - 1);
-                if(board.getPiece(end) == null) {
-                    addMove(start, end, null);
-                } else if (oppTeam(board, start, end)) {
-                    addMove(start, end, null);
-                    {break iLoop;}
-                } else {break iLoop;}
-                j--;
-            }
-        }
-    }
-
-    public void kingMoves(ChessBoard board, ChessPosition start) {
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                ChessPosition end = new ChessPosition(start.getRow() + i - 1, start.getColumn() + j - 1);
-                if((end.getRow() > 0 && end.getColumn() > 0) && (end.getRow() <= board.getWidth() && end.getColumn() <= board.getWidth())){
-                    if (board.getPiece(end) == null){
-                        addMove(start, end, null);
-                    } else if (oppTeam(board, start, end)) {
-                        addMove(start, end, null);
-                    }
-                }
-            }
-        }
-    }
-
-//    public ArrayList<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
-//
-//    }
-    public void rookMoves(ChessBoard board, ChessPosition start) {
-        //TODO: find a way to reduce code dup
-        //rookRight
-        for(int i = start.getColumn(); i < board.getWidth(); i++) {
-            ChessPosition end = new ChessPosition(start.getRow(), i + 1);
-            if(board.getPiece(end) == null) {
-                addMove(start, end, null);
-            } else if (oppTeam(board, start, end)) {
-                addMove(start, end, null);
-                {break;}
-            } else {break;}
-        }
-        //rookUp
-        for(int i = start.getRow(); i < board.getWidth(); i++) {
-            ChessPosition end = new ChessPosition(i + 1, start.getColumn());
-            if(board.getPiece(end) == null) {
-                addMove(start, end, null);
-            } else if (oppTeam(board, start, end)) {
-                addMove(start, end, null);
-                {break;}
-            } else {break;}
-        }
-        //rookLeft
-        for(int i = start.getColumn(); i > 1; i--) {
-            ChessPosition end = new ChessPosition(start.getRow(), i - 1);
-            if(board.getPiece(end) == null) {
-                addMove(start, end, null);
-            } else if (oppTeam(board, start, end)) {
-                addMove(start, end, null);
-                {break;}
-            } else {break;}
-        }
-        //rookDown
-        for(int i = start.getRow(); i > 1; i--) {
-            ChessPosition end = new ChessPosition(i - 1, start.getColumn());
-            if(board.getPiece(end) == null) {
-                addMove(start, end, null);
-            } else if (oppTeam(board, start, end)) {
-                addMove(start, end, null);
-                {break;}
-            } else {break;}
+        endIsOppTeam = false;
+        j = start.getColumn() - 1;
+        for(i = start.getRow() - 1; i > 0; i--) {
+            end.setRow(i);
+            end.setCol(j);
+            addNullAddOpp();
+            j--;
+            if(endIsOppTeam) {break;}
         }
 
     }
-
-
-    public void pawnMoves(ChessBoard board, ChessPosition start) {
-        ChessGame.TeamColor color = board.getPiece(start).getTeamColor();
-        int offset = 0;
-        int startRow = 0;
-        int promoteRow = 0;
-        if (color == ChessGame.TeamColor.WHITE) {
-            offset = 1;
-            startRow = 2;
-            promoteRow = 7;
-        } else if (color == ChessGame.TeamColor.BLACK) {
-            offset = -1;
-            startRow = 7;
-            promoteRow = 2;
-        }
-        ChessPosition forwardOne = new ChessPosition(start.getRow() + offset, start.getColumn());
-        ChessPosition forwardTwo = new ChessPosition(start.getRow() + offset * 2, start.getColumn());
-        ChessPosition forwardLeft = new ChessPosition(start.getRow() + offset, start.getColumn() - offset);
-        ChessPosition forwardRight = new ChessPosition(start.getRow() + offset, start.getColumn() + offset);
-
-        boolean promote = false;
-        if(start.getRow() == promoteRow) {
-            promote = true;
-        }
-
-        if(board.getPiece(forwardOne) == null) {
-            //Pawn promotion.
-            if(promote) {
-                pawnPromotion(start, forwardOne);
-            } else {
-                addMove(start, forwardOne, null);
-                //Pawn starts.
-                if (start.getRow() == startRow && board.getPiece((forwardTwo)) == null) {
-                    addMove(start, forwardTwo, null);
-                }
-
-            }
-
-        }
-        //Pawn takes left diagonal.
-        pawnCapture(board, start, forwardLeft, promote);
-        //Pawn takes right diagonal.
-        pawnCapture(board, start, forwardRight, promote);
+    public void addQueenMoves () {
+        addRookMoves();
+        addBishopMoves();
     }
-    //TODO: Border validation bugs around here... need to organize helpers
-    public void pawnCapture(ChessBoard board, ChessPosition start, ChessPosition end, boolean promote) {
-        if(end.getRow() - 1 < board.getWidth() && end.getRow() > 0 && end.getColumn() - 1 < board.getWidth() && end.getColumn() > 0) {
-            if(board.getPiece(end) != null && oppTeam(board, start, end)) {
-                if(promote) {
-                    pawnPromotion(start, end);
-                } else {
-                    addMove(start, end, null);
-                }
-            }
-        }
-
-
-    }
-
-    public void pawnPromotion(ChessPosition start, ChessPosition end) {
-        for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
-            if(type != ChessPiece.PieceType.KING && type != ChessPiece.PieceType.PAWN){
-                addMove(start, end, type);
+    public void addKingMoves() {
+        int i = 0;
+        int j = 0;
+        for(i = start.getRow() - 1; i < start.getRow() + 2; i++) {
+            for(j = start.getColumn() - 1; j < start.getColumn() + 2; j++) {
+                end.setRow(i);
+                end.setCol(j);
+                addNullAddOpp();
             }
         }
     }
 }
-

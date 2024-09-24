@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -11,7 +10,13 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private final ChessGame.TeamColor pieceColor;
+
+    private ChessGame.TeamColor pieceColor;
+    ChessPiece.PieceType type;
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -24,13 +29,6 @@ public class ChessPiece {
     @Override
     public int hashCode() {
         return Objects.hash(pieceColor, type);
-    }
-
-    private final PieceType type;
-
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.pieceColor = pieceColor;
-        this.type = type;
     }
 
     /**
@@ -67,8 +65,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        PieceMovesCalculator calculator = new PieceMovesCalculator();
-        calculator.calculateMoves(board, myPosition);
-        return calculator.getMoves();
+        PieceMovesCalculator calculator = new PieceMovesCalculator(board, myPosition);
+        return calculator.calculateMoves();
     }
 }

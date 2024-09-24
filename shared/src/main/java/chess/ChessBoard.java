@@ -1,6 +1,5 @@
 package chess;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -12,6 +11,11 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private ChessPiece[][] squares = new ChessPiece[8][8];
+    public ChessBoard() {
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -25,9 +29,8 @@ public class ChessBoard {
         return Arrays.deepHashCode(squares);
     }
 
-    private final ChessPiece[][] squares = new ChessPiece[8][8];
-    public ChessBoard() {
-        
+    public int getBoardWidth() {
+        return squares.length;
     }
 
     /**
@@ -37,7 +40,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow()-1][ position.getColumn()-1] = piece;
+        squares[position.getRow() - 1][position.getColumn()  - 1] = piece;
     }
 
     /**
@@ -48,7 +51,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()-1][position.getColumn()-1];
+        return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -56,22 +59,20 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        placePawns(ChessGame.TeamColor.BLACK, 7);
-        placePawns(ChessGame.TeamColor.WHITE, 2);
-        royalPieces(ChessGame.TeamColor.BLACK, 8);
-        royalPieces(ChessGame.TeamColor.WHITE, 1);
-
-
+        addPawns(ChessGame.TeamColor.WHITE, 2);
+        addPawns(ChessGame.TeamColor.BLACK, 7);
+        addRoyalty(ChessGame.TeamColor.WHITE, 1);
+        addRoyalty(ChessGame.TeamColor.BLACK, 8);
     }
-    public void placePawns(ChessGame.TeamColor color, int row) {
-        for(int i = 1; i <= getWidth(); i++) {
-            ChessPosition pawnPos = new ChessPosition(row, i);
-            ChessPiece pawn = new ChessPiece(color, ChessPiece.PieceType.PAWN);
-            addPiece(pawnPos, pawn);
+
+    public void addPawns(ChessGame.TeamColor color, int row) {
+        for(int i = 1; i <= getBoardWidth(); i++) {
+            ChessPosition pos = new ChessPosition(row, i);
+            ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.PAWN);
+            addPiece(pos, piece);
         }
-
     }
-    public void royalPieces(ChessGame.TeamColor color, int row) {
+    public void addRoyalty(ChessGame.TeamColor color, int row) {
         ArrayList<ChessPiece.PieceType> types = new ArrayList<>();
         types.add(ChessPiece.PieceType.ROOK);
         types.add(ChessPiece.PieceType.KNIGHT);
@@ -81,53 +82,12 @@ public class ChessBoard {
         types.add(ChessPiece.PieceType.BISHOP);
         types.add(ChessPiece.PieceType.KNIGHT);
         types.add(ChessPiece.PieceType.ROOK);
-
         int i = 1;
-        for(ChessPiece.PieceType type : types) {
+        for (ChessPiece.PieceType type : types) {
             ChessPosition pos = new ChessPosition(row, i);
             ChessPiece piece = new ChessPiece(color, type);
             addPiece(pos, piece);
             i++;
         }
     }
-
-    public int getWidth() {
-        return squares.length;
-    }
-
-    public void printBoard(ChessBoard board) {
-        for (int i = 1; i <= getWidth(); i++) {
-            for (int j = 1; j <= getWidth(); j++) {
-                ChessPosition pos = new ChessPosition(i, j);
-                char c;
-                switch (board.getPiece(pos).getPieceType()) {
-                    case KING -> {
-                        c = 'K';
-                    }
-                    case PAWN -> {
-                        c = 'P';
-                    }
-                    case ROOK -> {
-                        c = 'R';
-                    }
-                    case QUEEN -> {
-                        c = 'Q';
-                    }
-                    case BISHOP ->  {
-                        c = 'B';
-                    }
-                    case KNIGHT -> {
-                        c = 'N';
-                    }
-                    case null -> {
-                        c = ' ';
-                    }
-                    default -> throw new IllegalStateException("Unexpected value: " + board.getPiece(pos));
-                }
-                System.out.print("|" + c);
-            }
-            System.out.println('|');
-        }
-    }
 }
-
