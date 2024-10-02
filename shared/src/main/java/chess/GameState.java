@@ -3,7 +3,7 @@ package chess;
 public class GameState {
     private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
     private ChessBoard board = new ChessBoard();
-    private ChessRuleBook rules;
+    private ChessRuleBook rules = new ChessRuleBook();
     public GameState() {
         board.resetBoard();
     }

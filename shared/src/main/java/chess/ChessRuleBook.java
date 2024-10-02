@@ -4,16 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChessRuleBook {
-    private ChessBoard board;
-    private ChessPosition start;
-
-    public ChessRuleBook(ChessBoard board, ChessPosition start) {
-        this.board = board;
-        this.start = start;
+    public ChessRuleBook() {
     }
 
     public Collection<ChessMove> validMoves() {
-        Collection<ChessMove> pieceMoves = board.getPiece(start).pieceMoves(board, start);
 
         throw new RuntimeException("Not implemented");
     }
@@ -24,22 +18,7 @@ public class ChessRuleBook {
 
     public boolean isInCheck(ChessBoard board, ChessGame.TeamColor color) {
         ChessPosition kingPos = findKing(board, color);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                ChessPosition pos = new ChessPosition(i + 1, j + 1);
-                ChessPiece piece = board.getPiece(pos);
-                if (piece != null && piece.getTeamColor() != color) {
-                    Collection<ChessMove> moves = piece.pieceMoves(board, pos);
-                    for (ChessMove move : moves) {
-                        if( move.getEndPosition() == kingPos) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
+        return otherTeamEndPositions(board, color).contains(kingPos);
     }
 
     private ChessPosition findKing(ChessBoard board, ChessGame.TeamColor color) {
@@ -47,15 +26,50 @@ public class ChessRuleBook {
             for (int j = 0; j < 8; j++) {
                 ChessPosition pos = new ChessPosition(i + 1, j + 1);
                 ChessPiece piece = board.getPiece(pos);
-                if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color ) {
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color ) {
                     return pos;
                 }
             }
         }
+        throw new RuntimeException("King is missing from board.");
+    }
+
+    private Collection<ChessMove> otherTeamMoves(ChessBoard board, ChessGame.TeamColor color) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPosition pos = new ChessPosition(i + 1, j + 1);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() != color) {
+                    moves.addAll(piece.pieceMoves(board, pos));
+                }
+            }
+        }
+        return moves;
+    }
+    private Collection<ChessPosition> otherTeamEndPositions(ChessBoard board, ChessGame.TeamColor color) {
+        Collection<ChessPosition> positions = new ArrayList<>();
+        for (ChessMove move : otherTeamMoves(board, color)) {
+            positions.add(move.getEndPosition());
+        }
+        return positions;
     }
 
     public boolean isInCheckmate(ChessBoard board, ChessGame.TeamColor color) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(board, color)) {
+            return false;
+        }
+        ChessPosition kingPos = findKing(board, color);
+        Collection<ChessMove> kingMoves = board.getPiece(kingPos).pieceMoves(board, kingPos);
+        Collection<ChessPosition> teamPositions = otherTeamEndPositions(board, color);
+        for (ChessMove kingMove : kingMoves) {
+            if(!teamPositions.contains(kingMove)) {
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     public boolean isInStalemate(ChessBoard board, ChessGame.TeamColor color) {
