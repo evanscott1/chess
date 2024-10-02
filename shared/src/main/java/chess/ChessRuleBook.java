@@ -3,11 +3,17 @@ package chess;
 import java.util.Collection;
 
 public class ChessRuleBook {
-    public ChessRuleBook() {
+    private ChessBoard board;
+    private ChessPosition start;
 
+    public ChessRuleBook(ChessBoard board, ChessPosition start) {
+        this.board = board;
+        this.start = start;
     }
 
-    public Collection<ChessMove> validMoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> validMoves() {
+        board.getPiece(start).pieceMoves(board, start);
+
         throw new RuntimeException("Not implemented");
     }
 
