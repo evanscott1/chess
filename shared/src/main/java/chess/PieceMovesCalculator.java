@@ -43,26 +43,26 @@ public class PieceMovesCalculator {
         return moves;
     }
 
-    public boolean isOnBoardEnd() {
+    private boolean isOnBoardEnd() {
         return end.getRow() > 0 && end.getRow() <= board.getBoardWidth() && end.getColumn() > 0 && end.getColumn() <= board.getBoardWidth();
     }
 
-    public boolean isNullEnd() {
+    private boolean isNullEnd() {
         return board.getPiece(end) == null;
     }
 
-    public boolean isOppTeamEnd() {
+    private boolean isOppTeamEnd() {
         return startColor != board.getPiece(end).getTeamColor();
     }
 
-    public void addMove() {
+    private void addMove() {
         ChessPosition newEnd = new ChessPosition(end.getRow(), end.getColumn());
         ChessPiece.PieceType newPromotion = promotion;
         ChessMove move = new ChessMove(start, newEnd, newPromotion);
         moves.add(move);
     }
 
-    public void addNullAddOpp () {
+    private void addNullAddOpp () {
         if(isOnBoardEnd()) {
             if(isNullEnd()) {
                 addMove();
@@ -77,7 +77,7 @@ public class PieceMovesCalculator {
 
     }
 
-    public void addPawnMoves() {
+    private void addPawnMoves() {
         int forward = -1;
         if(startColor == ChessGame.TeamColor.WHITE) {
             forward = 1;
@@ -104,14 +104,14 @@ public class PieceMovesCalculator {
 
     }
 
-    public void pawnCapture(int i) {
+    private void pawnCapture(int i) {
         end.setCol(start.getColumn() + i);
         if(isOnBoardEnd() && !isNullEnd() && isOppTeamEnd()) {
             pawnPromotion();
         }
     }
 
-    public void pawnPromotion() {
+    private void pawnPromotion() {
         if(promotePawn()) {
             ArrayList<ChessPiece.PieceType> types = new ArrayList<>();
             types.add(ChessPiece.PieceType.ROOK);
@@ -129,14 +129,14 @@ public class PieceMovesCalculator {
         }
     }
 
-    public boolean promotePawn() {
+    private boolean promotePawn() {
         int i = 1;
         if(startColor == ChessGame.TeamColor.WHITE) {
             i = 8;
         }
         return end.getRow() == i;
     }
-    public void addRookMoves() {
+    private void addRookMoves() {
         int i = 0;
         //right
         endIsOppTeam = false;
@@ -171,7 +171,7 @@ public class PieceMovesCalculator {
             if(endIsOppTeam) {break;}
         }
     }
-    public void addKnightMoves() {
+    private void addKnightMoves() {
         int[][] pairs = {{1,2}, {2,1}, {2,-1}, {1,-2}, {-1,-2}, {-2,-1}, {-2,1}, {-1,2}};
 
         for (int[] pair : pairs) {
@@ -181,7 +181,7 @@ public class PieceMovesCalculator {
             addNullAddOpp();
         }
     }
-    public void addBishopMoves() {
+    private void addBishopMoves() {
         int i = 0;
         int j = 0;
 
@@ -229,11 +229,11 @@ public class PieceMovesCalculator {
         }
 
     }
-    public void addQueenMoves () {
+    private void addQueenMoves () {
         addRookMoves();
         addBishopMoves();
     }
-    public void addKingMoves() {
+    private void addKingMoves() {
         int i = 0;
         int j = 0;
         for(i = start.getRow() - 1; i < start.getRow() + 2; i++) {
