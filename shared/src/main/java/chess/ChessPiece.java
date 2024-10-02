@@ -13,9 +13,15 @@ public class ChessPiece {
 
     private ChessGame.TeamColor pieceColor;
     ChessPiece.PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+    }
+
+    public ChessPiece(ChessPiece newPiece) {
+        this.pieceColor = newPiece.pieceColor;
+        this.type = newPiece.type;
     }
 
     @Override

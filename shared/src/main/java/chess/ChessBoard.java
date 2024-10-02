@@ -16,6 +16,17 @@ public class ChessBoard {
 
     }
 
+    public ChessBoard(ChessBoard newBoard) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece newPiece = newBoard.getPiece(new ChessPosition(i, j));
+                if (newPiece != null) {
+                    squares[i][j] = new ChessPiece(newBoard.getPiece(new ChessPosition(i, j)));
+                }
+            }
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
