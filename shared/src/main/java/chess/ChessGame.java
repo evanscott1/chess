@@ -10,21 +10,17 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    private GameState state;
+    private GameState state = new GameState();
 
     public ChessGame() {
 
-    }
-
-    public GameState state() {
-        return state;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return state.turn();
     }
 
     /**
@@ -33,7 +29,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        state.setTurn(team);
     }
 
     /**

@@ -5,7 +5,11 @@ public class GameState {
     private ChessBoard board = new ChessBoard();
     private ChessRuleBook rules;
     public GameState() {
+        board.resetBoard();
+    }
 
+    public void setTurn(ChessGame.TeamColor turn) {
+        this.turn = turn;
     }
 
     public ChessGame.TeamColor turn() {
