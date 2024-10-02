@@ -12,7 +12,7 @@ public class ChessRuleBook {
     }
 
     public Collection<ChessMove> validMoves() {
-        board.getPiece(start).pieceMoves(board, start);
+        Collection<ChessMove> pieceMoves = board.getPiece(start).pieceMoves(board, start);
 
         throw new RuntimeException("Not implemented");
     }

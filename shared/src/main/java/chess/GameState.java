@@ -1,24 +1,31 @@
 package chess;
 
 public class GameState {
+    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
+    private ChessBoard board = new ChessBoard();
+    private ChessRuleBook rules;
     public GameState() {
 
     }
 
-    public void turn() {
-
+    public ChessGame.TeamColor turn() {
+        return turn;
     }
 
     public void status() {
 
     }
 
-    public void board() {
-
+    public void setBoard(ChessBoard board) {
+        this.board = board;
     }
 
-    public void rules() {
+    public ChessBoard board() {
+        return board;
+    }
 
+    public ChessRuleBook rules() {
+        return rules;
     }
 
 

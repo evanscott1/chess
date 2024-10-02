@@ -10,10 +10,14 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    ChessBoard board = new ChessBoard();
+    private GameState state;
 
     public ChessGame() {
 
+    }
+
+    public GameState state() {
+        return state;
     }
 
     /**
@@ -48,7 +52,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessRuleBook ruleBook = new ChessRuleBook(board, startPosition);
+        ChessRuleBook ruleBook = new ChessRuleBook(state.board(), startPosition);
         return ruleBook.validMoves();
     }
 
@@ -99,7 +103,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board = new ChessBoard(board);
+        state.setBoard(new ChessBoard(board));
     }
 
     /**
@@ -108,6 +112,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return state.board();
     }
 }
