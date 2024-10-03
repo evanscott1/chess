@@ -7,9 +7,17 @@ public class ChessRuleBook {
     public ChessRuleBook() {
     }
 
-    public Collection<ChessMove> validMoves() {
-
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> validMoves(ChessPosition start, ChessBoard board) {
+        Collection<ChessMove> moves = board.getPiece(start).pieceMoves(board, start);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove move : moves) {
+            ChessBoard newBoard =  new ChessBoard(board);
+            newBoard.movePiece(move.getStartPosition(), move.getEndPosition());
+            if(!isInCheck(newBoard, board.getPiece(move.getEndPosition()).getTeamColor())) {
+                validMoves.add(move);
+            }
+        }
+        return validMoves;
     }
 
     public boolean isBoardValid(ChessBoard board) {

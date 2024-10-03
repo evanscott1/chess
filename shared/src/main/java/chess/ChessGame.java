@@ -48,7 +48,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        return state.rules().validMoves(startPosition, state.board());
     }
 
     /**
@@ -68,7 +68,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return state.rules().isInCheck(state.board(),teamColor);
+        return state.rules().isInCheck(state.board(), teamColor);
     }
 
     /**
