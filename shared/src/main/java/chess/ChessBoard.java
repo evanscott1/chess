@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -100,5 +101,39 @@ public class ChessBoard {
             addPiece(pos, piece);
             i++;
         }
+    }
+
+    public Iterator<Placement> iterate() {
+        return new BoardIterator();
+    }
+
+    private class BoardIterator implements Iterator<Placement> {
+        private int row = 1;
+        private int col = 1;
+
+        @Override
+        public boolean hasNext() {
+            return row <= 8 && col <= 8;
+        }
+
+        @Override
+        public Placement next() {
+            if(!hasNext()) {
+                throw new RuntimeException();
+            }
+
+            ChessPiece piece = squares[row][col];
+            ChessPosition pos = new ChessPosition(row, col);
+            Placement placement = new Placement(piece, pos);
+
+            row++;
+            if(row >= getBoardWidth()) {
+                row = 1;
+                col++;
+            }
+            return placement;
+        }
+
+
     }
 }

@@ -47,6 +47,12 @@ public class ChessRuleBook {
         }
         return moves;
     }
+    private ChessGame.TeamColor otherTeamColor(ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) {
+            return ChessGame.TeamColor.BLACK;
+        }
+        return ChessGame.TeamColor.WHITE;
+    }
     private Collection<ChessPosition> otherTeamEndPositions(ChessBoard board, ChessGame.TeamColor color) {
         Collection<ChessPosition> positions = new ArrayList<>();
         for (ChessMove move : otherTeamMoves(board, color)) {
@@ -63,7 +69,7 @@ public class ChessRuleBook {
         Collection<ChessMove> kingMoves = board.getPiece(kingPos).pieceMoves(board, kingPos);
         Collection<ChessPosition> teamPositions = otherTeamEndPositions(board, color);
         for (ChessMove kingMove : kingMoves) {
-            if(!teamPositions.contains(kingMove)) {
+            if(!teamPositions.contains(kingMove.getEndPosition())) {
                 return false;
             }
         }
@@ -73,6 +79,13 @@ public class ChessRuleBook {
     }
 
     public boolean isInStalemate(ChessBoard board, ChessGame.TeamColor color) {
+        if(isInCheck(board, color)) {
+            return false;
+        }
+
+        Collection<ChessPosition> teamMoves = otherTeamEndPositions(board, otherTeamColor(color));
+
+
         throw new RuntimeException("Not implemented");
     }
 }
