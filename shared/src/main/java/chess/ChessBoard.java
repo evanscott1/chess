@@ -52,7 +52,7 @@ public class ChessBoard {
 
         ChessPiece piece = new ChessPiece(this.getPiece(start));
         squares[start.getRow() - 1][start.getColumn() - 1] = null;
-        squares[end.getRow() - 1][end.getRow() - 1] = piece;
+        squares[end.getRow() - 1][end.getColumn() - 1] = piece;
     }
 
     /**

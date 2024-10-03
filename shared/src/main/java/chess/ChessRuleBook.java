@@ -65,24 +65,11 @@ public class ChessRuleBook {
         if (!isInCheck(board, color)) {
             return false;
         }
-        ChessPosition kingPos = findKing(board, color);
-        Collection<ChessMove> kingMoves = board.getPiece(kingPos).pieceMoves(board, kingPos);
-        Collection<ChessPosition> teamPositions = otherTeamEndPositions(board, color);
-        for (ChessMove kingMove : kingMoves) {
-            if(!teamPositions.contains(kingMove.getEndPosition())) {
-                return false;
-            }
-        }
-
-        return true;
+        return moveIntoCheck(board, color);
 
     }
 
-    public boolean isInStalemate(ChessBoard board, ChessGame.TeamColor color) {
-        if(isInCheck(board, color)) {
-            return false;
-        }
-
+    private boolean moveIntoCheck(ChessBoard board, ChessGame.TeamColor color) {
         Collection<ChessMove> teamMoves = otherTeamMoves(board, otherTeamColor(color));
         for (ChessMove move : teamMoves) {
             ChessBoard newBoard =  new ChessBoard(board);
@@ -92,5 +79,13 @@ public class ChessRuleBook {
             }
         }
         return true;
+    }
+
+    public boolean isInStalemate(ChessBoard board, ChessGame.TeamColor color) {
+        if(isInCheck(board, color)) {
+            return false;
+        }
+
+        return moveIntoCheck(board, color);
     }
 }
