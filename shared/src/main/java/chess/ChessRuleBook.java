@@ -13,7 +13,7 @@ public class ChessRuleBook {
         for (ChessMove move : moves) {
             ChessBoard newBoard =  new ChessBoard(board);
             newBoard.movePiece(move.getStartPosition(), move.getEndPosition());
-            if(!isInCheck(newBoard, board.getPiece(move.getEndPosition()).getTeamColor())) {
+            if(!isInCheck(newBoard, newBoard.getPiece(move.getEndPosition()).getTeamColor())) {
                 validMoves.add(move);
             }
         }
