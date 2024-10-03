@@ -62,6 +62,9 @@ public class ChessGame {
         if(state.board().getPiece(move.getStartPosition()) != null && state.turn() == state.board().getPiece(move.getStartPosition()).getTeamColor()){
             Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
             if(validMoves.contains(move)) {
+                if(move.getPromotionPiece() != null) {
+                    state.board().addPiece(move.getStartPosition(), new ChessPiece(state.board().getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece()));
+                }
                 state.board().movePiece(move.getStartPosition(), move.getEndPosition());
                 moved = true;
             }

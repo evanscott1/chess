@@ -50,10 +50,12 @@ public class ChessBoard {
     public void movePiece(ChessPosition start, ChessPosition end) {
         history.add(new ChessBoard(this));
 
+
         ChessPiece piece = new ChessPiece(this.getPiece(start));
         squares[start.getRow() - 1][start.getColumn() - 1] = null;
         squares[end.getRow() - 1][end.getColumn() - 1] = piece;
     }
+    
 
     /**
      * Adds a chess piece to the chessboard
