@@ -55,7 +55,7 @@ public class ChessBoard {
         squares[start.getRow() - 1][start.getColumn() - 1] = null;
         squares[end.getRow() - 1][end.getColumn() - 1] = piece;
     }
-    
+
 
     /**
      * Adds a chess piece to the chessboard
