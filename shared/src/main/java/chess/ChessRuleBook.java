@@ -83,9 +83,14 @@ public class ChessRuleBook {
             return false;
         }
 
-        Collection<ChessPosition> teamMoves = otherTeamEndPositions(board, otherTeamColor(color));
-
-
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> teamMoves = otherTeamMoves(board, otherTeamColor(color));
+        for (ChessMove move : teamMoves) {
+            ChessBoard newBoard =  new ChessBoard(board);
+            newBoard.movePiece(move.getStartPosition(), move.getEndPosition());
+            if(!isInCheck(newBoard, color)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

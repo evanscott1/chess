@@ -13,6 +13,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
+    private ArrayList<ChessBoard> history = new ArrayList<>();
+
     public ChessBoard() {
 
     }
@@ -45,6 +47,14 @@ public class ChessBoard {
         return squares.length;
     }
 
+    public void movePiece(ChessPosition start, ChessPosition end) {
+        history.add(new ChessBoard(this));
+
+        ChessPiece piece = new ChessPiece(this.getPiece(start));
+        squares[start.getRow() - 1][start.getColumn() - 1] = null;
+        squares[end.getRow() - 1][end.getRow() - 1] = piece;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -52,7 +62,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow() - 1][position.getColumn()  - 1] = piece;
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -78,12 +88,13 @@ public class ChessBoard {
     }
 
     public void addPawns(ChessGame.TeamColor color, int row) {
-        for(int i = 1; i <= getBoardWidth(); i++) {
+        for (int i = 1; i <= getBoardWidth(); i++) {
             ChessPosition pos = new ChessPosition(row, i);
             ChessPiece piece = new ChessPiece(color, ChessPiece.PieceType.PAWN);
             addPiece(pos, piece);
         }
     }
+
     public void addRoyalty(ChessGame.TeamColor color, int row) {
         ArrayList<ChessPiece.PieceType> types = new ArrayList<>();
         types.add(ChessPiece.PieceType.ROOK);
@@ -118,7 +129,7 @@ public class ChessBoard {
 
         @Override
         public Placement next() {
-            if(!hasNext()) {
+            if (!hasNext()) {
                 throw new RuntimeException();
             }
 
@@ -127,13 +138,16 @@ public class ChessBoard {
             Placement placement = new Placement(piece, pos);
 
             row++;
-            if(row >= getBoardWidth()) {
+            if (row > getBoardWidth()) {
                 row = 1;
                 col++;
             }
             return placement;
         }
-
-
     }
+    public Iterator<ChessBoard> history () {
+        return history.iterator();
+    }
+
+
 }
