@@ -15,11 +15,11 @@ public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAc
 
     @Override
     public void deleteAuthData(String authToken) throws DataAccessException {
-        return
+        deleteT("authToken", authToken);
     }
 
     @Override
     public void deleteAllAuthDatas() throws DataAccessException {
-
+        deleteAllTs();
     }
 }

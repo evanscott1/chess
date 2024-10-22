@@ -1,15 +1,14 @@
 package dataaccess;
 
-import model.UserData;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Map;
 
-import static dataaccess.MemoryUtil.*;
 
 public abstract class MemoryBaseDAO<T> {
-    private int nextId = 1;
-    final private HashMap<Integer, T> ts = new HashMap<>();
+    protected int nextId = 1;
+    final protected HashMap<Integer, T> ts = new HashMap<>();
 
     public T addT(T t) throws DataAccessException {
         ts.put(nextId++, t);
@@ -17,27 +16,36 @@ public abstract class MemoryBaseDAO<T> {
     }
 
     public T getT(String attributeValue, String value) throws DataAccessException {
-        return findHashMapObjectByAttribute(ts, attributeValue, value);
+        Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);
+        return ts.get(key);
     }
 
-    public void deleteT(
+    public T updateT(T t, String attributeValue, String value) {
+        Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);
+        ts.replace(key, t);
+        return t;
+    }
+
+    public void deleteT(String attributeValue, String value) {
+        Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);
+        ts.remove(key);
+    }
 
     public void deleteAllTs() throws DataAccessException {
         ts.clear();
     }
 
-    private T findHashMapObjectByKey(int key) {
 
-    }
 
-    private T findHashMapObjectByAttribute(HashMap<Integer, T> ts, String attributeValue, String value) {
+    protected Integer findHashMapKeyByAttribute(HashMap<Integer, T> ts, String attributeValue, String value) {
 
-        for (T t : ts.values()) {
+        for (Map.Entry<Integer, T> entry : ts.entrySet()) {
+            T t = entry.getValue();
             try{
                 Field field = t.getClass().getDeclaredField(attributeValue);
                 Object fieldValue = field.get(t);
                 if(fieldValue != null && fieldValue.toString().equals(value)) {
-                    return t;
+                    return entry.getKey();
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();

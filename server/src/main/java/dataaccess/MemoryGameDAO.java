@@ -5,29 +5,30 @@ import model.GameData;
 import java.util.Collection;
 import java.util.List;
 
-public class MemoryGameDAO implements GameDataAccess{
+public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAccess{
     @Override
     public GameData addGameData(GameData gameData) throws DataAccessException {
-        return null;
+        return addT(gameData);
     }
 
     @Override
     public Collection<GameData> listGameDatas() throws DataAccessException {
-        return List.of();
+        return ts.values();
     }
 
     @Override
     public GameData getGameData(int gameID) throws DataAccessException {
-        return null;
+        return getT("gameID", Integer.toString(gameID));
     }
 
     @Override
     public GameData updateGameData(GameData gameData) throws DataAccessException {
-        return null;
+        updateT(gameData,"gameID", Integer.toString(gameData.gameID()));
+        return gameData;
     }
 
     @Override
     public void deleteAllGameDatas() throws DataAccessException {
-
+        deleteAllTs();
     }
 }
