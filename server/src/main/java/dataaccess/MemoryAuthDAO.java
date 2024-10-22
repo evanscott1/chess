@@ -1,19 +1,21 @@
 package dataaccess;
 
-public class MemoryAuthDAO implements AuthDataAccess{
+import model.AuthData;
+
+public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAccess{
     @Override
-    public AuthDataAccess addAuthData(AuthDataAccess authData) throws DataAccessException {
-        return null;
+    public AuthData addAuthData(AuthData authData) throws DataAccessException {
+        return addT(authData);
     }
 
     @Override
-    public AuthDataAccess getAuthData(String authToken) throws DataAccessException {
-        return null;
+    public AuthData getAuthData(String authToken) throws DataAccessException {
+        return getT("authToken", authToken);
     }
 
     @Override
     public void deleteAuthData(String authToken) throws DataAccessException {
-
+        return
     }
 
     @Override

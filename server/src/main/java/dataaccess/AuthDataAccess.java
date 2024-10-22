@@ -1,9 +1,11 @@
 package dataaccess;
 
-public interface AuthDataAccess {
-    AuthDataAccess addAuthData(AuthDataAccess authData) throws DataAccessException;
+import model.AuthData;
 
-    AuthDataAccess getAuthData(String authToken) throws DataAccessException;
+public interface AuthDataAccess {
+    AuthData addAuthData(AuthData authData) throws DataAccessException;
+
+    AuthData getAuthData(String authToken) throws DataAccessException;
 
     void deleteAuthData(String authToken) throws DataAccessException;
 
