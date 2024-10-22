@@ -20,18 +20,21 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, UnauthorizedException {
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
+        if (registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
+            throw new BadRequestException("Register request has empty required fields");
+        }
+
         if(u != null) {
-            throw new UnauthorizedException("Username already exists");
+            throw new ForbiddenException("Username already exists");
         }
             u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
             UserData newU = userDataAccess.addUserData(u);
             LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
             LoginResult loginResult = login(loginRequest);
             return new RegisterResult(loginResult.username(), loginResult.authToken());
-
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException, UnauthorizedException {

@@ -24,22 +24,36 @@ public class GameService {
         this.gameDataAccess = gameDataAccess;
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException, UnauthorizedException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException, BadRequestException, UnauthorizedException {
         authorizeUser(createGameRequest.authToken());
-
+        if (createGameRequest.gameName().isEmpty()) {
+            throw new BadRequestException("Create game request has empty required fields");
+        }
         GameData gameData = gameDataAccess.addGameData(new GameData(0, null, null, createGameRequest.gameName(), new ChessGame()));
 
         return new CreateGameResult(gameData.gameID());
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, UnauthorizedException {
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
         authorizeUser(joinGameRequest.authToken());
+
+        if (joinGameRequest.playerColor().isEmpty() || joinGameRequest.gameID() == 0) {
+            throw new BadRequestException("Join game request has empty required fields");
+        }
+
         String username = authDataAccess.getAuthData(joinGameRequest.authToken()).username();
 
         GameData gameData = gameDataAccess.getGameData(joinGameRequest.gameID());
+
         if (joinGameRequest.playerColor().equals("WHITE")) {
+            if (gameData.whiteUsername() != null) {
+                throw new ForbiddenException("Game color already taken");
+            }
             gameData.setWhiteUsername(username);
         } else if(joinGameRequest.playerColor().equals("BLACK")) {
+            if (gameData.blackUsername() != null) {
+                throw new ForbiddenException("Game color already taken");
+            }
             gameData.setBlackUsername(username);
         }
 
