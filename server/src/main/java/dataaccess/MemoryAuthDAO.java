@@ -14,6 +14,11 @@ public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAc
     }
 
     @Override
+    public AuthData getAuthDataByUsername(String username) throws DataAccessException {
+        return getT("username", username);
+    }
+
+    @Override
     public void deleteAuthData(String authToken) throws DataAccessException {
         deleteT("authToken", authToken);
     }

@@ -20,30 +20,45 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-        boolean isUser = userDataAccess.getUserData(registerRequest.username()) == null;
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, UnauthorizedException {
+        UserData u = userDataAccess.getUserData(registerRequest.username());
 
-        if(!isUser) {
-            UserData u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+        if(u != null) {
+            throw new UnauthorizedException("Username already exists");
+        }
+            u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
             UserData newU = userDataAccess.addUserData(u);
             LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
             LoginResult loginResult = login(loginRequest);
             return new RegisterResult(loginResult.username(), loginResult.authToken());
-        }
 
-        return null;
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, UnauthorizedException {
         UserData u = userDataAccess.getUserData(loginRequest.username());
-        if (u.password().equals(loginRequest.password())) {
-            AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
-            return new LoginResult(authData.username(), authData.authToken());
+        AuthData authData = authDataAccess.getAuthDataByUsername(loginRequest.username());
+        if (u == null) {
+            throw new UnauthorizedException("User not found");
         }
-        return null;
+        if(authData != null) {
+            throw new UnauthorizedException("User already logged in");
+        }
+        if(!u.password().equals(loginRequest.password())) {
+            throw new UnauthorizedException("User password does not match");
+        }
+
+        authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
+        return new LoginResult(authData.username(), authData.authToken());
+
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException{
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException, UnauthorizedException{
+        AuthData authData = authDataAccess.getAuthData(logoutRequest.authToken());
+
+        if(authData == null) {
+            throw new UnauthorizedException("User not logged in");
+        }
+
         authDataAccess.deleteAuthData(logoutRequest.authToken());
         return new LogoutResult();
     }

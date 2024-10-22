@@ -43,6 +43,7 @@ public abstract class MemoryBaseDAO<T> {
             T t = entry.getValue();
             try{
                 Field field = t.getClass().getDeclaredField(attributeValue);
+                field.setAccessible(true);
                 Object fieldValue = field.get(t);
                 if(fieldValue != null && fieldValue.toString().equals(value)) {
                     return entry.getKey();
