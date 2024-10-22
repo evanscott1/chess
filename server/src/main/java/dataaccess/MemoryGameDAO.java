@@ -6,8 +6,11 @@ import java.util.Collection;
 import java.util.List;
 
 public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAccess{
+    int nextGameId = 1;
+
     @Override
     public GameData addGameData(GameData gameData) throws DataAccessException {
+        gameData.setGameId(nextGameId++);
         return addT(gameData);
     }
 
