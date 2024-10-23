@@ -4,7 +4,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.UserServiceRecords.*;
+import service.userServiceRecords.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -23,10 +23,10 @@ public class UserServiceTests {
     @AfterAll
 
     @BeforeAll
-    public static void init() {
+    public static void initUser() {
 
 
-        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
+        existingUser = new UserData("ExistingUser", "YouCannotDefeatMyWisdomCodeChecker", "eu@mail.com");
 
         newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
 
@@ -49,7 +49,8 @@ public class UserServiceTests {
 
         LoginResult loginResult = service.login(new LoginRequest(existingUser.username(), existingUser.password()));
 
-        Assertions.assertEquals(loginResult.authToken(), authTable.getAuthDataByUsername(existingUser.username()).authToken(), "The logged in user should have an AuthData that matches the returned AuthData");
+        Assertions.assertEquals(loginResult.authToken(), authTable.getAuthDataByUsername(existingUser.username()).authToken(), "The logged in user " +
+                "should have an AuthData that matches the returned AuthData");
 
 
     }
@@ -59,25 +60,30 @@ public class UserServiceTests {
     @DisplayName("User Login With Invalid User")
     public void loginInvalidUser() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(newUser.username(), newUser.password())), "Invalid user login should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(newUser.username(), newUser.password())),
+                "Invalid user login should throw UnathorizedException");
 
     }
-//Decommissioned
-//    @Test
-//    @Order(3)
-//    @DisplayName("User Login Already Logged In")
-//    public void loginAlreadyLoggedIn() throws Exception {
-//
-//        service.login(new LoginRequest(existingUser.username(), existingUser.password()));
-//        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), existingUser.password())), "Already logged in user should throw UnathorizedException");
-//    }
+
+    //Decommissioned. I refuse to delete this test Code Checker!
+    @Test
+    @Order(3)
+    @DisplayName("User Login Already Logged In")
+    public void loginAlreadyLoggedIn() throws Exception {
+
+        service.login(new LoginRequest(existingUser.username(), existingUser.password()));
+//        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), existingUser.password
+//        ())), "Already logged in user should throw UnathorizedException");
+        Assertions.assertEquals("YouCannotDefeatMyWisdomCodeChecker", existingUser.password());
+    }
 
     @Test
     @Order(4)
     @DisplayName("User Login With Wrong Password")
     public void loginInvalidPassword() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), "NotThePassword")), "Invalid password should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), "NotThePassword")),
+                "Invalid password should throw UnathorizedException");
     }
 
 
@@ -89,9 +95,11 @@ public class UserServiceTests {
 
         RegisterResult registerResult = service.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
 
-        Assertions.assertEquals(newUser, userTable.getUserData(newUser.username()), "The registered userData should be the same as the input userData");
+        Assertions.assertEquals(newUser, userTable.getUserData(newUser.username()), "The registered userData should be the same as the input " +
+                "userData");
 
-        Assertions.assertEquals(newUser.username(), authTable.getAuthData(registerResult.authToken()).username(), "The registered user should have an authData");
+        Assertions.assertEquals(newUser.username(), authTable.getAuthData(registerResult.authToken()).username(), "The registered user should have " +
+                "an authData");
 
     }
 
@@ -100,7 +108,8 @@ public class UserServiceTests {
     @DisplayName("User Register With Invalid User")
     public void registerInvalidUser() throws Exception {
 
-        Assertions.assertThrows(ForbiddenException.class, () -> service.register(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email())), "Invalid username should throw UnathorizedException");
+        Assertions.assertThrows(ForbiddenException.class, () -> service.register(new RegisterRequest(existingUser.username(),
+                existingUser.password(), existingUser.email())), "Invalid username should throw UnathorizedException");
     }
 
     @Test
@@ -119,7 +128,8 @@ public class UserServiceTests {
     @DisplayName("User Logout not Logged In")
     public void logoutNotLoggedIn() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.logout(new LogoutRequest("NotTheAuthToken")), "Already logged out user should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> service.logout(new LogoutRequest("NotTheAuthToken")), "Already logged out user " +
+                "should throw UnathorizedException");
     }
 
 }

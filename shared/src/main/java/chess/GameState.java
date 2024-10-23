@@ -9,8 +9,12 @@ public class GameState {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         GameState gameState = (GameState) o;
         return turn == gameState.turn && Objects.equals(board, gameState.board) && Objects.equals(rules, gameState.rules);
     }

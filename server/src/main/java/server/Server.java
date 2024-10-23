@@ -4,12 +4,12 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import service.ClearService;
-import service.ClearServiceRecords.ClearRequest;
-import service.ClearServiceRecords.ClearResult;
+import service.clearServiceRecords.ClearRequest;
+import service.clearServiceRecords.ClearResult;
 import service.GameService;
-import service.GameServiceRecords.*;
+import service.gameServiceRecords.*;
 import service.UserService;
-import service.UserServiceRecords.*;
+import service.userServiceRecords.*;
 import spark.*;
 
 public class Server {
@@ -55,7 +55,7 @@ public class Server {
     }
 
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.statusCode());
         ResponseExceptionBody responseExceptionBody = new ResponseExceptionBody(ex.getMessage());
         res.body(new Gson().toJson(responseExceptionBody));
     }

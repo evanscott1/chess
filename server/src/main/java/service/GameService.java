@@ -8,10 +8,7 @@ import dataaccess.UserDataAccess;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
-import service.GameServiceRecords.*;
-
-import java.util.UUID;
+import service.gameServiceRecords.*;
 
 public class GameService {
 

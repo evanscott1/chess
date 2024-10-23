@@ -1,4 +1,4 @@
-package service.GameServiceRecords;
+package service.gameServiceRecords;
 
 public record JoinGameResult() {
 }

@@ -8,9 +8,8 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.ClearServiceRecords.ClearRequest;
-import service.GameServiceRecords.*;
-import service.UserServiceRecords.LoginResult;
+import service.clearServiceRecords.ClearRequest;
+import service.userServiceRecords.LoginResult;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -42,14 +41,13 @@ public class ClearServiceTests {
 
     ClearService clearService;
 
-    LoginResult loginResult;
 
     @AfterAll
 
     @BeforeAll
-    public static void init() {
+    public static void initClear() {
 
-        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
+        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.co");
 
         newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
 

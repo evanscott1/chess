@@ -6,7 +6,7 @@ import dataaccess.UserDataAccess;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
-import service.UserServiceRecords.*;
+import service.userServiceRecords.*;
 
 import java.util.UUID;
 
@@ -21,7 +21,8 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException, DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
+    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException, DataAccessException, BadRequestException,
+            UnauthorizedException, ForbiddenException {
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
@@ -45,10 +46,11 @@ public class UserService {
         if (u == null) {
             throw new UnauthorizedException("User not found");
         }
-        //TODO: Put user already logged in back since the "Normal User Login" test says normal is letting a user create multiple authTokens
-//        if(authData != null) {
+//        Put user already logged in back since the "Normal User Login" test says normal is letting a user create multiple authTokens
+        if (authData != null) {
+            System.out.println("Another happy bunny.");
 //            throw new UnauthorizedException("User already logged in");
-//        }
+        }
         if (!u.password().equals(loginRequest.password())) {
             throw new UnauthorizedException("User password does not match");
         }

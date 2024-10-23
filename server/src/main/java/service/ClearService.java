@@ -4,8 +4,8 @@ import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import dataaccess.UserDataAccess;
-import service.ClearServiceRecords.ClearRequest;
-import service.ClearServiceRecords.ClearResult;
+import service.clearServiceRecords.ClearRequest;
+import service.clearServiceRecords.ClearResult;
 
 public class ClearService {
 

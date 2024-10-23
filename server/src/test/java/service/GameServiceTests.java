@@ -8,8 +8,8 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.GameServiceRecords.*;
-import service.UserServiceRecords.LoginResult;
+import service.gameServiceRecords.*;
+import service.userServiceRecords.LoginResult;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -44,7 +44,7 @@ public class GameServiceTests {
     @AfterAll
 
     @BeforeAll
-    public static void init() {
+    public static void initGame() {
 
 
         existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
@@ -99,7 +99,8 @@ public class GameServiceTests {
     @DisplayName("Create Game With Invalid Auth")
     public void createGameInvalidAuth() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.createGame(new CreateGameRequest("NotTheAuth", newGame.gameName())), "Logged out user should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.createGame(new CreateGameRequest("NotTheAuth", newGame.gameName())),
+                "Logged out user should throw UnathorizedException");
 
     }
 
@@ -108,7 +109,8 @@ public class GameServiceTests {
     @DisplayName("Create Game With Invalid Name")
     public void createGameInvalidName() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class, () -> gameService.createGame(new CreateGameRequest(existingAuth.authToken(), "")), "Empty game name should throw BadRequestException");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.createGame(new CreateGameRequest(existingAuth.authToken(), "")),
+                "Empty game name should throw BadRequestException");
 
     }
 
@@ -132,7 +134,8 @@ public class GameServiceTests {
     @DisplayName("Join Game With Invalid Auth")
     public void joinGameInvalidAuth() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.joinGame(new JoinGameRequest("NotTheAuth", "WHITE", existingGame.gameID())), "Logged out user should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.joinGame(new JoinGameRequest("NotTheAuth", "WHITE",
+                existingGame.gameID())), "Logged out user should throw UnathorizedException");
 
     }
 
@@ -142,7 +145,8 @@ public class GameServiceTests {
     public void joinGameClaimedColor() throws Exception {
 
 
-        Assertions.assertThrows(ForbiddenException.class, () -> gameService.joinGame(new JoinGameRequest(existingAuth.authToken(), "WHITE", existingGameWhiteTeam.gameID())), "Claimed color should throw ForbiddenException");
+        Assertions.assertThrows(ForbiddenException.class, () -> gameService.joinGame(new JoinGameRequest(existingAuth.authToken(), "WHITE",
+                existingGameWhiteTeam.gameID())), "Claimed color should throw ForbiddenException");
 
     }
 
@@ -152,7 +156,8 @@ public class GameServiceTests {
     @DisplayName("Join Game With Empty Color")
     public void joinGameEmptyColor() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class, () -> gameService.joinGame(new JoinGameRequest(existingAuth.authToken(), "", existingGameWhiteTeam.gameID())), "Empty team color should throw BadRequestException");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.joinGame(new JoinGameRequest(existingAuth.authToken(), "",
+                existingGameWhiteTeam.gameID())), "Empty team color should throw BadRequestException");
 
     }
 
@@ -161,7 +166,8 @@ public class GameServiceTests {
     @DisplayName("Join Game With Invalid Color")
     public void joinGameInvalidColor() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class, () -> gameService.joinGame(new JoinGameRequest(existingAuth.authToken(), "PURPLE", existingGameWhiteTeam.gameID())), "Invalid team color should throw BadRequestException");
+        Assertions.assertThrows(BadRequestException.class, () -> gameService.joinGame(new JoinGameRequest(existingAuth.authToken(), "PURPLE",
+                existingGameWhiteTeam.gameID())), "Invalid team color should throw BadRequestException");
 
     }
 
@@ -176,7 +182,8 @@ public class GameServiceTests {
         ListGamesResult listGamesResult = gameService.listGames(new ListGamesRequest(existingAuth.authToken()));
 
 
-        Assertions.assertEquals(updatedGamesTable.listGameDatas().size(), listGamesResult.games().size(), "The listGamesResult should have the same values as the updatedGamesTable");
+        Assertions.assertEquals(updatedGamesTable.listGameDatas().size(), listGamesResult.games().size(), "The listGamesResult should have the same" +
+                " values as the updatedGamesTable");
 
     }
 
@@ -185,7 +192,8 @@ public class GameServiceTests {
     @DisplayName("List Games With Invalid Auth")
     public void listGamesInvalidAuth() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.listGames(new ListGamesRequest("NotTheAuth")), "Logged out user should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> gameService.listGames(new ListGamesRequest("NotTheAuth")), "Logged out user " +
+                "should throw UnathorizedException");
 
     }
 }

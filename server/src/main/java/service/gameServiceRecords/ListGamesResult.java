@@ -1,4 +1,4 @@
-package service.GameServiceRecords;
+package service.gameServiceRecords;
 
 import model.GameData;
 

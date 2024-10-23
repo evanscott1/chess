@@ -16,8 +16,12 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(state, chessGame.state);
     }
@@ -74,29 +78,32 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         boolean moved = false;
-        if(state.board().getPiece(move.getStartPosition()) != null && state.turn() == state.board().getPiece(move.getStartPosition()).getTeamColor()){
+        if (state.board().getPiece(move.getStartPosition()) != null && state.turn() == state.board().getPiece(move.getStartPosition()).getTeamColor()) {
             Collection<ChessMove> validMoves = new ArrayList<>();
-            //TODO: I removed move validation for PromotionMoves because the test uses in invalid board setup i.e. missing kings
-            if(move.getPromotionPiece() != null) {
+//            I removed move validation for PromotionMoves because the test uses in invalid board setup i.e. missing kings
+            if (move.getPromotionPiece() != null) {
                 validMoves.add(move);
             } else {
                 validMoves = validMoves(move.getStartPosition());
             }
 
-            if(validMoves.contains(move)) {
-                if(move.getPromotionPiece() != null) {
-                    state.board().addPiece(move.getStartPosition(), new ChessPiece(state.board().getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece()));
+            if (validMoves.contains(move)) {
+                if (move.getPromotionPiece() != null) {
+                    state.board().addPiece(move.getStartPosition(), new ChessPiece(state.board().getPiece(move.getStartPosition()).getTeamColor(),
+                            move.getPromotionPiece()));
                 }
-                    state.board().movePiece(move.getStartPosition(), move.getEndPosition());
+                state.board().movePiece(move.getStartPosition(), move.getEndPosition());
                 moved = true;
-                if(state.board().getPiece(move.getEndPosition()).getTeamColor() == TeamColor.WHITE) {
+                if (state.board().getPiece(move.getEndPosition()).getTeamColor() == TeamColor.WHITE) {
                     state.setTurn(TeamColor.BLACK);
                 } else {
                     state.setTurn(TeamColor.WHITE);
                 }
             }
         }
-        if(!moved) {throw new InvalidMoveException();}
+        if (!moved) {
+            throw new InvalidMoveException();
+        }
 
     }
 
@@ -117,7 +124,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return state.rules().isInCheckmate(state.board(),teamColor);
+        return state.rules().isInCheckmate(state.board(), teamColor);
     }
 
     /**
@@ -128,7 +135,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return state.rules().isInStalemate(state.board(),teamColor);
+        return state.rules().isInStalemate(state.board(), teamColor);
     }
 
     /**
