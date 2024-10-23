@@ -14,8 +14,6 @@ public class UserServiceTests {
 
     private static UserData newUser;
 
-    private String existingAuth;
-
     MemoryUserDAO userTable;
 
     MemoryAuthDAO authTable;
@@ -38,11 +36,11 @@ public class UserServiceTests {
     }
 
     @BeforeEach
-    public void setup() throws Exception{
+    public void setup() throws Exception {
         userTable = new MemoryUserDAO();
         authTable = new MemoryAuthDAO();
         service = new UserService(userTable, authTable);
-        userTable.addT(existingUser);
+        userTable.addUserData(existingUser);
     }
 
     @Test
@@ -105,7 +103,7 @@ public class UserServiceTests {
     @DisplayName("User Register With Invalid User")
     public void registerInvalidUser() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.register(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email())), "Invalid username should throw UnathorizedException");
+        Assertions.assertThrows(ForbiddenException.class, () -> service.register(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email())), "Invalid username should throw UnathorizedException");
     }
 
     @Test

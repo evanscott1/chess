@@ -45,18 +45,19 @@ public class GameService {
 
         GameData gameData = gameDataAccess.getGameData(joinGameRequest.gameID());
 
+
         if (joinGameRequest.playerColor().equals("WHITE")) {
             if (gameData.whiteUsername() != null) {
                 throw new ForbiddenException("Game color already taken");
             }
-            gameData.setWhiteUsername(username);
+            gameData = gameData.setWhiteUsername(username);
         } else if(joinGameRequest.playerColor().equals("BLACK")) {
             if (gameData.blackUsername() != null) {
                 throw new ForbiddenException("Game color already taken");
             }
-            gameData.setBlackUsername(username);
+            gameData = gameData.setBlackUsername(username);
         }
-
+        gameDataAccess.updateGameData(gameData);
         return new JoinGameResult();
     }
 

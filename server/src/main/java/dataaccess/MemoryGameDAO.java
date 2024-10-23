@@ -8,9 +8,11 @@ import java.util.List;
 public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAccess{
     int nextGameId = 1;
 
+
+
     @Override
     public GameData addGameData(GameData gameData) throws DataAccessException {
-        gameData.setGameId(nextGameId++);
+        gameData = gameData.setGameId(nextGameId++);
         return addT(gameData);
     }
 
@@ -26,8 +28,7 @@ public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAc
 
     @Override
     public GameData updateGameData(GameData gameData) throws DataAccessException {
-        updateT(gameData,"gameID", Integer.toString(gameData.gameID()));
-        return gameData;
+        return updateT(gameData,"gameID", Integer.toString(gameData.gameID()));
     }
 
     @Override
