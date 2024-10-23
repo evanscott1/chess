@@ -6,7 +6,7 @@ import model.UserData;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class MemoryUserDAO extends MemoryBaseDAO<UserData> implements UserDataAccess  {
+public class MemoryUserDAO extends MemoryBaseDAO<UserData> implements UserDataAccess {
 
     final private HashMap<Integer, UserData> userDatas = new HashMap<>();
 

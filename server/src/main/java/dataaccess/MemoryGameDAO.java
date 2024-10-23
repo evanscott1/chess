@@ -5,9 +5,8 @@ import model.GameData;
 import java.util.Collection;
 import java.util.List;
 
-public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAccess{
+public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAccess {
     int nextGameId = 1;
-
 
 
     @Override
@@ -28,7 +27,7 @@ public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAc
 
     @Override
     public GameData updateGameData(GameData gameData) throws DataAccessException {
-        return updateT(gameData,"gameID", Integer.toString(gameData.gameID()));
+        return updateT(gameData, "gameID", Integer.toString(gameData.gameID()));
     }
 
     @Override

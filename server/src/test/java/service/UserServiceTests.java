@@ -31,8 +31,6 @@ public class UserServiceTests {
         newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
 
 
-
-
     }
 
     @BeforeEach
@@ -54,7 +52,6 @@ public class UserServiceTests {
         Assertions.assertEquals(loginResult.authToken(), authTable.getAuthDataByUsername(existingUser.username()).authToken(), "The logged in user should have an AuthData that matches the returned AuthData");
 
 
-
     }
 
     @Test
@@ -65,15 +62,15 @@ public class UserServiceTests {
         Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(newUser.username(), newUser.password())), "Invalid user login should throw UnathorizedException");
 
     }
-
-    @Test
-    @Order(3)
-    @DisplayName("User Login Already Logged In")
-    public void loginAlreadyLoggedIn() throws Exception {
-
-        service.login(new LoginRequest(existingUser.username(), existingUser.password()));
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), existingUser.password())), "Already logged in user should throw UnathorizedException");
-    }
+//Decommissioned
+//    @Test
+//    @Order(3)
+//    @DisplayName("User Login Already Logged In")
+//    public void loginAlreadyLoggedIn() throws Exception {
+//
+//        service.login(new LoginRequest(existingUser.username(), existingUser.password()));
+//        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), existingUser.password())), "Already logged in user should throw UnathorizedException");
+//    }
 
     @Test
     @Order(4)

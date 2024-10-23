@@ -36,16 +36,16 @@ public abstract class MemoryBaseDAO<T> {
     }
 
 
-//TODO: throw access errors when null
+    //TODO: throw access errors when null
     protected Integer findHashMapKeyByAttribute(HashMap<Integer, T> ts, String attributeValue, String value) {
 
         for (Map.Entry<Integer, T> entry : ts.entrySet()) {
             T t = entry.getValue();
-            try{
+            try {
                 Field field = t.getClass().getDeclaredField(attributeValue);
                 field.setAccessible(true);
                 Object fieldValue = field.get(t);
-                if(fieldValue != null && fieldValue.toString().equals(value)) {
+                if (fieldValue != null && fieldValue.toString().equals(value)) {
                     return entry.getKey();
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {

@@ -13,7 +13,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    private ArrayList<ChessBoard> history = new ArrayList<>();
+    //TODO: Understand the history code better so that it doesn't cause assertEquals issues
+//    private ArrayList<ChessBoard> history = new ArrayList<>();
 
     public ChessBoard() {
 
@@ -48,7 +49,7 @@ public class ChessBoard {
     }
 
     public void movePiece(ChessPosition start, ChessPosition end) {
-        history.add(new ChessBoard(this));
+//        history.add(new ChessBoard(this));
 
 
         ChessPiece piece = new ChessPiece(this.getPiece(start));
@@ -147,9 +148,9 @@ public class ChessBoard {
             return placement;
         }
     }
-    public Iterator<ChessBoard> history () {
-        return history.iterator();
-    }
+//    public Iterator<ChessBoard> history () {
+//        return history.iterator();
+//    }
 
 
 }

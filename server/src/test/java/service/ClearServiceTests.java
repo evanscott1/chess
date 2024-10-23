@@ -16,83 +16,83 @@ import service.UserServiceRecords.LoginResult;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClearServiceTests {
 
-        private static UserData existingUser;
+    private static UserData existingUser;
 
-        private static UserData newUser;
+    private static UserData newUser;
 
-        private static AuthData existingAuth;
+    private static AuthData existingAuth;
 
-        private static GameData existingGame;
+    private static GameData existingGame;
 
-        private static GameData existingGameWhiteTeam;
+    private static GameData existingGameWhiteTeam;
 
-        private static GameData newGame;
+    private static GameData newGame;
 
-        MemoryUserDAO userTable;
+    MemoryUserDAO userTable;
 
-        MemoryAuthDAO authTable;
+    MemoryAuthDAO authTable;
 
-        MemoryGameDAO gameTable;
+    MemoryGameDAO gameTable;
 
-        MemoryGameDAO updatedGamesTable;
+    MemoryGameDAO updatedGamesTable;
 
-        UserService userService;
+    UserService userService;
 
-        GameService gameService;
+    GameService gameService;
 
-        ClearService clearService;
+    ClearService clearService;
 
-        LoginResult loginResult;
+    LoginResult loginResult;
 
-        @AfterAll
+    @AfterAll
 
-        @BeforeAll
-        public static void init() {
+    @BeforeAll
+    public static void init() {
 
-            existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
+        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-            newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
+        newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
 
-            existingAuth = new AuthData("existingAuth", "ExistingUser");
+        existingAuth = new AuthData("existingAuth", "ExistingUser");
 
-            existingGame = new GameData(1, null, null, "existingGame", new ChessGame());
+        existingGame = new GameData(1, null, null, "existingGame", new ChessGame());
 
-            existingGameWhiteTeam = new GameData(2, existingUser.username(), null, "existingGameWhiteTeam", new ChessGame());
+        existingGameWhiteTeam = new GameData(2, existingUser.username(), null, "existingGameWhiteTeam", new ChessGame());
 
-            newGame = new GameData(3, null, null, "newGame", new ChessGame());
-        }
+        newGame = new GameData(3, null, null, "newGame", new ChessGame());
+    }
 
-        @BeforeEach
-        public void setup() throws Exception{
-            userTable = new MemoryUserDAO();
-            authTable = new MemoryAuthDAO();
-            gameTable = new MemoryGameDAO();
+    @BeforeEach
+    public void setup() throws Exception {
+        userTable = new MemoryUserDAO();
+        authTable = new MemoryAuthDAO();
+        gameTable = new MemoryGameDAO();
 
-            userService = new UserService(userTable, authTable);
-            gameService = new GameService(userTable, authTable, gameTable);
-            clearService = new ClearService(userTable, authTable, gameTable);
+        userService = new UserService(userTable, authTable);
+        gameService = new GameService(userTable, authTable, gameTable);
+        clearService = new ClearService(userTable, authTable, gameTable);
 
-            userTable.addUserData(existingUser);
-            userTable.addUserData(newUser);
+        userTable.addUserData(existingUser);
+        userTable.addUserData(newUser);
 
-            authTable.addAuthData(existingAuth);
-            authTable.addAuthData(new AuthData("newAuthData", newUser.username()));
+        authTable.addAuthData(existingAuth);
+        authTable.addAuthData(new AuthData("newAuthData", newUser.username()));
 
-            gameTable.addGameData(existingGame);
-            gameTable.addGameData(existingGameWhiteTeam);
-            gameTable.addGameData(newGame);
+        gameTable.addGameData(existingGame);
+        gameTable.addGameData(existingGameWhiteTeam);
+        gameTable.addGameData(newGame);
 
-        }
+    }
 
-        @Test
-        @Order(1)
-        @DisplayName("Clear Database")
-        public void clearSuccess() throws Exception {
-            clearService.clear(new ClearRequest());
+    @Test
+    @Order(1)
+    @DisplayName("Clear Database")
+    public void clearSuccess() throws Exception {
+        clearService.clear(new ClearRequest());
 
-            Assertions.assertEquals(0, authTable.listAuthDatas().size(), "The gameTable should be empty");
-            Assertions.assertEquals(0, gameTable.listGameDatas().size(), "The gameTable should be empty");
-            Assertions.assertEquals(0, userTable.listUserDatas().size(), "The gameTable should be empty");
-        }
+        Assertions.assertEquals(0, authTable.listAuthDatas().size(), "The gameTable should be empty");
+        Assertions.assertEquals(0, gameTable.listGameDatas().size(), "The gameTable should be empty");
+        Assertions.assertEquals(0, userTable.listUserDatas().size(), "The gameTable should be empty");
+    }
 
 }

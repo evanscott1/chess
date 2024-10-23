@@ -5,7 +5,7 @@ import model.GameData;
 
 import java.util.Collection;
 
-public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAccess{
+public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAccess {
     @Override
     public AuthData addAuthData(AuthData authData) throws DataAccessException {
         return addT(authData);

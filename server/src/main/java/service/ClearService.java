@@ -23,7 +23,8 @@ public class ClearService {
     public ClearResult clear(ClearRequest clearRequest) throws DataAccessException {
         authDataAccess.deleteAllAuthDatas();
         gameDataAccess.deleteAllGameDatas();
-        userDataAccess.deleteAllUserDatas();;
+        userDataAccess.deleteAllUserDatas();
+        ;
 
         return new ClearResult();
     }

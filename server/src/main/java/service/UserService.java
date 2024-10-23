@@ -28,15 +28,15 @@ public class UserService {
             throw new BadRequestException("Register request has empty required fields");
         }
 
-        if(u != null) {
+        if (u != null) {
             throw new ForbiddenException("Username already exists");
         }
-            u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
-            UserData newU = userDataAccess.addUserData(u);
-            LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
-            LoginResult loginResult = login(loginRequest);
+        u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+        UserData newU = userDataAccess.addUserData(u);
+        LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
+        LoginResult loginResult = login(loginRequest);
 
-            return new RegisterResult(loginResult.username(), loginResult.authToken());
+        return new RegisterResult(loginResult.username(), loginResult.authToken());
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ResponseException {
@@ -49,7 +49,7 @@ public class UserService {
 //        if(authData != null) {
 //            throw new UnauthorizedException("User already logged in");
 //        }
-        if(!u.password().equals(loginRequest.password())) {
+        if (!u.password().equals(loginRequest.password())) {
             throw new UnauthorizedException("User password does not match");
         }
 
@@ -59,10 +59,10 @@ public class UserService {
 
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException, ResponseException{
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException, ResponseException {
         AuthData authData = authDataAccess.getAuthData(logoutRequest.authToken());
 
-        if(authData == null) {
+        if (authData == null) {
             throw new UnauthorizedException("User not logged in");
         }
 

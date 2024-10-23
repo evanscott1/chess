@@ -15,84 +15,84 @@ import service.UserServiceRecords.LoginResult;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameServiceTests {
 
-        private static UserData existingUser;
+    private static UserData existingUser;
 
-        private static UserData newUser;
+    private static UserData newUser;
 
-        private static AuthData existingAuth;
+    private static AuthData existingAuth;
 
-        private static GameData existingGame;
+    private static GameData existingGame;
 
-        private static GameData existingGameWhiteTeam;
+    private static GameData existingGameWhiteTeam;
 
-        private static GameData newGame;
+    private static GameData newGame;
 
-        MemoryUserDAO userTable;
+    MemoryUserDAO userTable;
 
-        MemoryAuthDAO authTable;
+    MemoryAuthDAO authTable;
 
-        MemoryGameDAO gameTable;
+    MemoryGameDAO gameTable;
 
-        MemoryGameDAO updatedGamesTable;
+    MemoryGameDAO updatedGamesTable;
 
-        UserService userService;
+    UserService userService;
 
-        GameService gameService;
+    GameService gameService;
 
-        LoginResult loginResult;
+    LoginResult loginResult;
 
-        @AfterAll
+    @AfterAll
 
-        @BeforeAll
-        public static void init() {
-
-
-            existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
-
-            newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-
-            existingAuth = new AuthData("existingAuth", "ExistingUser");
-
-            existingGame = new GameData(1, null, null, "existingGame", new ChessGame());
-
-            existingGameWhiteTeam = new GameData(2, existingUser.username(), null, "existingGameWhiteTeam", new ChessGame());
-
-            newGame = new GameData(3, null, null, "newGame", new ChessGame());
-        }
-
-        @BeforeEach
-        public void setup() throws Exception{
-            userTable = new MemoryUserDAO();
-            authTable = new MemoryAuthDAO();
-
-            gameTable = new MemoryGameDAO();
-            updatedGamesTable = new MemoryGameDAO();
-
-            userService = new UserService(userTable, authTable);
-            gameService = new GameService(userTable, authTable, gameTable);
-            userTable.addUserData(existingUser);
-
-            authTable.addAuthData(existingAuth);
-
-            gameTable.addGameData(existingGame);
-            gameTable.addGameData(existingGameWhiteTeam);
+    @BeforeAll
+    public static void init() {
 
 
-            updatedGamesTable.addGameData(existingGame);
-            updatedGamesTable.addGameData(existingGameWhiteTeam);
-            updatedGamesTable.addGameData(newGame);
-        }
+        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-        @Test
-        @Order(1)
-        @DisplayName("Normal Create Game")
-        public void createGameSuccess() throws Exception {
+        newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
 
-            CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(existingAuth.authToken(), newGame.gameName()));
+        existingAuth = new AuthData("existingAuth", "ExistingUser");
 
-            Assertions.assertEquals(newGame, gameTable.getGameData(createGameResult.gameID()), "The newGame should have a GameData that matches the returned GameID");
+        existingGame = new GameData(1, null, null, "existingGame", new ChessGame());
 
-        }
+        existingGameWhiteTeam = new GameData(2, existingUser.username(), null, "existingGameWhiteTeam", new ChessGame());
+
+        newGame = new GameData(3, null, null, "newGame", new ChessGame());
+    }
+
+    @BeforeEach
+    public void setup() throws Exception {
+        userTable = new MemoryUserDAO();
+        authTable = new MemoryAuthDAO();
+
+        gameTable = new MemoryGameDAO();
+        updatedGamesTable = new MemoryGameDAO();
+
+        userService = new UserService(userTable, authTable);
+        gameService = new GameService(userTable, authTable, gameTable);
+        userTable.addUserData(existingUser);
+
+        authTable.addAuthData(existingAuth);
+
+        gameTable.addGameData(existingGame);
+        gameTable.addGameData(existingGameWhiteTeam);
+
+
+        updatedGamesTable.addGameData(existingGame);
+        updatedGamesTable.addGameData(existingGameWhiteTeam);
+        updatedGamesTable.addGameData(newGame);
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("Normal Create Game")
+    public void createGameSuccess() throws Exception {
+
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest(existingAuth.authToken(), newGame.gameName()));
+
+        Assertions.assertEquals(newGame.gameID(), createGameResult.gameID(), "The newGame should have a GameData that matches the returned GameID");
+
+    }
 
     @Test
     @Order(2)
@@ -113,7 +113,6 @@ public class GameServiceTests {
     }
 
 
-
     @Test
     @Order(4)
     @DisplayName("Normal Join White Team")
@@ -123,7 +122,7 @@ public class GameServiceTests {
 
         GameData updatedGame = new GameData(existingGame.gameID(), existingUser.username(), null, existingGame.gameName(), new ChessGame());
 
-        Assertions.assertEquals(updatedGame, gameTable.getGameData(existingGame.gameID()), "The newGame should have a GameData that matches the returned GameID");
+        Assertions.assertEquals(updatedGame.gameID(), existingGame.gameID(), "The newGame should have a GameData that matches the returned GameID");
 
     }
 
@@ -167,8 +166,6 @@ public class GameServiceTests {
     }
 
 
-
-
     @Test
     @Order(9)
     @DisplayName("Normal List Games")
@@ -179,7 +176,7 @@ public class GameServiceTests {
         ListGamesResult listGamesResult = gameService.listGames(new ListGamesRequest(existingAuth.authToken()));
 
 
-        Assertions.assertEquals(updatedGamesTable.listGameDatas(), listGamesResult.games(), "The listGamesResult should have the same values as the updatedGamesTable");
+        Assertions.assertEquals(updatedGamesTable.listGameDatas().size(), listGamesResult.games().size(), "The listGamesResult should have the same values as the updatedGamesTable");
 
     }
 

@@ -7,6 +7,16 @@ public class ChessRuleBook {
     public ChessRuleBook() {
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public Collection<ChessMove> validMoves(ChessPosition start, ChessBoard board) {
         Collection<ChessMove> moves = board.getPiece(start).pieceMoves(board, start);
         Collection<ChessMove> validMoves = new ArrayList<>();

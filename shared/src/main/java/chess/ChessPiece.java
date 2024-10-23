@@ -14,16 +14,6 @@ public class ChessPiece {
     private ChessGame.TeamColor pieceColor;
     ChessPiece.PieceType type;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.pieceColor = pieceColor;
-        this.type = type;
-    }
-
-    public ChessPiece(ChessPiece newPiece) {
-        this.pieceColor = newPiece.pieceColor;
-        this.type = newPiece.type;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -35,6 +25,16 @@ public class ChessPiece {
     @Override
     public int hashCode() {
         return Objects.hash(pieceColor, type);
+    }
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
+    }
+
+    public ChessPiece(ChessPiece newPiece) {
+        this.pieceColor = newPiece.pieceColor;
+        this.type = newPiece.type;
     }
 
     /**

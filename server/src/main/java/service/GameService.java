@@ -52,7 +52,7 @@ public class GameService {
                 throw new ForbiddenException("Game color already taken");
             }
             gameData = gameData.setWhiteUsername(username);
-        } else if(joinGameRequest.playerColor().equals("BLACK")) {
+        } else if (joinGameRequest.playerColor().equals("BLACK")) {
             if (gameData.blackUsername() != null) {
                 throw new ForbiddenException("Game color already taken");
             }
@@ -72,7 +72,7 @@ public class GameService {
     private void authorizeUser(String authToken) throws DataAccessException, ResponseException {
         AuthData authData = authDataAccess.getAuthData(authToken);
 
-        if(authData == null) {
+        if (authData == null) {
             throw new UnauthorizedException("User not logged in");
         }
     }
