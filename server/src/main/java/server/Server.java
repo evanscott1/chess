@@ -4,12 +4,12 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import service.ClearService;
-import service.clearServiceRecords.ClearRequest;
-import service.clearServiceRecords.ClearResult;
+import service.clearservicerecords.ClearRequest;
+import service.clearservicerecords.ClearResult;
 import service.GameService;
-import service.gameServiceRecords.*;
+import service.gameservicerecords.*;
 import service.UserService;
-import service.userServiceRecords.*;
+import service.userservicerecords.*;
 import spark.*;
 
 public class Server {

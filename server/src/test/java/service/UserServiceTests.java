@@ -4,7 +4,7 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.userServiceRecords.*;
+import service.userservicerecords.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

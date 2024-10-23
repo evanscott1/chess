@@ -8,8 +8,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.clearServiceRecords.ClearRequest;
-import service.userServiceRecords.LoginResult;
+import service.clearservicerecords.ClearRequest;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

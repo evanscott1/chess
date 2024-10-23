@@ -78,7 +78,8 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         boolean moved = false;
-        if (state.board().getPiece(move.getStartPosition()) != null && state.turn() == state.board().getPiece(move.getStartPosition()).getTeamColor()) {
+        if (state.board().getPiece(move.getStartPosition()) != null && state.turn() ==
+                state.board().getPiece(move.getStartPosition()).getTeamColor()) {
             Collection<ChessMove> validMoves = new ArrayList<>();
 //            I removed move validation for PromotionMoves because the test uses in invalid board setup i.e. missing kings
             if (move.getPromotionPiece() != null) {

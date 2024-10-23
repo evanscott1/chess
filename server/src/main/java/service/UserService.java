@@ -6,7 +6,7 @@ import dataaccess.UserDataAccess;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
-import service.userServiceRecords.*;
+import service.userservicerecords.*;
 
 import java.util.UUID;
 

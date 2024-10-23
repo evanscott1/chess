@@ -8,7 +8,7 @@ import dataaccess.UserDataAccess;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
-import service.gameServiceRecords.*;
+import service.gameservicerecords.*;
 
 public class GameService {
 

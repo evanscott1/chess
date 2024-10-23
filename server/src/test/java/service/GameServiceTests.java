@@ -8,8 +8,8 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.gameServiceRecords.*;
-import service.userServiceRecords.LoginResult;
+import service.gameservicerecords.*;
+import service.userservicerecords.LoginResult;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
