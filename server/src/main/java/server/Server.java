@@ -69,7 +69,7 @@ public class Server {
     }
 
     private <T, R> Object handleAuthNoBodyRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
-        T request = new Gson().fromJson(req.headers("Authorization"), requestClass);
+        T request = requestClass.getConstructor(String.class).newInstance(req.headers("Authorization"));
         R result = service.apply(request);
         return new Gson().toJson(result);
     }
