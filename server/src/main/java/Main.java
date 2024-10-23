@@ -1,9 +1,6 @@
 import chess.*;
-import dataaccess.*;
 import server.Server;
-import service.ClearService;
-import service.GameService;
-import service.UserService;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -14,13 +11,6 @@ public class Main {
                 port = Integer.parseInt(args[0]);
             }
 
-            UserDataAccess userDataAccess = new MemoryUserDAO();
-            AuthDataAccess authDataAccess = new MemoryAuthDAO();
-            GameDataAccess gameDataAccess = new MemoryGameDAO();
-
-            UserService userService = new UserService(userDataAccess, authDataAccess);
-            GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);
-            ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
 
             var server = new Server();
             server.run(port);

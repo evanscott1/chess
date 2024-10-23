@@ -5,16 +5,18 @@ import dataaccess.*;
 import exception.ResponseException;
 import org.eclipse.jetty.client.HttpResponseException;
 import service.ClearService;
+import service.ClearServiceRecords.ClearRequest;
+import service.ClearServiceRecords.ClearResult;
 import service.GameService;
+import service.GameServiceRecords.*;
 import service.UserService;
-import service.UserServiceRecords.RegisterRequest;
-import service.UserServiceRecords.RegisterResult;
+import service.UserServiceRecords.*;
 import spark.*;
 
+import java.util.function.Function;
+
 public class Server {
-//    private final UserService userService;
-//    private final GameService gameService;
-//    private final ClearService clearService;
+
 
     private final UserDataAccess userDataAccess = new MemoryUserDAO();
     private final AuthDataAccess authDataAccess = new MemoryAuthDAO();
@@ -24,7 +26,6 @@ public class Server {
     private final GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);
     private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
 
-//    public Server() {}
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -32,7 +33,14 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.delete("/db", this::clearApplication);
+
         Spark.post("/user", this::registerUser);
+        Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
+        Spark.get("/game", this::listGames);
+        Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
 
@@ -54,9 +62,37 @@ public class Server {
         res.status(ex.StatusCode());
     }
 
-    private Object registerUser(Request req, Response res) throws ResponseException, Exception {
-        RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
-        RegisterResult registerResult = userService.register(registerRequest);
-        return new Gson().toJson(registerResult);
+    private <T, R> Object handleRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
+        T request = new Gson().fromJson(req.body(), requestClass);
+        R result = service.apply(request);
+        return new Gson().toJson(result);
     }
+
+    @FunctionalInterface
+    public interface ServiceFunction<T, R> {
+        R apply(T t) throws Exception;
+    }
+
+    private Object clearApplication(Request req, Response res) throws Exception {
+        return handleRequest(req, ClearRequest.class, clearService::clear);
+    }
+    private Object registerUser(Request req, Response res) throws ResponseException, Exception {
+        return handleRequest(req, RegisterRequest.class, userService::register);
+    }
+    private Object loginUser(Request req, Response res) throws  Exception {
+        return handleRequest(req, LoginRequest.class, userService::login);
+    }
+    private Object logoutUser(Request req, Response res) throws Exception {
+        return handleRequest(req, LogoutRequest.class, userService::logout);
+    }
+    private Object listGames(Request req, Response res) throws Exception {
+        return handleRequest(req, ListGamesRequest.class, gameService::listGames);
+    }
+    private Object createGame(Request req, Response res) throws Exception {
+        return handleRequest(req, CreateGameRequest.class, gameService::createGame);
+    }
+    private Object joinGame(Request req, Response res) throws  Exception {
+        return handleRequest(req, JoinGameRequest.class, gameService::joinGame);
+    }
+
 }
