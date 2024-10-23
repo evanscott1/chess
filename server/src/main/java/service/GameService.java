@@ -38,7 +38,7 @@ public class GameService {
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, ResponseException {
         authorizeUser(joinGameRequest.authToken());
 
-        if (joinGameRequest.playerColor().isEmpty() || joinGameRequest.gameID() == 0) {
+        if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == 0) {
             throw new BadRequestException("Join game request has empty required fields");
         }
 

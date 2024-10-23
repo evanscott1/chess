@@ -24,7 +24,7 @@ public class UserService {
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException, DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
-        if (registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new BadRequestException("Register request has empty required fields");
         }
 
