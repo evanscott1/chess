@@ -56,6 +56,8 @@ public class GameService {
                 throw new ForbiddenException("Game color already taken");
             }
             gameData = gameData.setBlackUsername(username);
+        } else {
+            throw new BadRequestException("Game color not valid");
         }
         gameDataAccess.updateGameData(gameData);
         return new JoinGameResult();
