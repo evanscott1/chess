@@ -1,6 +1,9 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
+
+import java.util.Collection;
 
 public interface AuthDataAccess {
     AuthData addAuthData(AuthData authData) throws DataAccessException;
@@ -8,6 +11,8 @@ public interface AuthDataAccess {
     AuthData getAuthData(String authToken) throws DataAccessException;
 
     AuthData getAuthDataByUsername(String username) throws DataAccessException;
+
+    Collection<AuthData> listAuthDatas() throws DataAccessException;
 
     void deleteAuthData(String authToken) throws DataAccessException;
 

@@ -9,12 +9,8 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.GameServiceRecords.*;
-import service.UserServiceRecords.LoginRequest;
 import service.UserServiceRecords.LoginResult;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameServiceTests {

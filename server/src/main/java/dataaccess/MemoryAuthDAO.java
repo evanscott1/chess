@@ -1,6 +1,9 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
+
+import java.util.Collection;
 
 public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAccess{
     @Override
@@ -16,6 +19,11 @@ public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAc
     @Override
     public AuthData getAuthDataByUsername(String username) throws DataAccessException {
         return getT("username", username);
+    }
+
+    @Override
+    public Collection<AuthData> listAuthDatas() throws DataAccessException {
+        return ts.values();
     }
 
     @Override
