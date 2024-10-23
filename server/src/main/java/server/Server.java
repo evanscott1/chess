@@ -62,7 +62,19 @@ public class Server {
         res.status(ex.StatusCode());
     }
 
-    private <T, R> Object handleRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
+    private <T, R> Object handleNoAuthRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
+        T request = new Gson().fromJson(req.body(), requestClass);
+        R result = service.apply(request);
+        return new Gson().toJson(result);
+    }
+
+    private <T, R> Object handleAuthNoBodyRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
+        T request = new Gson().fromJson(req.headers("Authorization"), requestClass);
+        R result = service.apply(request);
+        return new Gson().toJson(result);
+    }
+
+    private <T, R> Object handleAuthBodyRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
         T request = new Gson().fromJson(req.body(), requestClass);
         R result = service.apply(request);
         return new Gson().toJson(result);
@@ -74,25 +86,25 @@ public class Server {
     }
 
     private Object clearApplication(Request req, Response res) throws Exception {
-        return handleRequest(req, ClearRequest.class, clearService::clear);
+        return handleNoAuthRequest(req, ClearRequest.class, clearService::clear);
     }
     private Object registerUser(Request req, Response res) throws ResponseException, Exception {
-        return handleRequest(req, RegisterRequest.class, userService::register);
+        return handleNoAuthRequest(req, RegisterRequest.class, userService::register);
     }
     private Object loginUser(Request req, Response res) throws  Exception {
-        return handleRequest(req, LoginRequest.class, userService::login);
+        return handleNoAuthRequest(req, LoginRequest.class, userService::login);
     }
     private Object logoutUser(Request req, Response res) throws Exception {
-        return handleRequest(req, LogoutRequest.class, userService::logout);
+        return handleAuthNoBodyRequest(req, LogoutRequest.class, userService::logout);
     }
     private Object listGames(Request req, Response res) throws Exception {
-        return handleRequest(req, ListGamesRequest.class, gameService::listGames);
+        return handleAuthNoBodyRequest(req, ListGamesRequest.class, gameService::listGames);
     }
     private Object createGame(Request req, Response res) throws Exception {
-        return handleRequest(req, CreateGameRequest.class, gameService::createGame);
+        return handleAuthBodyRequest(req, CreateGameRequest.class, gameService::createGame);
     }
     private Object joinGame(Request req, Response res) throws  Exception {
-        return handleRequest(req, JoinGameRequest.class, gameService::joinGame);
+        return handleAuthBodyRequest(req, JoinGameRequest.class, gameService::joinGame);
     }
 
 }

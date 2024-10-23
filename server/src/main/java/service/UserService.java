@@ -45,9 +45,10 @@ public class UserService {
         if (u == null) {
             throw new UnauthorizedException("User not found");
         }
-        if(authData != null) {
-            throw new UnauthorizedException("User already logged in");
-        }
+        //TODO: Put user already logged in back since the "Normal User Login" test says normal is letting a user create multiple authTokens
+//        if(authData != null) {
+//            throw new UnauthorizedException("User already logged in");
+//        }
         if(!u.password().equals(loginRequest.password())) {
             throw new UnauthorizedException("User password does not match");
         }
