@@ -6,12 +6,13 @@ public class PieceMovesCalculator {
 
     private ChessBoard board;
     private ChessPosition start;
-    private ChessPosition end = new ChessPosition(0,0);
+    private ChessPosition end = new ChessPosition(0, 0);
     private ArrayList<ChessMove> moves = new ArrayList<>();
     private ChessPiece.PieceType startType;
     private ChessGame.TeamColor startColor;
     private ChessPiece.PieceType promotion = null;
     private boolean endIsOppTeam = false;
+
     PieceMovesCalculator(ChessBoard board, ChessPosition start) {
         this.board = board;
         this.start = start;
@@ -62,14 +63,14 @@ public class PieceMovesCalculator {
         moves.add(move);
     }
 
-    private void addNullAddOpp () {
-        if(isOnBoardEnd()) {
-            if(isNullEnd()) {
+    private void addNullAddOpp() {
+        if (isOnBoardEnd()) {
+            if (isNullEnd()) {
                 addMove();
             } else if (isOppTeamEnd()) {
                 addMove();
                 endIsOppTeam = true;
-            } else{
+            } else {
                 endIsOppTeam = true;
             }
 
@@ -79,21 +80,21 @@ public class PieceMovesCalculator {
 
     private void addPawnMoves() {
         int forward = -1;
-        if(startColor == ChessGame.TeamColor.WHITE) {
+        if (startColor == ChessGame.TeamColor.WHITE) {
             forward = 1;
         }
         end.setCol(start.getColumn());
         end.setRow(start.getRow() + forward);
-        if(isNullEnd()) {
+        if (isNullEnd()) {
             pawnPromotion();
-            if(startColor == ChessGame.TeamColor.WHITE && start.getRow() == 2) {
+            if (startColor == ChessGame.TeamColor.WHITE && start.getRow() == 2) {
                 end.setRow(start.getRow() + 2 * forward);
-                if(isNullEnd()) {
+                if (isNullEnd()) {
                     addMove();
                 }
             } else if (startColor == ChessGame.TeamColor.BLACK && start.getRow() == 7) {
                 end.setRow(start.getRow() + 2 * forward);
-                if(isNullEnd()) {
+                if (isNullEnd()) {
                     addMove();
                 }
             }
@@ -106,20 +107,20 @@ public class PieceMovesCalculator {
 
     private void pawnCapture(int i) {
         end.setCol(start.getColumn() + i);
-        if(isOnBoardEnd() && !isNullEnd() && isOppTeamEnd()) {
+        if (isOnBoardEnd() && !isNullEnd() && isOppTeamEnd()) {
             pawnPromotion();
         }
     }
 
     private void pawnPromotion() {
-        if(promotePawn()) {
+        if (promotePawn()) {
             ArrayList<ChessPiece.PieceType> types = new ArrayList<>();
             types.add(ChessPiece.PieceType.ROOK);
             types.add(ChessPiece.PieceType.KNIGHT);
             types.add(ChessPiece.PieceType.BISHOP);
             types.add(ChessPiece.PieceType.QUEEN);
 
-            for( ChessPiece.PieceType type : types) {
+            for (ChessPiece.PieceType type : types) {
                 promotion = type;
                 addMove();
             }
@@ -131,48 +132,58 @@ public class PieceMovesCalculator {
 
     private boolean promotePawn() {
         int i = 1;
-        if(startColor == ChessGame.TeamColor.WHITE) {
+        if (startColor == ChessGame.TeamColor.WHITE) {
             i = 8;
         }
         return end.getRow() == i;
     }
+
     private void addRookMoves() {
         int i = 0;
         //right
         endIsOppTeam = false;
         end.setRow(start.getRow());
-        for(i = start.getColumn() + 1; i <= board.getBoardWidth(); i++) {
+        for (i = start.getColumn() + 1; i <= board.getBoardWidth(); i++) {
             end.setCol(i);
             addNullAddOpp();
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
         //left
         endIsOppTeam = false;
         end.setRow(start.getRow());
-        for(i = start.getColumn() - 1; i > 0; i--) {
+        for (i = start.getColumn() - 1; i > 0; i--) {
             end.setCol(i);
             addNullAddOpp();
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
         //up
         endIsOppTeam = false;
         end.setCol(start.getColumn());
-        for(i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
+        for (i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
             end.setRow(i);
             addNullAddOpp();
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
         //down
         endIsOppTeam = false;
         end.setCol(start.getColumn());
-        for(i = start.getRow() - 1; i > 0; i--) {
+        for (i = start.getRow() - 1; i > 0; i--) {
             end.setRow(i);
             addNullAddOpp();
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
     }
+
     private void addKnightMoves() {
-        int[][] pairs = {{1,2}, {2,1}, {2,-1}, {1,-2}, {-1,-2}, {-2,-1}, {-2,1}, {-1,2}};
+        int[][] pairs = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
 
         for (int[] pair : pairs) {
             endIsOppTeam = false;
@@ -181,6 +192,7 @@ public class PieceMovesCalculator {
             addNullAddOpp();
         }
     }
+
     private void addBishopMoves() {
         int i = 0;
         int j = 0;
@@ -188,56 +200,66 @@ public class PieceMovesCalculator {
         //topRight
         endIsOppTeam = false;
         j = start.getColumn() + 1;
-        for(i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
+        for (i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
             end.setRow(i);
             end.setCol(j);
             addNullAddOpp();
             j++;
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
 
         //topLeft
         endIsOppTeam = false;
         j = start.getColumn() - 1;
-        for(i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
+        for (i = start.getRow() + 1; i <= board.getBoardWidth(); i++) {
             end.setRow(i);
             end.setCol(j);
             addNullAddOpp();
             j--;
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
 
         //bottomRight
         endIsOppTeam = false;
         j = start.getColumn() + 1;
-        for(i = start.getRow() - 1; i > 0; i--) {
+        for (i = start.getRow() - 1; i > 0; i--) {
             end.setRow(i);
             end.setCol(j);
             addNullAddOpp();
             j++;
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
         //bottomLeft
         endIsOppTeam = false;
         j = start.getColumn() - 1;
-        for(i = start.getRow() - 1; i > 0; i--) {
+        for (i = start.getRow() - 1; i > 0; i--) {
             end.setRow(i);
             end.setCol(j);
             addNullAddOpp();
             j--;
-            if(endIsOppTeam) {break;}
+            if (endIsOppTeam) {
+                break;
+            }
         }
 
     }
-    private void addQueenMoves () {
+
+    private void addQueenMoves() {
         addRookMoves();
         addBishopMoves();
     }
+
     private void addKingMoves() {
         int i = 0;
         int j = 0;
-        for(i = start.getRow() - 1; i < start.getRow() + 2; i++) {
-            for(j = start.getColumn() - 1; j < start.getColumn() + 2; j++) {
+        for (i = start.getRow() - 1; i < start.getRow() + 2; i++) {
+            for (j = start.getColumn() - 1; j < start.getColumn() + 2; j++) {
                 end.setRow(i);
                 end.setCol(j);
                 addNullAddOpp();
