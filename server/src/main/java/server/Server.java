@@ -13,6 +13,7 @@ import service.UserService;
 import service.UserServiceRecords.*;
 import spark.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 public class Server {
@@ -42,6 +43,7 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.exception(ResponseException.class, this::exceptionHandler);
+        Spark.exception(DataAccessException.class, this::dataAccessExceptionHandler);
 
 
 
@@ -62,50 +64,46 @@ public class Server {
         res.status(ex.StatusCode());
     }
 
-    private <T, R> Object handleNoAuthRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
-        T request = new Gson().fromJson(req.body(), requestClass);
-        R result = service.apply(request);
-        return new Gson().toJson(result);
+    private void dataAccessExceptionHandler(DataAccessException ex, Request req, Response res) {
+        res.status(500);
     }
 
-    private <T, R> Object handleAuthNoBodyRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
-        T request = requestClass.getConstructor(String.class).newInstance(req.headers("Authorization"));
-        R result = service.apply(request);
-        return new Gson().toJson(result);
+    private Object clearApplication(Request req, Response res) throws ResponseException, DataAccessException {
+        ClearRequest clearRequest = new Gson().fromJson(req.body(), ClearRequest.class);
+        ClearResult clearResult = clearService.clear(clearRequest);
+        return new Gson().toJson(clearResult);
     }
+    private Object registerUser(Request req, Response res) throws ResponseException, ResponseException, DataAccessException {
+        RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
+        RegisterResult registerResult = userService.register(registerRequest);
+        return new Gson().toJson(registerResult);
+    }
+    private Object loginUser(Request req, Response res) throws  ResponseException, DataAccessException {
+        LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
+        LoginResult loginResult = userService.login(loginRequest);
+        return new Gson().toJson(loginResult);
+    }
+    private Object logoutUser(Request req, Response res) throws ResponseException, DataAccessException {
+        LogoutRequest logoutRequest = new LogoutRequest(req.headers("Authorization"));
+        LogoutResult logoutResult = userService.logout(logoutRequest);
+        return new Gson().toJson(logoutResult);
+    }
+    private Object listGames(Request req, Response res) throws ResponseException, DataAccessException {
+        ListGamesRequest listGamesRequest = new ListGamesRequest(req.headers("Authorization"));
+        ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
+        return new Gson().toJson(listGamesResult);
+    }
+    private Object createGame(Request req, Response res) throws ResponseException, DataAccessException {
+        CreateGameRequest createGameRequest = new CreateGameRequest(req.headers("Authorization"), req.body());
+        CreateGameResult createGameResult = gameService.createGame(createGameRequest);
+        return new Gson().toJson(createGameResult);
+    }
+    private Object joinGame(Request req, Response res) throws  ResponseException, DataAccessException {
 
-    private <T, R> Object handleAuthBodyRequest(Request req, Class<T> requestClass, ServiceFunction<T, R> service) throws Exception {
-
-        T request = requestClass.getConstructor(String.class, String.class).newInstance(req.headers("Authorization"), req.body()); ;
-        R result = service.apply(request);
-        return new Gson().toJson(result);
-    }
-
-    @FunctionalInterface
-    public interface ServiceFunction<T, R> {
-        R apply(T t) throws Exception;
-    }
-
-    private Object clearApplication(Request req, Response res) throws Exception {
-        return handleNoAuthRequest(req, ClearRequest.class, clearService::clear);
-    }
-    private Object registerUser(Request req, Response res) throws ResponseException, Exception {
-        return handleNoAuthRequest(req, RegisterRequest.class, userService::register);
-    }
-    private Object loginUser(Request req, Response res) throws  Exception {
-        return handleNoAuthRequest(req, LoginRequest.class, userService::login);
-    }
-    private Object logoutUser(Request req, Response res) throws Exception {
-        return handleAuthNoBodyRequest(req, LogoutRequest.class, userService::logout);
-    }
-    private Object listGames(Request req, Response res) throws Exception {
-        return handleAuthNoBodyRequest(req, ListGamesRequest.class, gameService::listGames);
-    }
-    private Object createGame(Request req, Response res) throws Exception {
-        return handleAuthBodyRequest(req, CreateGameRequest.class, gameService::createGame);
-    }
-    private Object joinGame(Request req, Response res) throws  Exception {
-        return handleAuthBodyRequest(req, JoinGameRequest.class, gameService::joinGame);
+        JoinGameRequest body = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        JoinGameRequest joinGameRequest = new JoinGameRequest(req.headers("Authorization"), body.playerColor(), body.gameID());
+        JoinGameResult joinGameResult = gameService.joinGame(joinGameRequest);
+        return new Gson().toJson(joinGameResult);
     }
 
 }

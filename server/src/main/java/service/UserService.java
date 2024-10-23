@@ -39,7 +39,7 @@ public class UserService {
             return new RegisterResult(loginResult.username(), loginResult.authToken());
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, UnauthorizedException {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ResponseException {
         UserData u = userDataAccess.getUserData(loginRequest.username());
         AuthData authData = authDataAccess.getAuthDataByUsername(loginRequest.username());
         if (u == null) {
@@ -54,11 +54,12 @@ public class UserService {
         }
 
         authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
+        System.out.println(authData.authToken() + " " + authData.username());
         return new LoginResult(authData.username(), authData.authToken());
 
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException, UnauthorizedException{
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException, ResponseException{
         AuthData authData = authDataAccess.getAuthData(logoutRequest.authToken());
 
         if(authData == null) {

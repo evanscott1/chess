@@ -5,6 +5,7 @@ import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import dataaccess.UserDataAccess;
+import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -24,7 +25,7 @@ public class GameService {
         this.gameDataAccess = gameDataAccess;
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException, BadRequestException, UnauthorizedException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException, ResponseException {
         authorizeUser(createGameRequest.authToken());
         if (createGameRequest.gameName().isEmpty()) {
             throw new BadRequestException("Create game request has empty required fields");
@@ -34,7 +35,7 @@ public class GameService {
         return new CreateGameResult(gameData.gameID());
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, ResponseException {
         authorizeUser(joinGameRequest.authToken());
 
         if (joinGameRequest.playerColor().isEmpty() || joinGameRequest.gameID() == 0) {
@@ -63,12 +64,12 @@ public class GameService {
         return new JoinGameResult();
     }
 
-    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException, UnauthorizedException {
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException, ResponseException {
         authorizeUser(listGamesRequest.authToken());
         return new ListGamesResult(gameDataAccess.listGameDatas());
     }
 
-    private void authorizeUser(String authToken) throws DataAccessException, UnauthorizedException {
+    private void authorizeUser(String authToken) throws DataAccessException, ResponseException {
         AuthData authData = authDataAccess.getAuthData(authToken);
 
         if(authData == null) {

@@ -1,10 +1,12 @@
 package service;
 
+import exception.ResponseException;
+
 /**
  * Indicates there was an unauthorized access attempt. 400 error
  */
-public class BadRequestException extends Exception {
+public class BadRequestException extends ResponseException {
     public BadRequestException(String message) {
-        super(message);
+        super(400, message);
     }
 }
