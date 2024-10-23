@@ -3,7 +3,6 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
-import org.eclipse.jetty.client.HttpResponseException;
 import service.ClearService;
 import service.ClearServiceRecords.ClearRequest;
 import service.ClearServiceRecords.ClearResult;
@@ -12,9 +11,6 @@ import service.GameServiceRecords.*;
 import service.UserService;
 import service.UserServiceRecords.*;
 import spark.*;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.function.Function;
 
 public class Server {
 
@@ -62,10 +58,17 @@ public class Server {
 
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
         res.status(ex.StatusCode());
+        ResponseExceptionBody responseExceptionBody = new ResponseExceptionBody(ex.getMessage());
+        res.body(new Gson().toJson(responseExceptionBody));
     }
 
     private void dataAccessExceptionHandler(DataAccessException ex, Request req, Response res) {
         res.status(500);
+        ResponseExceptionBody responseExceptionBody = new ResponseExceptionBody(ex.getMessage());
+        res.body(new Gson().toJson(responseExceptionBody));
+    }
+
+    private record ResponseExceptionBody(String message) {
     }
 
     private Object clearApplication(Request req, Response res) throws ResponseException, DataAccessException {

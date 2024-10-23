@@ -7,6 +7,6 @@ import exception.ResponseException;
  */
 public class ForbiddenException extends ResponseException {
     public ForbiddenException(String message) {
-        super(403, message);
+        super(403, "Error: already taken");
     }
 }

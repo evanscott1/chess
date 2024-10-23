@@ -7,6 +7,6 @@ import exception.ResponseException;
  */
 public class BadRequestException extends ResponseException {
     public BadRequestException(String message) {
-        super(400, message);
+        super(400, "Error: bad request");
     }
 }
