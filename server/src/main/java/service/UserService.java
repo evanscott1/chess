@@ -3,6 +3,7 @@ package service;
 import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccess;
+import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import service.UserServiceRecords.*;
@@ -15,12 +16,12 @@ public class UserService {
     private final UserDataAccess userDataAccess;
     private final AuthDataAccess authDataAccess;
 
-    UserService(UserDataAccess userDataAccess, AuthDataAccess authDataAccess) {
+    public UserService(UserDataAccess userDataAccess, AuthDataAccess authDataAccess) {
         this.userDataAccess = userDataAccess;
         this.authDataAccess = authDataAccess;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
+    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException, DataAccessException, BadRequestException, UnauthorizedException, ForbiddenException {
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
         if (registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
@@ -34,6 +35,7 @@ public class UserService {
             UserData newU = userDataAccess.addUserData(u);
             LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
             LoginResult loginResult = login(loginRequest);
+
             return new RegisterResult(loginResult.username(), loginResult.authToken());
     }
 

@@ -49,7 +49,6 @@ public class ClearServiceTests {
         @BeforeAll
         public static void init() {
 
-
             existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
 
             newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
