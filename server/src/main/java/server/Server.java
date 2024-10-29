@@ -15,7 +15,7 @@ import spark.*;
 public class Server {
 
 
-    private final UserDataAccess userDataAccess = new MemoryUserDAO();
+    private final UserDataAccess userDataAccess = new MySQLUserDAO();
     private final AuthDataAccess authDataAccess = new MemoryAuthDAO();
     private final GameDataAccess gameDataAccess = new MemoryGameDAO();
 

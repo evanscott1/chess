@@ -17,8 +17,13 @@ import static java.sql.Types.NULL;
 
 public class MySQLUserDAO implements UserDataAccess {
 
-    public MySQLUserDAO() throws ResponseException {
-        configureDatabase();
+    public MySQLUserDAO() {
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -109,17 +114,17 @@ public class MySQLUserDAO implements UserDataAccess {
             CREATE TABLE IF NOT EXISTS  user (
                 `id` int NOT NULL AUTO_INCREMENT,
                 `username` varchar(256) NOT NULL,
-                `password` char(60) NOT NULL
+                `password` char(60) NOT NULL,
                 `email` varchar(256) NOT NULL,
                 `json` TEXT DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 INDEX(username),
                 INDEX(password)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs
             """
     };
 
-    private void configureDatabase() throws ResponseException {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -128,7 +133,7 @@ public class MySQLUserDAO implements UserDataAccess {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 }
