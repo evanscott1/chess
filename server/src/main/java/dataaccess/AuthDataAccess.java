@@ -10,7 +10,7 @@ public interface AuthDataAccess {
 
     AuthData getAuthData(String authToken) throws DataAccessException;
 
-    AuthData getAuthDataByUsername(String username) throws DataAccessException;
+
 
     Collection<AuthData> listAuthDatas() throws DataAccessException;
 

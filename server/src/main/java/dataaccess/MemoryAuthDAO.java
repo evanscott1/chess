@@ -16,7 +16,7 @@ public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAc
         return getT("authToken", authToken);
     }
 
-    @Override
+    //I admit I was wrong. This method probably shouldn't exist.
     public AuthData getAuthDataByUsername(String username) throws DataAccessException {
         return getT("username", username);
     }

@@ -42,20 +42,15 @@ public class UserService {
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ResponseException {
         UserData u = userDataAccess.getUserData(loginRequest.username());
-        AuthData authData = authDataAccess.getAuthDataByUsername(loginRequest.username());
+
         if (u == null) {
             throw new UnauthorizedException("User not found");
-        }
-//        Put user already logged in back since the "Normal User Login" test says normal is letting a user create multiple authTokens
-        if (authData != null) {
-            System.out.println("Another happy bunny.");
-//            throw new UnauthorizedException("User already logged in");
         }
         if (!u.password().equals(loginRequest.password())) {
             throw new UnauthorizedException("User password does not match");
         }
 
-        authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
+        AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
         System.out.println(authData.authToken() + " " + authData.username());
         return new LoginResult(authData.username(), authData.authToken());
 

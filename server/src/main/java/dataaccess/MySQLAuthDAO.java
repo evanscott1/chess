@@ -23,18 +23,13 @@ public class MySQLAuthDAO extends MySQLBaseDAO implements AuthDataAccess {
     }
 
     @Override
-    public AuthData getAuthDataByUsername(String username) throws DataAccessException {
-        return null;
-    };
-
-    @Override
     public Collection<AuthData> listAuthDatas() throws DataAccessException {
         return listTs(AuthData.class);
     }
 
     @Override
     public void deleteAuthData(String authToken) throws DataAccessException {
-
+        
     };
 
     @Override
