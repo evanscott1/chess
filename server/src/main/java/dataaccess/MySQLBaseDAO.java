@@ -1,14 +1,22 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
+import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MySQLBaseDAO {
     protected final String[] createStatements = {};
     public MySQLBaseDAO() throws ResponseException {
         configureDatabase();
+    }
+
+    private <T> T readJsonResultToObject(ResultSet rs, Class<T> objectClass) throws SQLException {
+        var json = rs.getString("json");
+        return new Gson().fromJson(json, objectClass);
     }
 
     private String hashUserPassword(String username, String password) {

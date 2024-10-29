@@ -9,6 +9,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -49,12 +50,26 @@ public class MySQLUserDAO implements UserDataAccess {
 
     @Override
     public Collection<UserData> listUserDatas() throws DataAccessException {
-        return null;
+        var result = new ArrayList<UserData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT json FROM user";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readUser(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
     }
 
     @Override
     public void deleteAllUserDatas() throws DataAccessException {
-
+        var statement = "TRUNCATE user";
+        executeUpdate(statement);
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {
