@@ -1,6 +1,7 @@
 package dataaccess;
 
 import exception.ResponseException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
@@ -8,6 +9,10 @@ public class MySQLBaseDAO {
     protected final String[] createStatements = {};
     public MySQLBaseDAO() throws ResponseException {
         configureDatabase();
+    }
+
+    private String hashUserPassword(String username, String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
 
