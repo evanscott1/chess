@@ -15,17 +15,20 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySQLBaseDAO {
-    protected String[] createStatements = {};
+    private String[] createStatements = {};
+    private String table = "";
+
     public MySQLBaseDAO() {
         try {
             this.createStatements = getCreateStatements();
+            this.table = getTableName();
             configureDatabase();
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public <T> void addT(String into, T t) throws DataAccessException {
+    public <T> void addT(T t) throws DataAccessException {
         Field[] fields = t.getClass().getDeclaredFields();
 
         StringBuilder columnNames = new StringBuilder();
@@ -50,16 +53,16 @@ public class MySQLBaseDAO {
         }
         columnNames.append(", json");
         placeholders.append(", ?");
-        var statement = String.format("INSERT INTO %s (%s) VALUES (%s)", into, columnNames, placeholders);
+        var statement = String.format("INSERT INTO %s (%s) VALUES (%s)", table, columnNames, placeholders);
 
         params[fields.length] = new Gson().toJson(t);
 
         executeUpdate(statement, params);
     }
 
-    public <T> T getT(String from, String where, String value, Class<T> objectClass) throws DataAccessException {
+    public <T> T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = String.format("SELECT json FROM %s WHERE %s=?", from, where);
+            var statement = String.format("SELECT json FROM %s WHERE %s=?", table, where);
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, value);
                 try (var rs = ps.executeQuery()) {
@@ -69,15 +72,15 @@ public class MySQLBaseDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data from %s: %s", from, e.getMessage()));
+            throw new DataAccessException(String.format("Unable to read data from %s: %s", table, e.getMessage()));
         }
         return null;
     }
 
-    public <T> Collection<T> listTs(String from, Class<T> objectClass) throws DataAccessException {
+    public <T> Collection<T> listTs(Class<T> objectClass) throws DataAccessException {
         var result = new ArrayList<T>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = String.format("SELECT json FROM %s", from);
+            var statement = String.format("SELECT json FROM %s", table);
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -86,12 +89,12 @@ public class MySQLBaseDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data from %s: %s",from, e.getMessage()));
+            throw new DataAccessException(String.format("Unable to read data from %s: %s", table, e.getMessage()));
         }
         return result;
     }
 
-    public <T> void deleteAllTs(String table) throws DataAccessException {
+    public <T> void deleteAllTs() throws DataAccessException {
         var statement = String.format("TRUNCATE %s", table);
         executeUpdate(statement);
     }
@@ -134,6 +137,10 @@ public class MySQLBaseDAO {
 
     protected String[] getCreateStatements() {
         return new String[] {};
+    }
+
+    protected String getTableName() {
+        return "";
     }
 
     private void configureDatabase() throws DataAccessException {
