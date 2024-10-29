@@ -16,8 +16,8 @@ public class Server {
 
 
     private final UserDataAccess userDataAccess = new MySQLUserDAO();
-    private final AuthDataAccess authDataAccess = new MemoryAuthDAO();
-    private final GameDataAccess gameDataAccess = new MemoryGameDAO();
+    private final AuthDataAccess authDataAccess = new MySQLAuthDAO();
+    private final GameDataAccess gameDataAccess = new MySQLGameDAO();
 
     private final UserService userService = new UserService(userDataAccess, authDataAccess);
     private final GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);

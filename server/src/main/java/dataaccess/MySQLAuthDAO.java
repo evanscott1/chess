@@ -29,7 +29,7 @@ public class MySQLAuthDAO extends MySQLBaseDAO implements AuthDataAccess {
 
     @Override
     public void deleteAuthData(String authToken) throws DataAccessException {
-        
+        deleteT("authToken", authToken);
     };
 
     @Override

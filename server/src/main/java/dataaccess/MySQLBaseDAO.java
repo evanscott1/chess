@@ -5,6 +5,7 @@ import exception.ResponseException;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.xml.crypto.Data;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +29,7 @@ public class MySQLBaseDAO {
         }
     }
 
-    public <T> void addT(T t) throws DataAccessException {
+    public <T> int addT(T t) throws DataAccessException {
         Field[] fields = t.getClass().getDeclaredFields();
 
         StringBuilder columnNames = new StringBuilder();
@@ -57,7 +58,7 @@ public class MySQLBaseDAO {
 
         params[fields.length] = new Gson().toJson(t);
 
-        executeUpdate(statement, params);
+        return executeUpdate(statement, params);
     }
 
     public <T> T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
@@ -77,6 +78,13 @@ public class MySQLBaseDAO {
         return null;
     }
 
+
+    public T updateT(T t, String attributeValue, String value) {
+        Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);
+        ts.replace(key, t);
+        return t;
+    }
+
     public <T> Collection<T> listTs(Class<T> objectClass) throws DataAccessException {
         var result = new ArrayList<T>();
         try (var conn = DatabaseManager.getConnection()) {
@@ -92,6 +100,11 @@ public class MySQLBaseDAO {
             throw new DataAccessException(String.format("Unable to read data from %s: %s", table, e.getMessage()));
         }
         return result;
+    }
+
+    public void deleteT(String where, String value) throws DataAccessException {
+        var statement = String.format("DELETE FROM %s WHERE %s=?", table, value);
+        executeUpdate(statement, value);
     }
 
     public <T> void deleteAllTs() throws DataAccessException {
