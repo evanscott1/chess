@@ -17,8 +17,8 @@ public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAcce
     }
 
     @Override
-    public AuthData getAuthData(String username) throws DataAccessException {
-        return getT("username", username, AuthData.class);
+    public AuthData getAuthData(String authToken) throws DataAccessException {
+        return getT("authToken", authToken, AuthData.class);
     }
 
     @Override
