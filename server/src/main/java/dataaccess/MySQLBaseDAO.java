@@ -144,7 +144,7 @@ public abstract class MySQLBaseDAO<T> {
     }
 
     public void deleteT(String where, String value) throws DataAccessException {
-        var statement = String.format("DELETE FROM %s WHERE %s=?", table, value);
+        var statement = String.format("DELETE FROM %s WHERE %s=?", table, where);
         executeUpdate(statement, value);
     }
 

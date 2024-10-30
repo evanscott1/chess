@@ -22,8 +22,7 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException, DataAccessException, BadRequestException,
-            UnauthorizedException, ForbiddenException {
+    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException{
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
@@ -43,7 +42,7 @@ public class UserService {
         return new RegisterResult(loginResult.username(), loginResult.authToken());
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ResponseException {
+    public LoginResult login(LoginRequest loginRequest) throws ResponseException {
         UserData u = userDataAccess.getUserData(loginRequest.username());
 
         if (u == null) {
@@ -60,7 +59,7 @@ public class UserService {
 
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException, ResponseException {
+    public LogoutResult logout(LogoutRequest logoutRequest) throws ResponseException {
         AuthData authData = authDataAccess.getAuthData(logoutRequest.authToken());
 
         if (authData == null) {
