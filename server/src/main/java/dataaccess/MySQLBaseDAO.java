@@ -7,9 +7,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -29,29 +28,28 @@ public abstract class MySQLBaseDAO<T> {
     }
 
     public int addT(T t) throws DataAccessException {
-        Field[] fields = t.getClass().getDeclaredFields();
+        List<Field> nonObjectFields = Arrays.stream(t.getClass().getDeclaredFields()).filter(f -> isSimpleType(f.getType())).toList();
 
         StringBuilder columnNames = new StringBuilder();
         StringBuilder placeholders = new StringBuilder();
-        Object[] params = new Object[fields.length + 1];
+        List<Object> params = new ArrayList<>();
+
+        Iterator<Field> iterator = nonObjectFields.iterator();
         try {
-            for (int i = 0; i < fields.length; i++) {
-                fields[i].setAccessible(true);
+            while (iterator.hasNext()) {
+                Field field = iterator.next();
+                field.setAccessible(true);
+                columnNames.append(field.getName());
+                placeholders.append("?");
 
-                if (isSimpleType(fields[i].getType())) {
-
-                    columnNames.append(fields[i].getName());
-                    placeholders.append("?");
-
-                    if (i < fields.length - 1) {
-                        columnNames.append(", ");
-                        placeholders.append(", ");
-                    }
-
-                    params[i] = fields[i].get(t);
+                if ( iterator.hasNext()) {
+                    columnNames.append(", ");
+                    placeholders.append(", ");
                 }
 
+                params.add(field.get(t));
             }
+
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -59,20 +57,20 @@ public abstract class MySQLBaseDAO<T> {
         placeholders.append(", ?");
         var statement = String.format("INSERT INTO %s (%s) VALUES (%s)", table, columnNames, placeholders);
 
-        params[fields.length] = new Gson().toJson(t);
+        params.add(new Gson().toJson(t));
 
         return executeUpdate(statement, params);
     }
 
     private boolean isSimpleType(Class<?> type) {
-        return !type.isPrimitive() &&
-                !type.equals(String.class) &&
-                !type.equals(Integer.class) &&
-                !type.equals(Long.class) &&
-                !type.equals(Double.class) &&
-                !type.equals(Float.class) &&
-                !type.equals(Boolean.class) &&
-                !type.equals(Character.class);
+        return type.isPrimitive() ||
+                type.equals(String.class) ||
+                type.equals(Integer.class) ||
+                type.equals(Long.class) ||
+                type.equals(Double.class) ||
+                type.equals(Float.class) ||
+                type.equals(Boolean.class) ||
+                type.equals(Character.class);
     }
 
     public T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
