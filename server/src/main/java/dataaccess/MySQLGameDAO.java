@@ -7,7 +7,7 @@ import model.UserData;
 import java.util.Collection;
 
 
-public class MySQLGameDAO extends MySQLBaseDAO implements GameDataAccess {
+public class MySQLGameDAO extends MySQLBaseDAO<GameData> implements GameDataAccess {
 
     @Override
     public GameData addGameData(GameData gameData) throws DataAccessException {
@@ -23,7 +23,8 @@ public class MySQLGameDAO extends MySQLBaseDAO implements GameDataAccess {
 
     @Override
     public GameData updateGameData(GameData gameData) throws DataAccessException {
-        return getT("gameID", Integer.toString(gameID), GameData.class);
+        updateT(gameData, "gameID", gameData.gameID());
+        return gameData;
     }
 
     @Override
@@ -51,7 +52,6 @@ public class MySQLGameDAO extends MySQLBaseDAO implements GameDataAccess {
                 `whiteUsername` varchar(256) NOT NULL,
                 `blackUsername` varchar(256) NOT NULL,
                 `gameName` varchar(256) NOT NULL,
-                `game` TEXT DEFAULT NULL,
                 `json` TEXT DEFAULT NULL,
                 PRIMARY KEY (`gameID`),
                 INDEX(gameID),

@@ -2,20 +2,19 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.crypto.Data;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
-public class MySQLBaseDAO {
+public abstract class MySQLBaseDAO<T> {
     private String[] createStatements = {};
     private String table = "";
 
@@ -29,7 +28,7 @@ public class MySQLBaseDAO {
         }
     }
 
-    public <T> int addT(T t) throws DataAccessException {
+    public int addT(T t) throws DataAccessException {
         Field[] fields = t.getClass().getDeclaredFields();
 
         StringBuilder columnNames = new StringBuilder();
@@ -39,15 +38,19 @@ public class MySQLBaseDAO {
             for (int i = 0; i < fields.length; i++) {
                 fields[i].setAccessible(true);
 
-                columnNames.append(fields[i].getName());
-                placeholders.append("?");
+                if (isSimpleType(fields[i].getType())) {
 
-                if (i < fields.length - 1) {
-                    columnNames.append(", ");
-                    placeholders.append(", ");
+                    columnNames.append(fields[i].getName());
+                    placeholders.append("?");
+
+                    if (i < fields.length - 1) {
+                        columnNames.append(", ");
+                        placeholders.append(", ");
+                    }
+
+                    params[i] = fields[i].get(t);
                 }
 
-                params[i] = fields[i].get(t);
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -61,7 +64,18 @@ public class MySQLBaseDAO {
         return executeUpdate(statement, params);
     }
 
-    public <T> T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
+    private boolean isSimpleType(Class<?> type) {
+        return !type.isPrimitive() &&
+                !type.equals(String.class) &&
+                !type.equals(Integer.class) &&
+                !type.equals(Long.class) &&
+                !type.equals(Double.class) &&
+                !type.equals(Float.class) &&
+                !type.equals(Boolean.class) &&
+                !type.equals(Character.class);
+    }
+
+    public T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = String.format("SELECT json FROM %s WHERE %s=?", table, where);
             try (var ps = conn.prepareStatement(statement)) {
@@ -79,13 +93,42 @@ public class MySQLBaseDAO {
     }
 
 
-    public T updateT(T t, String attributeValue, String value) {
-        Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);
-        ts.replace(key, t);
-        return t;
+    public int updateT(T t, String where, Object value) throws DataAccessException {
+        Field[] fields = t.getClass().getDeclaredFields();
+
+        StringBuilder columnNames = new StringBuilder();
+
+        List<Object> params = new ArrayList<>();
+        try {
+            for (Field field : fields) {
+                field.setAccessible(true);
+
+                if (isSimpleType(field.getType())) {
+                    if (!params.isEmpty()) {columnNames.append(", ");}
+
+                    columnNames.append(field.getName()).append(" = ?");
+                    params.add(field.get(t));
+                }
+            }
+            if (!columnNames.isEmpty()) {columnNames.append(", ");}
+            columnNames.append("json = ?");
+            params.add(new Gson().toJson(t));
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Error accessing field values: " + e.getMessage(), e);
+        }
+
+
+        var statement = String.format("UPDATE %s SET %s WHERE %s=?", table, columnNames, where);
+
+        params.add(value);
+
+
+        return executeUpdate(statement, params.toArray());
+
     }
 
-    public <T> Collection<T> listTs(Class<T> objectClass) throws DataAccessException {
+    public Collection<T> listTs(Class<T> objectClass) throws DataAccessException {
         var result = new ArrayList<T>();
         try (var conn = DatabaseManager.getConnection()) {
             var statement = String.format("SELECT json FROM %s", table);
@@ -107,7 +150,7 @@ public class MySQLBaseDAO {
         executeUpdate(statement, value);
     }
 
-    public <T> void deleteAllTs() throws DataAccessException {
+    public void deleteAllTs() throws DataAccessException {
         var statement = String.format("TRUNCATE %s", table);
         executeUpdate(statement);
     }
@@ -139,7 +182,7 @@ public class MySQLBaseDAO {
         }
     }
 
-    protected  <T> T readJsonResultToObject(ResultSet rs, Class<T> objectClass) throws SQLException {
+    protected  T readJsonResultToObject(ResultSet rs, Class<T> objectClass) throws SQLException {
         var json = rs.getString("json");
         return new Gson().fromJson(json, objectClass);
     }

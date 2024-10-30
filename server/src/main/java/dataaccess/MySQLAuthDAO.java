@@ -7,7 +7,7 @@ import model.UserData;
 import java.util.Collection;
 
 
-public class MySQLAuthDAO extends MySQLBaseDAO implements AuthDataAccess {
+public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAccess {
 
 
     @Override

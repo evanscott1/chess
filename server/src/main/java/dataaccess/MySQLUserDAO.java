@@ -2,10 +2,11 @@ package dataaccess;
 
 
 import model.UserData;
+
 import java.util.Collection;
 
 
-public class MySQLUserDAO extends MySQLBaseDAO implements UserDataAccess {
+public class MySQLUserDAO extends MySQLBaseDAO<UserData> implements UserDataAccess {
 
     @Override
     public UserData addUserData(UserData userData) throws DataAccessException {
@@ -38,7 +39,7 @@ public class MySQLUserDAO extends MySQLBaseDAO implements UserDataAccess {
 
     @Override
     protected String[] getCreateStatements() {
-        return new String[] {
+        return new String[]{
                 """
             CREATE TABLE IF NOT EXISTS  user (
                 `id` int NOT NULL AUTO_INCREMENT,
