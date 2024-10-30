@@ -59,7 +59,7 @@ public abstract class MySQLBaseDAO<T> {
 
         params.add(new Gson().toJson(t));
 
-        return executeUpdate(statement, params);
+        return executeUpdate(statement, params.toArray());
     }
 
     private boolean isSimpleType(Class<?> type) {
@@ -75,7 +75,7 @@ public abstract class MySQLBaseDAO<T> {
 
     public T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = String.format("SELECT json FROM %s WHERE %s=?", table, where);
+            var statement = String.format("SELECT json, FROM %s WHERE %s=?", table, where);
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, value);
                 try (var rs = ps.executeQuery()) {
@@ -183,10 +183,6 @@ public abstract class MySQLBaseDAO<T> {
     protected  T readJsonResultToObject(ResultSet rs, Class<T> objectClass) throws SQLException {
         var json = rs.getString("json");
         return new Gson().fromJson(json, objectClass);
-    }
-
-    protected String hashStringBCrypt(String value) {
-        return BCrypt.hashpw(value, BCrypt.gensalt());
     }
 
     protected String[] getCreateStatements() {

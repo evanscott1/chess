@@ -6,6 +6,7 @@ import dataaccess.UserDataAccess;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import service.userservicerecords.*;
 
 import java.util.UUID;
@@ -32,7 +33,9 @@ public class UserService {
         if (u != null) {
             throw new ForbiddenException("Username already exists");
         }
-        u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+
+        String hashedPassword = hashStringBCrypt(registerRequest.password());
+        u = new UserData(registerRequest.username(), hashedPassword, registerRequest.email());
         UserData newU = userDataAccess.addUserData(u);
         LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
         LoginResult loginResult = login(loginRequest);
@@ -46,6 +49,7 @@ public class UserService {
         if (u == null) {
             throw new UnauthorizedException("User not found");
         }
+        String hashedPassword = hashStringBCrypt(loginRequest.password());
         if (!u.password().equals(loginRequest.password())) {
             throw new UnauthorizedException("User password does not match");
         }
@@ -65,5 +69,9 @@ public class UserService {
 
         authDataAccess.deleteAuthData(logoutRequest.authToken());
         return new LogoutResult();
+    }
+
+    protected String hashStringBCrypt(String value) {
+        return BCrypt.hashpw(value, BCrypt.gensalt());
     }
 }

@@ -23,7 +23,7 @@ public class GameService {
     }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException, ResponseException {
-        authorizeUser(createGameRequest.authToken());
+        checkUserAuth(createGameRequest.authToken());
         if (createGameRequest.gameName().isEmpty()) {
             throw new BadRequestException("Create game request has empty required fields");
         }
@@ -33,7 +33,7 @@ public class GameService {
     }
 
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, ResponseException {
-        authorizeUser(joinGameRequest.authToken());
+        checkUserAuth(joinGameRequest.authToken());
 
         if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == 0) {
             throw new BadRequestException("Join game request has empty required fields");
@@ -61,12 +61,12 @@ public class GameService {
         return new JoinGameResult();
     }
 
-    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException, ResponseException {
-        authorizeUser(listGamesRequest.authToken());
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws ResponseException {
+        checkUserAuth(listGamesRequest.authToken());
         return new ListGamesResult(gameDataAccess.listGameDatas());
     }
 
-    private void authorizeUser(String authToken) throws DataAccessException, ResponseException {
+    private void checkUserAuth(String authToken) throws ResponseException {
         AuthData authData = authDataAccess.getAuthData(authToken);
 
         if (authData == null) {

@@ -10,9 +10,7 @@ public class MySQLUserDAO extends MySQLBaseDAO<UserData> implements UserDataAcce
 
     @Override
     public UserData addUserData(UserData userData) throws DataAccessException {
-        String hashedPassword = hashStringBCrypt(userData.password());
-        UserData hashedUser = new UserData(userData.username(), hashedPassword, userData.email());
-        addT(hashedUser);
+        addT(userData);
         return userData;
     }
 

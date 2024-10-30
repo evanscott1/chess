@@ -12,7 +12,6 @@ public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAcce
 
     @Override
     public AuthData addAuthData(AuthData authData) throws DataAccessException {
-
         addT(authData);
         return authData;
     }
