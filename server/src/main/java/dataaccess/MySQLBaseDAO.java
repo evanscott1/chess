@@ -75,7 +75,7 @@ public abstract class MySQLBaseDAO<T> {
 
     public T getT(String where, String value, Class<T> objectClass) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = String.format("SELECT json, FROM %s WHERE %s=?", table, where);
+            var statement = String.format("SELECT json FROM %s WHERE %s=?", table, where);
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, value);
                 try (var rs = ps.executeQuery()) {

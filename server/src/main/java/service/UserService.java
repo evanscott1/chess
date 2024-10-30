@@ -37,7 +37,7 @@ public class UserService {
         String hashedPassword = hashStringBCrypt(registerRequest.password());
         u = new UserData(registerRequest.username(), hashedPassword, registerRequest.email());
         UserData newU = userDataAccess.addUserData(u);
-        LoginRequest loginRequest = new LoginRequest(newU.username(), newU.password());
+        LoginRequest loginRequest = new LoginRequest(registerRequest.username(), registerRequest.password());
         LoginResult loginResult = login(loginRequest);
 
         return new RegisterResult(loginResult.username(), loginResult.authToken());
@@ -49,8 +49,8 @@ public class UserService {
         if (u == null) {
             throw new UnauthorizedException("User not found");
         }
-        String hashedPassword = hashStringBCrypt(loginRequest.password());
-        if (!u.password().equals(loginRequest.password())) {
+
+        if (!verifyUser(loginRequest.password(), u.password())) {
             throw new UnauthorizedException("User password does not match");
         }
 
@@ -71,7 +71,11 @@ public class UserService {
         return new LogoutResult();
     }
 
-    protected String hashStringBCrypt(String value) {
+    private String hashStringBCrypt(String value) {
         return BCrypt.hashpw(value, BCrypt.gensalt());
+    }
+
+    boolean verifyUser(String providedClearTextPassword, String hashedPassword) {
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
     }
 }

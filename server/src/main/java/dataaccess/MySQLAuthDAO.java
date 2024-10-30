@@ -38,7 +38,7 @@ public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAcce
 
     @Override
     protected String getTableName() {
-        return "user";
+        return "auth";
     }
 
 
@@ -47,8 +47,8 @@ public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAcce
         return new String[] {
                 """
             CREATE TABLE IF NOT EXISTS  auth (
-                `username` varchar(256) NOT NULL,
                 `authToken` char(36) NOT NULL,
+                `username` varchar(256) NOT NULL,
                 `json` TEXT DEFAULT NULL,
                 PRIMARY KEY (`authToken`),
                 INDEX(username),
