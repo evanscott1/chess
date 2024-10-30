@@ -12,8 +12,8 @@ public class MySQLGameDAO extends MySQLBaseDAO<GameData> implements GameDataAcce
     @Override
     public GameData addGameData(GameData gameData) throws DataAccessException {
         int gameID = addT(gameData);
-        gameData.setGameId(gameID);
-        return gameData;
+        GameData newGameData = gameData.setGameId(gameID);
+        return updateGameData(newGameData);
     }
 
     @Override
