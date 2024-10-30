@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
+import model.GameData;
 import service.ClearService;
 import service.clearservicerecords.ClearRequest;
 import service.clearservicerecords.ClearResult;
@@ -75,7 +76,7 @@ public class Server {
         return new Gson().toJson(clearResult);
     }
 
-    private Object registerUser(Request req, Response res) throws ResponseException, ResponseException, DataAccessException {
+    private Object registerUser(Request req, Response res) throws ResponseException, DataAccessException {
         RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
         RegisterResult registerResult = userService.register(registerRequest);
         return new Gson().toJson(registerResult);
@@ -100,7 +101,8 @@ public class Server {
     }
 
     private Object createGame(Request req, Response res) throws ResponseException, DataAccessException {
-        CreateGameRequest createGameRequest = new CreateGameRequest(req.headers("Authorization"), req.body());
+        CreateGameRequest body = new Gson().fromJson(req.body(), CreateGameRequest.class);
+        CreateGameRequest createGameRequest = new CreateGameRequest(req.headers("Authorization"), body.gameName());
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         return new Gson().toJson(createGameResult);
     }
