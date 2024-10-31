@@ -2,10 +2,7 @@ package dataaccess;
 
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 public abstract class MemoryBaseDAO<T> {
@@ -30,10 +27,9 @@ public abstract class MemoryBaseDAO<T> {
         return t;
     }
 
-//    public ArrayList<T> listTs() {
-//        ArrayList<T> tArrayList = new ArrayList<>();
-//        for ()
-//    }
+    public Collection<T> listTs() {
+        return ts.values();
+    }
 
     public void deleteT(String attributeValue, String value) {
         Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);

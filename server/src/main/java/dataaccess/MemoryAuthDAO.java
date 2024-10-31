@@ -31,7 +31,7 @@ public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAc
 
     @Override
     public Collection<AuthData> listAuthDatas() throws ResponseException {
-        return ts.values();
+        return listTs();
     }
 
     @Override

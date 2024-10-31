@@ -16,7 +16,6 @@ public class AuthDAOTests {
 
     private static AuthDataAccess serverAuthDAO;
     private static AuthData newAuth;
-    private static UserData existingUser;
 
     private static Collection<AuthData> authDataList = new ArrayList<>();
 
@@ -24,9 +23,9 @@ public class AuthDAOTests {
     @BeforeAll
     public static void initAuthDAO() {
         serverAuthDAO = Server.authDataAccess;
-        existingUser = new UserData("ExistingUser", "YouCannotDefeatMyWisdomCodeChecker", "eu@mail.com");
+        UserData existingUser = new UserData("ExistingUser", "YouCannotDefeatMyWisdomCodeChecker", "eu@mail.com");
 
-        newAuth = new AuthData("newAuthToken",existingUser.username());
+        newAuth = new AuthData("newAuthToken", existingUser.username());
 
         authDataList.add(new AuthData("authToken1", existingUser.username()));
         authDataList.add(new AuthData("authToken2", existingUser.username()));

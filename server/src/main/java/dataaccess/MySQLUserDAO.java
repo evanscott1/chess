@@ -1,7 +1,9 @@
 package dataaccess;
 
 
+import exception.ResponseException;
 import model.UserData;
+import service.BadRequestException;
 
 import java.util.Collection;
 
@@ -9,23 +11,29 @@ import java.util.Collection;
 public class MySQLUserDAO extends MySQLBaseDAO<UserData> implements UserDataAccess {
 
     @Override
-    public UserData addUserData(UserData userData) throws DataAccessException {
+    public UserData addUserData(UserData userData) throws ResponseException {
+        if (userData.username().isEmpty() || userData.password().isEmpty() || userData.email().isEmpty()) {
+            throw new BadRequestException("UserData fields cannot be empty");
+        }
         addT(userData);
         return userData;
     }
 
     @Override
-    public UserData getUserData(String username) throws DataAccessException {
+    public UserData getUserData(String username) throws ResponseException {
+        if (username.isEmpty()) {
+            throw new BadRequestException("Username cannot be empty");
+        }
         return getT("username", username, UserData.class);
     }
 
     @Override
-    public Collection<UserData> listUserDatas() throws DataAccessException {
+    public Collection<UserData> listUserDatas() throws ResponseException {
         return listTs(UserData.class);
     }
 
     @Override
-    public void deleteAllUserDatas() throws DataAccessException {
+    public void deleteAllUserDatas() throws ResponseException {
         deleteAllTs();
     }
 
