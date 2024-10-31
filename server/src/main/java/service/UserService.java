@@ -53,8 +53,7 @@ public class UserService {
             throw new UnauthorizedException("User password does not match");
         }
 
-        AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
-        System.out.println(authData.authToken() + " " + authData.username());
+        AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(),  loginRequest.username()));
         return new LoginResult(authData.username(), authData.authToken());
 
     }

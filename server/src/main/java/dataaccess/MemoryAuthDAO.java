@@ -24,11 +24,6 @@ public class MemoryAuthDAO extends MemoryBaseDAO<AuthData> implements AuthDataAc
         return getT("authToken", authToken);
     }
 
-    //I admit I was wrong. This method probably shouldn't exist.
-    public AuthData getAuthDataByUsername(String username) throws ResponseException {
-        return getT("username", username);
-    }
-
     @Override
     public Collection<AuthData> listAuthDatas() throws ResponseException {
         return listTs();

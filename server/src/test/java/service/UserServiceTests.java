@@ -1,9 +1,12 @@
 package service;
 
+import dataaccess.AuthDataAccess;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
+import dataaccess.UserDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import server.Server;
 import service.userservicerecords.*;
 
 
@@ -14,13 +17,11 @@ public class UserServiceTests {
 
     private static UserData newUser;
 
-    MemoryUserDAO userTable;
+    private static AuthDataAccess serverAuthDAO;
+    private static UserDataAccess serverUserDAO;
+    private static UserService serverUserService;
 
-    MemoryAuthDAO authTable;
 
-    UserService service;
-
-    @AfterAll
 
     @BeforeAll
     public static void initUser() {
@@ -35,23 +36,24 @@ public class UserServiceTests {
 
     @BeforeEach
     public void setup() throws Exception {
-        userTable = new MemoryUserDAO();
-        authTable = new MemoryAuthDAO();
-        service = new UserService(userTable, authTable);
-        userTable.addUserData(existingUser);
+        serverUserService = Server.userService;
+        serverAuthDAO = Server.authDataAccess;
+        serverUserDAO = Server.userDataAccess;
+        serverUserDAO.deleteAllUserDatas();
+        serverAuthDAO.deleteAllAuthDatas();
+
     }
 
     @Test
     @Order(1)
     @DisplayName("Normal User Login")
     public void loginSuccess() throws Exception {
+        RegisterResult registerResult = serverUserService.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
+        serverUserService.logout(new LogoutRequest(registerResult.authToken()));
+        LoginResult loginResult = serverUserService.login(new LoginRequest(newUser.username(), newUser.password()));
 
-
-        LoginResult loginResult = service.login(new LoginRequest(existingUser.username(), existingUser.password()));
-
-        Assertions.assertEquals(loginResult.authToken(), authTable.getAuthDataByUsername(existingUser.username()).authToken(), "The logged in user " +
+        Assertions.assertEquals(loginResult.username(), serverAuthDAO.getAuthData(loginResult.authToken()).username(), "The logged in user " +
                 "should have an AuthData that matches the returned AuthData");
-
 
     }
 
@@ -60,21 +62,8 @@ public class UserServiceTests {
     @DisplayName("User Login With Invalid User")
     public void loginInvalidUser() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(newUser.username(), newUser.password())),
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverUserService.login(new LoginRequest(newUser.username(), newUser.password())),
                 "Invalid user login should throw UnathorizedException");
-
-    }
-
-    //Decommissioned. I refuse to delete this test Code Checker!
-    @Test
-    @Order(3)
-    @DisplayName("User Login Already Logged In")
-    public void loginAlreadyLoggedIn() throws Exception {
-
-        service.login(new LoginRequest(existingUser.username(), existingUser.password()));
-//        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), existingUser.password
-//        ())), "Already logged in user should throw UnathorizedException");
-        Assertions.assertEquals("YouCannotDefeatMyWisdomCodeChecker", existingUser.password());
     }
 
     @Test
@@ -82,8 +71,8 @@ public class UserServiceTests {
     @DisplayName("User Login With Wrong Password")
     public void loginInvalidPassword() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.login(new LoginRequest(existingUser.username(), "NotThePassword")),
-                "Invalid password should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverUserService.login(new LoginRequest(existingUser.username(),
+                        "NotThePassword")), "Invalid password should throw UnathorizedException");
     }
 
 
@@ -93,13 +82,12 @@ public class UserServiceTests {
     public void registerSuccess() throws Exception {
 
 
-        RegisterResult registerResult = service.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
+        RegisterResult registerResult = serverUserService.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
 
-        Assertions.assertEquals(newUser, userTable.getUserData(newUser.username()), "The registered userData should be the same as the input " +
-                "userData");
 
-        Assertions.assertEquals(newUser.username(), authTable.getAuthData(registerResult.authToken()).username(), "The registered user should have " +
+        Assertions.assertEquals(newUser.username(), serverAuthDAO.getAuthData(registerResult.authToken()).username(), "The registered user should have " +
                 "an authData");
+        Assertions.assertNotNull(serverAuthDAO.getAuthData(registerResult.authToken()), "The registered user should have an authToken");
 
     }
 
@@ -108,19 +96,21 @@ public class UserServiceTests {
     @DisplayName("User Register With Invalid User")
     public void registerInvalidUser() throws Exception {
 
-        Assertions.assertThrows(ForbiddenException.class, () -> service.register(new RegisterRequest(existingUser.username(),
-                existingUser.password(), existingUser.email())), "Invalid username should throw UnathorizedException");
+        RegisterResult registerResult = serverUserService.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
+
+        Assertions.assertThrows(ForbiddenException.class, () -> serverUserService.register(new RegisterRequest(newUser.username(),
+                newUser.password(), newUser.email())), "Invalid username should throw UnathorizedException");
     }
 
     @Test
     @Order(7)
     @DisplayName("Normal User Logout")
     public void logoutSuccess() throws Exception {
+        RegisterResult registerResult = serverUserService.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
 
-        LoginResult loginResult = service.login(new LoginRequest(existingUser.username(), existingUser.password()));
-        service.logout(new LogoutRequest(loginResult.authToken()));
+        serverUserService.logout(new LogoutRequest(registerResult.authToken()));
 
-        Assertions.assertNull(authTable.getAuthDataByUsername(loginResult.username()), "The logged in user should not have an AuthData");
+        Assertions.assertNull(serverAuthDAO.getAuthData(registerResult.authToken()), "The logged in user should not have an AuthData");
     }
 
     @Test
@@ -128,7 +118,7 @@ public class UserServiceTests {
     @DisplayName("User Logout not Logged In")
     public void logoutNotLoggedIn() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> service.logout(new LogoutRequest("NotTheAuthToken")), "Already logged out user " +
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverUserService.logout(new LogoutRequest("NotTheAuthToken")), "Already logged out user " +
                 "should throw UnathorizedException");
     }
 

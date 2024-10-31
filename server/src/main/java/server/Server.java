@@ -16,13 +16,17 @@ import spark.*;
 public class Server {
 
     //Change server access type here.
-    public static UserDataAccess userDataAccess = new MemoryUserDAO();
-    public static AuthDataAccess authDataAccess = new MemoryAuthDAO();
-    public static GameDataAccess gameDataAccess = new MemoryGameDAO();
+    public static UserDataAccess userDataAccess = new MySQLUserDAO();
+    public static AuthDataAccess authDataAccess = new MySQLAuthDAO();
+    public static GameDataAccess gameDataAccess = new MySQLGameDAO();
 
-    private final UserService userService = new UserService(userDataAccess, authDataAccess);
-    private final GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);
-    private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
+//    public static UserDataAccess userDataAccess = new MemoryUserDAO();
+//    public static AuthDataAccess authDataAccess = new MemoryAuthDAO();
+//    public static GameDataAccess gameDataAccess = new MemoryGameDAO();
+
+    public static UserService userService = new UserService(userDataAccess, authDataAccess);
+    public static GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);
+    public static ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
 
 
     public int run(int desiredPort) {
