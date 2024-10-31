@@ -4,6 +4,7 @@ import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import dataaccess.UserDataAccess;
+import exception.ResponseException;
 import service.clearservicerecords.ClearRequest;
 import service.clearservicerecords.ClearResult;
 
@@ -20,7 +21,7 @@ public class ClearService {
     }
 
 
-    public ClearResult clear(ClearRequest clearRequest) throws DataAccessException {
+    public ClearResult clear(ClearRequest clearRequest) throws ResponseException {
         authDataAccess.deleteAllAuthDatas();
         gameDataAccess.deleteAllGameDatas();
         userDataAccess.deleteAllUserDatas();

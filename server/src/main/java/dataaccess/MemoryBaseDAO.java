@@ -2,13 +2,17 @@ package dataaccess;
 
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public abstract class MemoryBaseDAO<T> {
     protected int nextId = 1;
     final protected HashMap<Integer, T> ts = new HashMap<>();
+
+
 
     public T addT(T t) throws DataAccessException {
         ts.put(nextId++, t);
@@ -25,6 +29,11 @@ public abstract class MemoryBaseDAO<T> {
         ts.replace(key, t);
         return t;
     }
+
+//    public ArrayList<T> listTs() {
+//        ArrayList<T> tArrayList = new ArrayList<>();
+//        for ()
+//    }
 
     public void deleteT(String attributeValue, String value) {
         Integer key = findHashMapKeyByAttribute(ts, attributeValue, value);

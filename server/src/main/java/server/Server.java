@@ -15,9 +15,9 @@ import spark.*;
 
 public class Server {
 
-
-    private final UserDataAccess userDataAccess = new MySQLUserDAO();
-    private final AuthDataAccess authDataAccess = new MySQLAuthDAO();
+    //Change server access type here.
+    public static UserDataAccess userDataAccess = new MySQLUserDAO();
+    public static AuthDataAccess authDataAccess = new MySQLAuthDAO();
     private final GameDataAccess gameDataAccess = new MySQLGameDAO();
 
     private final UserService userService = new UserService(userDataAccess, authDataAccess);

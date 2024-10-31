@@ -1,20 +1,21 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
 
 public interface AuthDataAccess {
-    AuthData addAuthData(AuthData authData) throws DataAccessException;
+    AuthData addAuthData(AuthData authData) throws ResponseException;
 
-    AuthData getAuthData(String authToken) throws DataAccessException;
+    AuthData getAuthData(String authToken) throws ResponseException;
 
 
 
-    Collection<AuthData> listAuthDatas() throws DataAccessException;
+    Collection<AuthData> listAuthDatas() throws ResponseException;
 
-    void deleteAuthData(String authToken) throws DataAccessException;
+    void deleteAuthData(String authToken) throws ResponseException;
 
-    void deleteAllAuthDatas() throws DataAccessException;
+    void deleteAllAuthDatas() throws ResponseException;
 }
