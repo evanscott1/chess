@@ -30,15 +30,15 @@ public class UserServiceTests {
         existingUser = new UserData("ExistingUser", "YouCannotDefeatMyWisdomCodeChecker", "eu@mail.com");
 
         newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-
+        serverUserService = Server.userService;
+        serverAuthDAO = Server.authDataAccess;
+        serverUserDAO = Server.userDataAccess;
 
     }
 
     @BeforeEach
     public void setup() throws Exception {
-        serverUserService = Server.userService;
-        serverAuthDAO = Server.authDataAccess;
-        serverUserDAO = Server.userDataAccess;
+
         serverUserDAO.deleteAllUserDatas();
         serverAuthDAO.deleteAllAuthDatas();
 
