@@ -39,9 +39,9 @@ public class ChessRuleBook {
     public boolean isInCheck(ChessBoard board, ChessGame.TeamColor color) {
         ChessPosition kingPos = findKing(board, color);
         if (isBoardValid(board)) {
-            System.out.println("A useless method for Code Quality Checker. I hope he's happy.");
+            return otherTeamEndPositions(board, color).contains(kingPos);
         }
-        return otherTeamEndPositions(board, color).contains(kingPos);
+        return false;
     }
 
     private ChessPosition findKing(ChessBoard board, ChessGame.TeamColor color) {

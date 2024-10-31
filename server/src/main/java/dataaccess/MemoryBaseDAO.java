@@ -2,13 +2,14 @@ package dataaccess;
 
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public abstract class MemoryBaseDAO<T> {
     protected int nextId = 1;
     final protected HashMap<Integer, T> ts = new HashMap<>();
-
 
 
     public T addT(T t) throws DataAccessException {

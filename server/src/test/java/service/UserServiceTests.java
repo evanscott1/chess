@@ -1,8 +1,6 @@
 package service;
 
 import dataaccess.AuthDataAccess;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
 import dataaccess.UserDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -20,7 +18,6 @@ public class UserServiceTests {
     private static AuthDataAccess serverAuthDAO;
     private static UserDataAccess serverUserDAO;
     private static UserService serverUserService;
-
 
 
     @BeforeAll
@@ -72,7 +69,7 @@ public class UserServiceTests {
     public void loginInvalidPassword() throws Exception {
 
         Assertions.assertThrows(UnauthorizedException.class, () -> serverUserService.login(new LoginRequest(existingUser.username(),
-                        "NotThePassword")), "Invalid password should throw UnathorizedException");
+                "NotThePassword")), "Invalid password should throw UnathorizedException");
     }
 
 

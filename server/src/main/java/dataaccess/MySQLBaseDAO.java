@@ -2,13 +2,11 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -42,7 +40,7 @@ public abstract class MySQLBaseDAO<T> {
                 columnNames.append(field.getName());
                 placeholders.append("?");
 
-                if ( iterator.hasNext()) {
+                if (iterator.hasNext()) {
                     columnNames.append(", ");
                     placeholders.append(", ");
                 }
@@ -102,13 +100,17 @@ public abstract class MySQLBaseDAO<T> {
                 field.setAccessible(true);
 
                 if (isSimpleType(field.getType())) {
-                    if (!params.isEmpty()) {columnNames.append(", ");}
+                    if (!params.isEmpty()) {
+                        columnNames.append(", ");
+                    }
 
                     columnNames.append(field.getName()).append(" = ?");
                     params.add(field.get(t));
                 }
             }
-            if (!columnNames.isEmpty()) {columnNames.append(", ");}
+            if (!columnNames.isEmpty()) {
+                columnNames.append(", ");
+            }
             columnNames.append("json = ?");
             params.add(new Gson().toJson(t));
 
@@ -180,13 +182,13 @@ public abstract class MySQLBaseDAO<T> {
         }
     }
 
-    protected  T readJsonResultToObject(ResultSet rs, Class<T> objectClass) throws SQLException {
+    protected T readJsonResultToObject(ResultSet rs, Class<T> objectClass) throws SQLException {
         var json = rs.getString("json");
         return new Gson().fromJson(json, objectClass);
     }
 
     protected String[] getCreateStatements() {
-        return new String[] {};
+        return new String[]{};
     }
 
     protected String getTableName() {

@@ -1,8 +1,9 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.*;
-import model.AuthData;
+import dataaccess.AuthDataAccess;
+import dataaccess.GameDataAccess;
+import dataaccess.UserDataAccess;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -33,9 +34,6 @@ public class GameServiceTests {
     private static Collection<CreateGameRequest> createGameRequestsList = new ArrayList<>();
 
 
-
-
-
     LoginResult loginResult;
 
     @AfterAll
@@ -48,7 +46,6 @@ public class GameServiceTests {
         serverAuthDAO = Server.authDataAccess;
         serverUserDAO = Server.userDataAccess;
         serverGameDAO = Server.gameDataAccess;
-
 
 
     }
@@ -68,8 +65,6 @@ public class GameServiceTests {
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game2"));
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game3"));
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game4"));
-
-
 
 
     }
@@ -157,7 +152,7 @@ public class GameServiceTests {
         serverGameService.createGame(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
 
         Assertions.assertThrows(BadRequestException.class, () -> serverGameService.joinGame(new
-                JoinGameRequest(existingUserRegisterResult.authToken(), "", 1)),
+                        JoinGameRequest(existingUserRegisterResult.authToken(), "", 1)),
                 "Empty team color should throw BadRequestException");
 
     }

@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AuthDataAccess;
-import dataaccess.DataAccessException;
 import dataaccess.UserDataAccess;
 import exception.ResponseException;
 import model.AuthData;
@@ -22,7 +21,7 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException{
+    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
@@ -53,7 +52,7 @@ public class UserService {
             throw new UnauthorizedException("User password does not match");
         }
 
-        AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(),  loginRequest.username()));
+        AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
         return new LoginResult(authData.username(), authData.authToken());
 
     }

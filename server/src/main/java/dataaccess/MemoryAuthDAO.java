@@ -2,7 +2,6 @@ package dataaccess;
 
 import exception.ResponseException;
 import model.AuthData;
-import model.GameData;
 import service.BadRequestException;
 
 import java.util.Collection;

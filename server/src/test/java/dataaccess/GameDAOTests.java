@@ -1,7 +1,6 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -59,7 +58,7 @@ public class GameDAOTests {
     public void addGameDataFailure() throws Exception {
         GameData gameData = new GameData(0, null, null, "", new ChessGame());
 
-        Assertions.assertThrows(BadRequestException.class,() -> serverGameDAO.addGameData(gameData));
+        Assertions.assertThrows(BadRequestException.class, () -> serverGameDAO.addGameData(gameData));
 
     }
 
@@ -79,7 +78,7 @@ public class GameDAOTests {
     @DisplayName("Add GameData Bad Request")
     public void getGameDataFailure() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class,() -> serverGameDAO.getGameData(-20));
+        Assertions.assertThrows(BadRequestException.class, () -> serverGameDAO.getGameData(-20));
 
     }
 
@@ -108,7 +107,7 @@ public class GameDAOTests {
 
 
         Assertions.assertThrows(BadRequestException.class, () -> serverGameDAO.updateGameData(new GameData(1, "player1", null,
-                "", newGame.game())),
+                        "", newGame.game())),
                 "Game whiteUsername should have been returned.");
     }
 
@@ -123,15 +122,10 @@ public class GameDAOTests {
         }
 
 
-
         Assertions.assertEquals(gameDataList.size(), serverGameDAO.listGameDatas().size(), "All game datas should " +
                 "have been returned."
-                );
+        );
     }
-
-
-
-
 
 
     @Test
@@ -148,9 +142,6 @@ public class GameDAOTests {
                 "have been returned."
         );
     }
-
-
-
 
 
 }

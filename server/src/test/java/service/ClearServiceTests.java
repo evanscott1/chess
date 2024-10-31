@@ -1,9 +1,8 @@
 package service;
 
-import chess.ChessGame;
-import dataaccess.*;
-import model.AuthData;
-import model.GameData;
+import dataaccess.AuthDataAccess;
+import dataaccess.GameDataAccess;
+import dataaccess.UserDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -44,8 +43,6 @@ public class ClearServiceTests {
         serverGameDAO = Server.gameDataAccess;
 
 
-
-
     }
 
     @BeforeEach
@@ -68,7 +65,6 @@ public class ClearServiceTests {
         registerRequestsList.add(new RegisterRequest("ExistingUser2", "existingUserPassword2", "eu2@mail.com"));
         registerRequestsList.add(new RegisterRequest("ExistingUser3", "existingUserPassword3", "eu3@mail.com"));
         registerRequestsList.add(new RegisterRequest("ExistingUser4", "existingUserPassword4", "eu4@mail.com"));
-
 
 
     }

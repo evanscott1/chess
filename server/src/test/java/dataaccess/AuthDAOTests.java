@@ -57,7 +57,7 @@ public class AuthDAOTests {
     public void addAuthDataFailure() throws Exception {
         AuthData authData = new AuthData("ACoolAuthToken", null);
 
-        Assertions.assertThrows(BadRequestException.class,() -> serverAuthDAO.addAuthData(authData));
+        Assertions.assertThrows(BadRequestException.class, () -> serverAuthDAO.addAuthData(authData));
 
     }
 
@@ -77,7 +77,7 @@ public class AuthDAOTests {
     @DisplayName("Add AuthData Bad Request")
     public void getAuthDataFailure() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class,() -> serverAuthDAO.getAuthData(""));
+        Assertions.assertThrows(BadRequestException.class, () -> serverAuthDAO.getAuthData(""));
 
     }
 
@@ -92,10 +92,9 @@ public class AuthDAOTests {
         }
 
 
-
         Assertions.assertIterableEquals(authDataList, serverAuthDAO.listAuthDatas(), "All auth datas should " +
                 "have been returned."
-                );
+        );
     }
 
 
@@ -115,7 +114,7 @@ public class AuthDAOTests {
     @Order(7)
     @DisplayName("User Logout not Logged In")
     public void deleteAuthDataFailure() throws Exception {
-        Assertions.assertThrows(BadRequestException.class,() -> serverAuthDAO.getAuthData(""));
+        Assertions.assertThrows(BadRequestException.class, () -> serverAuthDAO.getAuthData(""));
 
     }
 
@@ -133,9 +132,6 @@ public class AuthDAOTests {
                 "have been returned."
         );
     }
-
-
-
 
 
 }

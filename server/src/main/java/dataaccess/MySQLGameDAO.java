@@ -3,7 +3,6 @@ package dataaccess;
 
 import exception.ResponseException;
 import model.GameData;
-import model.UserData;
 import service.BadRequestException;
 
 import java.util.Collection;
@@ -57,7 +56,7 @@ public class MySQLGameDAO extends MySQLBaseDAO<GameData> implements GameDataAcce
 
     @Override
     protected String[] getCreateStatements() {
-        return new String[] {
+        return new String[]{
                 """
             CREATE TABLE IF NOT EXISTS  game (
                 `gameID` int NOT NULL AUTO_INCREMENT,

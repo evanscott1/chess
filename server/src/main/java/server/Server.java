@@ -3,26 +3,27 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
-import model.GameData;
 import service.ClearService;
+import service.GameService;
+import service.UserService;
 import service.clearservicerecords.ClearRequest;
 import service.clearservicerecords.ClearResult;
-import service.GameService;
 import service.gameservicerecords.*;
-import service.UserService;
 import service.userservicerecords.*;
-import spark.*;
+import spark.Request;
+import spark.Response;
+import spark.Spark;
 
 public class Server {
 
     //Change server access type here.
-//    public static UserDataAccess userDataAccess = new MySQLUserDAO();
-//    public static AuthDataAccess authDataAccess = new MySQLAuthDAO();
-//    public static GameDataAccess gameDataAccess = new MySQLGameDAO();
+    public static UserDataAccess userDataAccess = new MySQLUserDAO();
+    public static AuthDataAccess authDataAccess = new MySQLAuthDAO();
+    public static GameDataAccess gameDataAccess = new MySQLGameDAO();
 
-    public static UserDataAccess userDataAccess = new MemoryUserDAO();
-    public static AuthDataAccess authDataAccess = new MemoryAuthDAO();
-    public static GameDataAccess gameDataAccess = new MemoryGameDAO();
+//    public static UserDataAccess userDataAccess = new MemoryUserDAO();
+//    public static AuthDataAccess authDataAccess = new MemoryAuthDAO();
+//    public static GameDataAccess gameDataAccess = new MemoryGameDAO();
 
     public static UserService userService = new UserService(userDataAccess, authDataAccess);
     public static GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);

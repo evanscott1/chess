@@ -3,7 +3,6 @@ package dataaccess;
 
 import exception.ResponseException;
 import model.AuthData;
-import model.UserData;
 import service.BadRequestException;
 
 import java.util.Collection;
@@ -42,7 +41,9 @@ public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAcce
         }
 
         deleteT("authToken", authToken);
-    };
+    }
+
+    ;
 
     @Override
     public void deleteAllAuthDatas() throws ResponseException {
@@ -57,7 +58,7 @@ public class MySQLAuthDAO extends MySQLBaseDAO<AuthData> implements AuthDataAcce
 
     @Override
     protected String[] getCreateStatements() {
-        return new String[] {
+        return new String[]{
                 """
             CREATE TABLE IF NOT EXISTS  auth (
                 `authToken` char(36) NOT NULL,

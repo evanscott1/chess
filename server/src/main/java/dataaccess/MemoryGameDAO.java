@@ -5,7 +5,6 @@ import model.GameData;
 import service.BadRequestException;
 
 import java.util.Collection;
-import java.util.List;
 
 public class MemoryGameDAO extends MemoryBaseDAO<GameData> implements GameDataAccess {
     int nextGameId = 1;

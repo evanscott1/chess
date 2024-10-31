@@ -1,6 +1,5 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -60,7 +59,7 @@ public class UserDAOTests {
     public void addUserDataFailure() throws Exception {
         UserData authData = new UserData("", newUser.password(), newUser.email());
 
-        Assertions.assertThrows(BadRequestException.class,() -> serverUserDAO.addUserData(authData), "An empty" +
+        Assertions.assertThrows(BadRequestException.class, () -> serverUserDAO.addUserData(authData), "An empty" +
                 "UserData field should throw a Bad Request Exception");
 
     }
@@ -81,7 +80,7 @@ public class UserDAOTests {
     @DisplayName("Get UserData Bad Request")
     public void getUserDataFailure() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class,() -> serverUserDAO.getUserData(""));
+        Assertions.assertThrows(BadRequestException.class, () -> serverUserDAO.getUserData(""));
 
     }
 
@@ -96,12 +95,10 @@ public class UserDAOTests {
         }
 
 
-
         Assertions.assertIterableEquals(userDataList, serverUserDAO.listUserDatas(), "All auth datas should " +
                 "have been returned."
-                );
+        );
     }
-
 
 
     @Test
@@ -118,9 +115,6 @@ public class UserDAOTests {
                 "have been returned."
         );
     }
-
-
-
 
 
 }

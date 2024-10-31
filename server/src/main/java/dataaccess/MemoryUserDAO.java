@@ -1,7 +1,6 @@
 package dataaccess;
 
 import exception.ResponseException;
-import model.GameData;
 import model.UserData;
 import service.BadRequestException;
 

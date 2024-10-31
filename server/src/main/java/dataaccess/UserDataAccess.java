@@ -1,10 +1,8 @@
 package dataaccess;
 
 import exception.ResponseException;
-import model.GameData;
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.util.Collection;
 
 public interface UserDataAccess {
