@@ -1,8 +1,10 @@
 package dataaccess;
 
 
+import exception.ResponseException;
 import model.GameData;
 import model.UserData;
+import service.BadRequestException;
 
 import java.util.Collection;
 
@@ -10,30 +12,40 @@ import java.util.Collection;
 public class MySQLGameDAO extends MySQLBaseDAO<GameData> implements GameDataAccess {
 
     @Override
-    public GameData addGameData(GameData gameData) throws DataAccessException {
+    public GameData addGameData(GameData gameData) throws ResponseException {
+        if (gameData.gameName().isEmpty()) {
+            throw new BadRequestException("Game name cannot be empty.");
+        }
         int gameID = addT(gameData);
         GameData newGameData = gameData.setGameId(gameID);
         return updateGameData(newGameData);
     }
 
     @Override
-    public GameData getGameData(int gameID) throws DataAccessException {
+    public GameData getGameData(int gameID) throws ResponseException {
+        if (gameID < 1) {
+            throw new BadRequestException("GameID cannot be less than 1.");
+        }
         return getT("gameID", Integer.toString(gameID), GameData.class);
     }
 
     @Override
-    public GameData updateGameData(GameData gameData) throws DataAccessException {
+    public GameData updateGameData(GameData gameData) throws ResponseException {
+        if (gameData.gameName().isEmpty()) {
+            throw new BadRequestException("Game name cannot be empty.");
+        }
+
         updateT(gameData, "gameID", gameData.gameID());
         return gameData;
     }
 
     @Override
-    public Collection<GameData> listGameDatas() throws DataAccessException {
+    public Collection<GameData> listGameDatas() throws ResponseException {
         return listTs(GameData.class);
     }
 
     @Override
-    public void deleteAllGameDatas() throws DataAccessException {
+    public void deleteAllGameDatas() throws ResponseException {
         deleteAllTs();
     }
 

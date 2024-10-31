@@ -105,7 +105,7 @@ public class UserDAOTests {
 
 
     @Test
-    @Order(8)
+    @Order(6)
     @DisplayName("User Logout not Logged In")
     public void deleteUserDatasSuccess() throws Exception {
 
