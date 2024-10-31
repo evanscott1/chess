@@ -82,8 +82,8 @@ public class UserServiceTests {
         RegisterResult registerResult = serverUserService.register(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()));
 
 
-        Assertions.assertEquals(newUser.username(), serverAuthDAO.getAuthData(registerResult.authToken()).username(), "The registered user should have " +
-                "an authData");
+        Assertions.assertEquals(newUser.username(), serverAuthDAO.getAuthData(registerResult.authToken()).username(),
+                "The registered user should have an authData");
         Assertions.assertNotNull(serverAuthDAO.getAuthData(registerResult.authToken()), "The registered user should have an authToken");
 
     }
@@ -115,8 +115,8 @@ public class UserServiceTests {
     @DisplayName("User Logout not Logged In")
     public void logoutNotLoggedIn() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> serverUserService.logout(new LogoutRequest("NotTheAuthToken")), "Already logged out user " +
-                "should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverUserService.logout(new LogoutRequest("NotTheAuthToken")),
+                "Already logged out user should throw UnathorizedException");
     }
 
 }

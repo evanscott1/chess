@@ -59,7 +59,8 @@ public class GameServiceTests {
 
         existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-        existingUserRegisterResult = serverUserService.register(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email()));
+        existingUserRegisterResult = serverUserService.register(new RegisterRequest(existingUser.username(),
+                existingUser.password(), existingUser.email()));
         createGameRequestsList.clear();
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game2"));
@@ -75,9 +76,11 @@ public class GameServiceTests {
     @DisplayName("Normal Create Game")
     public void createGameSuccess() throws Exception {
 
-        CreateGameResult createGameResult = serverGameService.createGame(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
+        CreateGameResult createGameResult = serverGameService.createGame(
+                new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
 
-        Assertions.assertEquals(1, createGameResult.gameID(), "The newGame should have a GameData that matches the returned GameID");
+        Assertions.assertEquals(1, createGameResult.gameID(),
+                "The newGame should have a GameData that matches the returned GameID");
 
     }
 
@@ -86,7 +89,8 @@ public class GameServiceTests {
     @DisplayName("Create Game With Invalid Auth")
     public void createGameInvalidAuth() throws Exception {
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> serverGameService.createGame(new CreateGameRequest("NotTheAuth", "game1")),
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverGameService.createGame(
+                new CreateGameRequest("NotTheAuth", "game1")),
                 "Logged out user should throw UnathorizedException");
 
     }
@@ -96,7 +100,8 @@ public class GameServiceTests {
     @DisplayName("Create Game With Invalid Name")
     public void createGameInvalidName() throws Exception {
 
-        Assertions.assertThrows(BadRequestException.class, () -> serverGameService.createGame(new CreateGameRequest(existingUserRegisterResult.authToken(), "")),
+        Assertions.assertThrows(BadRequestException.class, () -> serverGameService.createGame(
+                new CreateGameRequest(existingUserRegisterResult.authToken(), "")),
                 "Empty game name should throw BadRequestException");
 
     }
@@ -109,11 +114,13 @@ public class GameServiceTests {
 
         serverGameService.createGame(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
 
-        JoinGameResult joinGameResult = serverGameService.joinGame(new JoinGameRequest(existingUserRegisterResult.authToken(), "WHITE", 1));
+        JoinGameResult joinGameResult = serverGameService.joinGame(new JoinGameRequest(existingUserRegisterResult.authToken(),
+                "WHITE", 1));
 
         GameData updatedGame = new GameData(1, existingUser.username(), null, "game1", new ChessGame());
 
-        Assertions.assertNotNull(serverGameDAO.getGameData(1).whiteUsername(), "The newGame should have a GameData that matches the returned GameID");
+        Assertions.assertNotNull(serverGameDAO.getGameData(1).whiteUsername(),
+                "The newGame should have a GameData that matches the returned GameID");
 
     }
 
@@ -125,7 +132,8 @@ public class GameServiceTests {
         serverGameService.createGame(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
 
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> serverGameService.joinGame(new JoinGameRequest("NotTheAuth", "WHITE",
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverGameService.joinGame(
+                new JoinGameRequest("NotTheAuth", "WHITE",
                 1)), "Logged out user should throw UnathorizedException");
 
     }
@@ -137,9 +145,11 @@ public class GameServiceTests {
 
         serverGameService.createGame(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
 
-        JoinGameResult joinGameResult = serverGameService.joinGame(new JoinGameRequest(existingUserRegisterResult.authToken(), "WHITE", 1));
+        JoinGameResult joinGameResult = serverGameService.joinGame(
+                new JoinGameRequest(existingUserRegisterResult.authToken(), "WHITE", 1));
 
-        Assertions.assertThrows(ForbiddenException.class, () -> serverGameService.joinGame(new JoinGameRequest(existingUserRegisterResult.authToken(), "WHITE",
+        Assertions.assertThrows(ForbiddenException.class, () -> serverGameService.joinGame(
+                new JoinGameRequest(existingUserRegisterResult.authToken(), "WHITE",
                 1)), "Claimed color should throw ForbiddenException");
 
     }
@@ -184,8 +194,8 @@ public class GameServiceTests {
         ListGamesResult listGamesResult = serverGameService.listGames(new ListGamesRequest(existingUserRegisterResult.authToken()));
 
 
-        Assertions.assertEquals(createGameRequestsList.size(), listGamesResult.games().size(), "The listGamesResult should have the same" +
-                " values as the updatedGamesTable");
+        Assertions.assertEquals(createGameRequestsList.size(), listGamesResult.games().size(),
+                "The listGamesResult should have the same values as the updatedGamesTable");
 
     }
 
@@ -198,8 +208,8 @@ public class GameServiceTests {
             serverGameService.createGame(createGameRequest);
         }
 
-        Assertions.assertThrows(UnauthorizedException.class, () -> serverGameService.listGames(new ListGamesRequest("NotTheAuth")), "Logged out user " +
-                "should throw UnathorizedException");
+        Assertions.assertThrows(UnauthorizedException.class, () -> serverGameService.listGames(
+                new ListGamesRequest("NotTheAuth")), "Logged out user should throw UnathorizedException");
 
     }
 }

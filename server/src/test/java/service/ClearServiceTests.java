@@ -54,7 +54,8 @@ public class ClearServiceTests {
 
         existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-        existingUserRegisterResult = serverUserService.register(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email()));
+        existingUserRegisterResult = serverUserService.register(new RegisterRequest(existingUser.username(),
+                existingUser.password(), existingUser.email()));
 
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
         createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game2"));
