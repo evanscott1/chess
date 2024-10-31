@@ -25,14 +25,14 @@ public class UserServiceTests {
 
     @BeforeAll
     public static void initUser() {
-
+        serverUserService = Server.userService;
+        serverAuthDAO = Server.authDataAccess;
+        serverUserDAO = Server.userDataAccess;
 
         existingUser = new UserData("ExistingUser", "YouCannotDefeatMyWisdomCodeChecker", "eu@mail.com");
 
         newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-        serverUserService = Server.userService;
-        serverAuthDAO = Server.authDataAccess;
-        serverUserDAO = Server.userDataAccess;
+
 
     }
 

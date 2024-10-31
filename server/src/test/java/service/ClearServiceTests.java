@@ -1,83 +1,75 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import server.Server;
 import service.clearservicerecords.ClearRequest;
+import service.gameservicerecords.CreateGameRequest;
+import service.userservicerecords.RegisterRequest;
+import service.userservicerecords.RegisterResult;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClearServiceTests {
 
+    private static AuthDataAccess serverAuthDAO;
+    private static UserDataAccess serverUserDAO;
+    private static GameDataAccess serverGameDAO;
+    private static ClearService serverClearService;
+    private static GameService serverGameService;
+    private static UserService serverUserService;
+
+    private static Collection<RegisterRequest> registerRequestsList = new ArrayList<>();
+    private static Collection<CreateGameRequest> createGameRequestsList = new ArrayList<>();
+
     private static UserData existingUser;
 
-    private static UserData newUser;
-
-    private static AuthData existingAuth;
-
-    private static GameData existingGame;
-
-    private static GameData existingGameWhiteTeam;
-
-    private static GameData newGame;
-
-    MemoryUserDAO userTable;
-
-    MemoryAuthDAO authTable;
-
-    MemoryGameDAO gameTable;
-
-    MemoryGameDAO updatedGamesTable;
-
-    UserService userService;
-
-    GameService gameService;
-
-    ClearService clearService;
-
-
-    @AfterAll
+    private static RegisterResult existingUserRegisterResult;
 
     @BeforeAll
     public static void initClear() {
 
-        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.co");
+        serverClearService = Server.clearService;
+        serverUserService = Server.userService;
+        serverGameService = Server.gameService;
+        serverAuthDAO = Server.authDataAccess;
+        serverUserDAO = Server.userDataAccess;
+        serverGameDAO = Server.gameDataAccess;
 
-        newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
 
-        existingAuth = new AuthData("existingAuth", "ExistingUser");
 
-        existingGame = new GameData(1, null, null, "existingGame", new ChessGame());
 
-        existingGameWhiteTeam = new GameData(2, existingUser.username(), null, "existingGameWhiteTeam", new ChessGame());
-
-        newGame = new GameData(3, null, null, "newGame", new ChessGame());
     }
 
     @BeforeEach
     public void setup() throws Exception {
-        userTable = new MemoryUserDAO();
-        authTable = new MemoryAuthDAO();
-        gameTable = new MemoryGameDAO();
 
-        userService = new UserService(userTable, authTable);
-        gameService = new GameService(userTable, authTable, gameTable);
-        clearService = new ClearService(userTable, authTable, gameTable);
+        serverGameDAO.deleteAllGameDatas();
+        serverUserDAO.deleteAllUserDatas();
+        serverAuthDAO.deleteAllAuthDatas();
 
-        userTable.addUserData(existingUser);
-        userTable.addUserData(newUser);
+        existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
 
-        authTable.addAuthData(existingAuth);
-        authTable.addAuthData(new AuthData("newAuthData", newUser.username()));
+        existingUserRegisterResult = serverUserService.register(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email()));
 
-        gameTable.addGameData(existingGame);
-        gameTable.addGameData(existingGameWhiteTeam);
-        gameTable.addGameData(newGame);
+        createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game1"));
+        createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game2"));
+        createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game3"));
+        createGameRequestsList.add(new CreateGameRequest(existingUserRegisterResult.authToken(), "game4"));
+
+        registerRequestsList.add(new RegisterRequest("ExistingUser1", "existingUserPassword1", "eu1@mail.com"));
+        registerRequestsList.add(new RegisterRequest("ExistingUser2", "existingUserPassword2", "eu2@mail.com"));
+        registerRequestsList.add(new RegisterRequest("ExistingUser3", "existingUserPassword3", "eu3@mail.com"));
+        registerRequestsList.add(new RegisterRequest("ExistingUser4", "existingUserPassword4", "eu4@mail.com"));
+
+
 
     }
 
@@ -85,11 +77,21 @@ public class ClearServiceTests {
     @Order(1)
     @DisplayName("Clear Database")
     public void clearSuccess() throws Exception {
-        clearService.clear(new ClearRequest());
 
-        Assertions.assertEquals(0, authTable.listAuthDatas().size(), "The gameTable should be empty");
-        Assertions.assertEquals(0, gameTable.listGameDatas().size(), "The gameTable should be empty");
-        Assertions.assertEquals(0, userTable.listUserDatas().size(), "The gameTable should be empty");
+        for (RegisterRequest registerRequest : registerRequestsList) {
+            serverUserService.register(registerRequest);
+        }
+
+        for (CreateGameRequest createGameRequest : createGameRequestsList) {
+            serverGameService.createGame(createGameRequest);
+        }
+
+
+        serverClearService.clear(new ClearRequest());
+
+        Assertions.assertEquals(0, serverAuthDAO.listAuthDatas().size(), "The gameTable should be empty");
+        Assertions.assertEquals(0, serverGameDAO.listGameDatas().size(), "The gameTable should be empty");
+        Assertions.assertEquals(0, serverUserDAO.listUserDatas().size(), "The gameTable should be empty");
     }
 
 }
