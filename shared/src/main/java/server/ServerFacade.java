@@ -2,8 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import userservicerecords.RegisterRequest;
-import userservicerecords.RegisterResult;
+import gameservicerecords.*;
+import userservicerecords.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +23,34 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         var path = "/user";
-        return makeRequest("POST", path, request, RegisterResult.class)
+        return makeRequest("POST", path, request, RegisterResult.class);
     }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return makeRequest("POST", path, request, LoginResult.class);
+    }
+
+    public LogoutResult logout(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return makeRequest("DELETE", path, request, LogoutResult.class);
+    }
+
+    public ListGamesResult listGames(ListGamesRequest request) throws ResponseException {
+        var path = "/game";
+        return makeRequest("GET", path, request, ListGamesResult.class);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+        var path = "/game";
+        return makeRequest("POST", path, request, CreateGameResult.class);
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+        var path = "/game";
+        return makeRequest("PUT", path, request, JoinGameResult.class);
+    }
+
 
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
