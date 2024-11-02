@@ -6,7 +6,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import service.userservicerecords.*;
+import userservicerecords.*;
 
 import java.util.UUID;
 

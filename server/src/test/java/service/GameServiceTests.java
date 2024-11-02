@@ -4,14 +4,14 @@ import chess.ChessGame;
 import dataaccess.AuthDataAccess;
 import dataaccess.GameDataAccess;
 import dataaccess.UserDataAccess;
+import gameservicerecords.*;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.gameservicerecords.*;
-import service.userservicerecords.LoginResult;
-import service.userservicerecords.RegisterRequest;
-import service.userservicerecords.RegisterResult;
+import userservicerecords.LoginResult;
+import userservicerecords.RegisterRequest;
+import userservicerecords.RegisterResult;
 
 import java.util.ArrayList;
 import java.util.Collection;

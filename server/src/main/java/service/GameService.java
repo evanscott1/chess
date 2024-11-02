@@ -6,9 +6,9 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import dataaccess.UserDataAccess;
 import exception.ResponseException;
+import gameservicerecords.*;
 import model.AuthData;
 import model.GameData;
-import service.gameservicerecords.*;
 
 public class GameService {
 

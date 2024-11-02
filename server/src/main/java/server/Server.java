@@ -3,16 +3,16 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
+import gameservicerecords.*;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
-import service.clearservicerecords.ClearRequest;
-import service.clearservicerecords.ClearResult;
-import service.gameservicerecords.*;
-import service.userservicerecords.*;
+import clearservicerecords.ClearRequest;
+import clearservicerecords.ClearResult;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
+import userservicerecords.*;
 
 public class Server {
 

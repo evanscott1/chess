@@ -5,7 +5,7 @@ import dataaccess.UserDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.userservicerecords.*;
+import userservicerecords.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
