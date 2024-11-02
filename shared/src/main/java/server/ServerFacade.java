@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -60,6 +61,8 @@ public class ServerFacade {
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+            setAuthTokenHeader(request, http);
+
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -69,15 +72,42 @@ public class ServerFacade {
         }
     }
 
+    private static void setAuthTokenHeader(Object request, HttpURLConnection http) throws IllegalAccessException {
+        try {
+            Field authTokenField = request.getClass().getDeclaredField("authToken");
+            authTokenField.setAccessible(true);
+            String authToken = (String) authTokenField.get(request);
+            if (authToken != null) {
+                http.setRequestProperty("Authorization", authToken);
+            }
+        } catch (NoSuchFieldException e) {
+
+        }
+    }
+
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
+
+            Object sanitizedAuthRequest = removeAuthToken(request);
+
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
+            String reqData = new Gson().toJson(sanitizedAuthRequest);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
         }
+    }
+
+    private static Object removeAuthToken(Object request) {
+        try {
+            Field authTokenField = request.getClass().getDeclaredField("authToken");
+            authTokenField.setAccessible(true);
+            authTokenField.set(request, null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+
+        }
+        return request;
     }
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
