@@ -1,39 +1,36 @@
 package client;
 
+import exception.ResponseException;
+import userservicerecords.LoginRequest;
+import userservicerecords.LoginResult;
+import userservicerecords.RegisterRequest;
+import userservicerecords.RegisterResult;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
 public class ReplClient {
 
-    private final ChessClient client;
-
-    public ReplClient(String serverUrl) {
-        client = new ChessClient(serverUrl);
-    }
-
-    public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to chess. Log in to start.");
-        System.out.print(client.help());
-
-        Scanner scanner = new Scanner(System.in);
-        var result = "";
-        while (!result.equals("quit")) {
-            printPrompt();
-            String line = scanner.nextLine();
-
-            try {
-                result = client.eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
-            } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(msg);
-            }
+    public String register(String... params) throws ResponseException {
+        if (params.length == 3) {
+            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+            RegisterResult result = server.register(request);
+            state = State.LOGGEDIN;
+            authToken = result.authToken();
+            return String.format("You signed in as %s.", result.username());
         }
-        System.out.println();
+        throw new ResponseException(400, "Expected: register <username> <password> <email>");
     }
 
-    private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_BOLD_FAINT + ">>> " + SET_TEXT_COLOR_GREEN);
+    public String login(String... params) throws ResponseException {
+        if (params.length == 2) {
+            LoginRequest request = new LoginRequest(params[0], params[1]);
+            LoginResult result = server.login(request);
+            state = State.LOGGEDIN;
+            authToken = result.authToken();
+            return String.format("You signed in as %s.", result);
+        }
+        throw new ResponseException(400, "Expected: login <username> <password>");
     }
 }
