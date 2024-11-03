@@ -6,10 +6,10 @@ import dataaccess.UserDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.clearservicerecords.ClearRequest;
-import service.gameservicerecords.CreateGameRequest;
-import service.userservicerecords.RegisterRequest;
-import service.userservicerecords.RegisterResult;
+import clearservicerecords.ClearRequest;
+import gameservicerecords.CreateGameRequest;
+import userservicerecords.RegisterRequest;
+import userservicerecords.RegisterResult;
 
 import java.util.ArrayList;
 import java.util.Collection;

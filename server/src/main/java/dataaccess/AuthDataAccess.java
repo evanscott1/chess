@@ -10,7 +10,6 @@ public interface AuthDataAccess {
 
     AuthData getAuthData(String authToken) throws ResponseException;
 
-
     Collection<AuthData> listAuthDatas() throws ResponseException;
 
     void deleteAuthData(String authToken) throws ResponseException;
