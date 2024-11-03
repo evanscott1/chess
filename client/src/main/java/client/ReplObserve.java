@@ -8,9 +8,8 @@ public class ReplObserve {
     private ServerFacade server;
     private String authToken;
 
-    public ReplObserve(ServerFacade server, String authToken) throws ResponseException {
+    public ReplObserve(ServerFacade server) throws ResponseException {
         this.server = server;
-        this.authToken = authToken;
     }
 
     public ReplResponse evalObserveMenu(String cmd, String... params) throws ResponseException {
@@ -20,6 +19,10 @@ public class ReplObserve {
             case "quit" -> quitGame();
             default -> help();
         };
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     private ReplResponse leaveGame() {

@@ -14,12 +14,23 @@ public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.LOGGEDOUT;
+    private ReplLogin replLogin;
+    private ReplPlay replPlay;
+    private ReplObserve replObserve;
 
     private String authToken = null;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        try {
+            replLogin = new ReplLogin(this.server);
+            replPlay = new ReplPlay(this.server);
+            replObserve = new ReplObserve(this.server);
+        } catch (ResponseException e) {
+
+        }
+
     }
 
     public String eval(String input) {
@@ -31,7 +42,6 @@ public class ChessClient {
             if(state == State.LOGGEDOUT) {
                 return evalLoggedOutMenu(cmd, params);
             } else if (state == State.LOGGEDIN) {
-                ReplLogin replLogin = new ReplLogin(server, authToken);
                 return processReplResponse(replLogin.evalLoggedInMenu(cmd, params));
             } else if (state == State.INPLAY) {
                 ReplPlay replPlay = new ReplPlay(server, authToken);
@@ -68,6 +78,7 @@ public class ChessClient {
             RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
             RegisterResult result = server.register(request);
             state = State.LOGGEDIN;
+            replLogin.setAuthToken(result.authToken());
             authToken = result.authToken();
             return String.format("You signed in as %s.", result.username());
         }
@@ -79,6 +90,7 @@ public class ChessClient {
             LoginRequest request = new LoginRequest(params[0], params[1]);
             LoginResult result = server.login(request);
             state = State.LOGGEDIN;
+            replLogin.setAuthToken(result.authToken());
             authToken = result.authToken();
             return String.format("You signed in as %s.", result);
         }

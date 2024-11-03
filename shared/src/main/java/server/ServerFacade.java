@@ -59,11 +59,14 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
 
             setAuthTokenHeader(request, http);
 
-            writeBody(request, http);
+            if (!method.equals("GET")) {
+                http.setDoOutput(true);
+                writeBody(request, http);
+            }
+
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

@@ -16,16 +16,15 @@ public class ReplLogin {
     private HashMap<Integer, Integer> gamesList = new HashMap<>();
     private int nextGameListID = 1;
 
-    public ReplLogin(ServerFacade server, String authToken) throws ResponseException {
+    public ReplLogin(ServerFacade server) throws ResponseException {
         this.server = server;
-        this.authToken = authToken;
     }
 
     public ReplResponse evalLoggedInMenu(String cmd, String... params) throws ResponseException {
         return switch (cmd) {
             case "create" -> create(params);
             case "list" -> listGames();
-            case "join" -> joinGame();
+            case "join" -> joinGame(params);
             case "observe" -> observeGame(params);
             case "logout" -> logout();
             case "quit" -> quitGame();
@@ -33,11 +32,15 @@ public class ReplLogin {
         };
     }
 
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
     private ReplResponse create(String... params) throws ResponseException {
         if (params.length == 1) {
             CreateGameRequest request = new CreateGameRequest(authToken, params[0]);
             CreateGameResult result = server.createGame(request);
-            return new ReplResponse(State.LOGGEDIN, String.format("Created game. ID: %s.", result.gameID()));
+            return new ReplResponse(State.LOGGEDIN, String.format("Created game. Name: %s.", params[0]));
         }
         throw new ResponseException(400, "Expected: create <NAME>");
     }

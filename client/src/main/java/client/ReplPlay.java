@@ -8,9 +8,8 @@ public class ReplPlay {
     private ServerFacade server;
     private String authToken = null;
 
-    public ReplPlay(ServerFacade server, String authToken) throws ResponseException {
+    public ReplPlay(ServerFacade server) throws ResponseException {
         this.server = server;
-        this.authToken = authToken;
     }
 
     public ReplResponse evalInPlayMenu(String cmd, String... params) throws ResponseException {
@@ -20,6 +19,10 @@ public class ReplPlay {
             case "quit" -> quitGame();
             default -> help();
         };
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     private ReplResponse makeMove(String... params) throws ResponseException {
