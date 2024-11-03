@@ -30,7 +30,6 @@ public class ChessClient {
         } catch (ResponseException e) {
 
         }
-
     }
 
     public String eval(String input) {
@@ -44,10 +43,8 @@ public class ChessClient {
             } else if (state == State.LOGGEDIN) {
                 return processReplResponse(replLogin.evalLoggedInMenu(cmd, params));
             } else if (state == State.INPLAY) {
-                ReplPlay replPlay = new ReplPlay(server, authToken);
                 return processReplResponse(replPlay.evalInPlayMenu(cmd, params));
             } else if (state == State.OBSERVATION) {
-                ReplObserve replObserve = new ReplObserve(server, authToken);
                 return processReplResponse(replObserve.evalObserveMenu(cmd, params));
             } else {
                 assert false;
@@ -79,6 +76,8 @@ public class ChessClient {
             RegisterResult result = server.register(request);
             state = State.LOGGEDIN;
             replLogin.setAuthToken(result.authToken());
+            replPlay.setAuthToken(result.authToken());
+            replObserve.setAuthToken(result.authToken());
             authToken = result.authToken();
             return String.format("You signed in as %s.", result.username());
         }
@@ -91,12 +90,13 @@ public class ChessClient {
             LoginResult result = server.login(request);
             state = State.LOGGEDIN;
             replLogin.setAuthToken(result.authToken());
+            replPlay.setAuthToken(result.authToken());
+            replObserve.setAuthToken(result.authToken());
             authToken = result.authToken();
             return String.format("You signed in as %s.", result);
         }
         throw new ResponseException(400, "Expected: login <username> <password>");
     }
-
 
     public String help() {
             return """

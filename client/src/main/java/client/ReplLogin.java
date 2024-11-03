@@ -63,7 +63,7 @@ public class ReplLogin {
         if (params.length == 2) {
             int listID = Integer.parseInt(params[0]);
             if (gamesList.containsKey(listID)) {
-                JoinGameRequest request = new JoinGameRequest(authToken, params[1], gamesList.get(listID));
+                JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
                 JoinGameResult result = server.joinGame(request);
                 return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
             }
