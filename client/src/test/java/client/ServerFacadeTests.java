@@ -9,6 +9,7 @@ import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
+import ui.ChessBoardMaker;
 import userservicerecords.*;
 
 import java.util.ArrayList;
@@ -154,6 +155,15 @@ public class ServerFacadeTests {
         RegisterResult result = facade.register(new RegisterRequest("player1", "password", "p1@email.com"));
         CreateGameResult gameResult = facade.createGame(new CreateGameRequest(result.authToken(), "game1"));
         Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(new JoinGameRequest(result.authToken(), "WHITE", 2)));
+    }
+
+    @Test
+    void makeChessBoardTest() throws ResponseException{
+        ListGamesResult gamesResult = facade.listGames(new ListGamesRequest("f9be96ce-effc-4d26-b7f2-f1332f543895"));
+        GameData gameData = new ArrayList<>(gamesResult.games()).getFirst();
+        ChessBoardMaker.boardMaker(gameData);
+
+
     }
 
 }

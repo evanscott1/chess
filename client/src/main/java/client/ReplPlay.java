@@ -2,6 +2,7 @@ package client;
 
 import exception.ResponseException;
 import server.ServerFacade;
+import ui.ChessBoardMaker;
 
 public class ReplPlay {
 
@@ -26,6 +27,7 @@ public class ReplPlay {
     }
 
     private ReplResponse makeMove(String... params) throws ResponseException {
+//        ChessBoardMaker.main(new String[] {""});
         return new ReplResponse(State.INPLAY, "Not available.");
     }
 

@@ -4,9 +4,11 @@ import exception.ResponseException;
 import gameservicerecords.*;
 import model.GameData;
 import server.ServerFacade;
+import ui.ChessBoardMaker;
 import userservicerecords.LogoutRequest;
 import userservicerecords.LogoutResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ReplLogin {
@@ -65,6 +67,7 @@ public class ReplLogin {
             if (gamesList.containsKey(listID)) {
                 JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
                 JoinGameResult result = server.joinGame(request);
+//                outputChessBoard(listID);
                 return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
             }
             throw new ResponseException(400, "Not a valid ID.");
@@ -76,6 +79,7 @@ public class ReplLogin {
         if (params.length == 1) {
             int listID = Integer.parseInt(params[0]);
             if (gamesList.containsKey(listID)) {
+//                ChessBoardMaker.main(new String[] {""});
                 return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
             }
             throw new ResponseException(400, "Not a valid ID.");
@@ -100,11 +104,17 @@ public class ReplLogin {
                     - create <NAME> - a game
                     - list - games
                     - join <ID> [WHITE|BLACK]
-                    - observer <ID> - a game
+                    - observe <ID> - a game
                     - logout - when you are done
                     - quit - playing chess
                     - help - with possible commands
                     """);
+    }
+
+    private  void outputChessBoard(int listID) throws ResponseException{
+        ListGamesResult gamesListResult = server.listGames(new ListGamesRequest(authToken));
+        GameData gameData = new ArrayList<>(gamesListResult.games()).get(listID - 1);
+//        ChessBoardMaker.main(gameData);
     }
 
 }
