@@ -28,7 +28,7 @@ public class ChessClient {
             replPlay = new ReplPlay(this.server);
             replObserve = new ReplObserve(this.server);
         } catch (ResponseException e) {
-
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -39,13 +39,13 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
             if(state == State.LOGGEDOUT) {
-                return evalLoggedOutMenu(cmd, params);
+                return evalMenu(cmd, params);
             } else if (state == State.LOGGEDIN) {
-                return processReplResponse(replLogin.evalLoggedInMenu(cmd, params));
+                return processReplResponse(replLogin.evalMenu(cmd, params));
             } else if (state == State.INPLAY) {
-                return processReplResponse(replPlay.evalInPlayMenu(cmd, params));
+                return processReplResponse(replPlay.evalMenu(cmd, params));
             } else if (state == State.OBSERVATION) {
-                return processReplResponse(replObserve.evalObserveMenu(cmd, params));
+                return processReplResponse(replObserve.evalMenu(cmd, params));
             } else {
                 assert false;
                 return null;
@@ -61,7 +61,7 @@ public class ChessClient {
         return response.message();
     }
 
-    private String evalLoggedOutMenu(String cmd, String... params) throws ResponseException{
+    private String evalMenu(String cmd, String... params) throws ResponseException{
         return switch (cmd) {
             case "register" -> register(params);
             case "login" -> login(params);

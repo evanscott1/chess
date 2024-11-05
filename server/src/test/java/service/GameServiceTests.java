@@ -36,7 +36,7 @@ public class GameServiceTests {
 
     LoginResult loginResult;
 
-    @AfterAll
+
 
     @BeforeAll
     public static void initGame() {

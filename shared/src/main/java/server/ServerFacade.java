@@ -1,5 +1,7 @@
 package server;
 
+import clearservicerecords.ClearRequest;
+import clearservicerecords.ClearResult;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import gameservicerecords.*;
@@ -50,6 +52,11 @@ public class ServerFacade {
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
         var path = "/game";
         return makeRequest("PUT", path, request, JoinGameResult.class);
+    }
+
+    public ClearResult clearDB(ClearRequest request) throws ResponseException {
+        var path = "/db";
+        return makeRequest("DELETE", path, request, ClearResult.class);
     }
 
 
