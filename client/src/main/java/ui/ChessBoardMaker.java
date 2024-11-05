@@ -127,7 +127,9 @@ public class ChessBoardMaker {
 
             }
 
-
+            /*
+            Row: Part 3
+             */
             setBorder(out);
             printSquare(out, Integer.toString(i));
             printNewLine(out);
@@ -140,8 +142,6 @@ public class ChessBoardMaker {
                 setDarkBackground(out);
                 startSquareType = SquareType.LIGHT;
             }
-
-
 
         }
     }

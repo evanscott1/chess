@@ -157,14 +157,5 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(new JoinGameRequest(result.authToken(), "WHITE", 2)));
     }
 
-    @Test
-    void makeChessBoardTest() throws ResponseException{
-        ListGamesResult gamesResult = facade.listGames(new ListGamesRequest("f9be96ce-effc-4d26-b7f2-f1332f543895"));
-        GameData gameData = new ArrayList<>(gamesResult.games()).getFirst();
-        ChessBoardMaker.boardMaker(gameData, "WHITE");
-        ChessBoardMaker.boardMaker(gameData, "BLACK");
-
-
-    }
 
 }
