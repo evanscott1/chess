@@ -12,7 +12,7 @@ public class ReplObserve {
         this.server = server;
     }
 
-    public ReplResponse evalObserveMenu(String cmd, String... params) throws ResponseException {
+    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
 
         return switch (cmd) {
             case "leave" -> leaveGame();

@@ -22,7 +22,7 @@ public class ReplLogin {
         this.server = server;
     }
 
-    public ReplResponse evalLoggedInMenu(String cmd, String... params) throws ResponseException {
+    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
         return switch (cmd) {
             case "create" -> create(params);
             case "list" -> listGames();
@@ -67,7 +67,7 @@ public class ReplLogin {
             if (gamesList.containsKey(listID)) {
                 JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
                 JoinGameResult result = server.joinGame(request);
-//                outputChessBoard(listID);
+                outputChessBoard(listID, params[1].toUpperCase());
                 return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
             }
             throw new ResponseException(400, "Not a valid ID.");
@@ -79,7 +79,7 @@ public class ReplLogin {
         if (params.length == 1) {
             int listID = Integer.parseInt(params[0]);
             if (gamesList.containsKey(listID)) {
-//                ChessBoardMaker.main(new String[] {""});
+                outputChessBoard(listID, "WHITE");
                 return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
             }
             throw new ResponseException(400, "Not a valid ID.");
@@ -111,10 +111,10 @@ public class ReplLogin {
                     """);
     }
 
-    private  void outputChessBoard(int listID) throws ResponseException{
+    private void outputChessBoard(int listID, String teamColor) throws ResponseException{
         ListGamesResult gamesListResult = server.listGames(new ListGamesRequest(authToken));
         GameData gameData = new ArrayList<>(gamesListResult.games()).get(listID - 1);
-//        ChessBoardMaker.main(gameData);
+        ChessBoardMaker.boardMaker(gameData, teamColor);
     }
 
 }

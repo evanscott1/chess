@@ -8,12 +8,13 @@ public class ReplPlay {
 
     private ServerFacade server;
     private String authToken = null;
+    private int gameID = 0;
 
     public ReplPlay(ServerFacade server) throws ResponseException {
         this.server = server;
     }
 
-    public ReplResponse evalInPlayMenu(String cmd, String... params) throws ResponseException {
+    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
         return switch (cmd) {
             case "move" -> makeMove(params);
             case "leave" -> leaveGame();
@@ -22,12 +23,17 @@ public class ReplPlay {
         };
     }
 
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 
     private ReplResponse makeMove(String... params) throws ResponseException {
-//        ChessBoardMaker.main(new String[] {""});
+
+
         return new ReplResponse(State.INPLAY, "Not available.");
     }
 

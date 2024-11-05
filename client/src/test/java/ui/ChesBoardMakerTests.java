@@ -47,7 +47,8 @@ public class ChesBoardMakerTests {
     void makeChessBoardTest() throws ResponseException{
         ListGamesResult gamesResult = facade.listGames(new ListGamesRequest("e4d5b410-8e54-429c-8768-077e54619135"));
         GameData gameData = new ArrayList<>(gamesResult.games()).getFirst();
-        ChessBoardMaker.boardMaker(gameData);
+        ChessBoardMaker.boardMaker(gameData, "WHITE");
+        ChessBoardMaker.boardMaker(gameData, "BLACK");
 
 
     }

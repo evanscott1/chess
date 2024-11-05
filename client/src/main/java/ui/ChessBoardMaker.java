@@ -10,8 +10,11 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static ui.EscapeSequences.*;
 
 public class ChessBoardMaker {
@@ -19,22 +22,19 @@ public class ChessBoardMaker {
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 10;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
-    private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
 
     // Padded characters.
     private static final String EMPTY = "   ";
-    private static final String X = " X ";
-    private static final String O = " O ";
 
-    private static Random rand = new Random();
     private static SquareType startSquareType;
 
 //    private static final GameData gameData = null;
 
 
-    public static void boardMaker(GameData gameData) {
+    public static void boardMaker(GameData gameData, String teamColor) {
         ChessBoard board = gameData.game().getBoard();
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        boolean isWhite = Objects.equals(teamColor, "WHITE");
 
         ArrayList<String> squareCharacters = new ArrayList<>();
         out.print(ERASE_SCREEN);
@@ -42,33 +42,60 @@ public class ChessBoardMaker {
 
         ArrayList<String> headers = new ArrayList<>(List.of(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
 
-//        squareCharacters.addAll(headers);
 
         /*
         Header
          */
-        printHeader(out, headers);
+        printHeader(out, headers, isWhite);
 
-
+        /*
+        Body
+         */
         startSquareType = SquareType.LIGHT;
 
-        for (int i = BOARD_SIZE_IN_SQUARES - 2; i > 0; i--) {
-//            squareCharacters.add(Integer.toString(i));
+        printBody(out, board, isWhite);
+
+
+        /*
+        Footer
+         */
+        printHeader(out, headers, isWhite);
+
+
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
+        out.println();
+        out.println();
+    }
+
+    private static void printBody(PrintStream out, ChessBoard board, boolean isWhite) {
+
+        SquareType squareType;
+
+        int startRow = isWhite ? board.getBoardWidth() : 1;
+        int endRow = isWhite ? 0 : board.getBoardWidth() + 1;
+        int stepRow = isWhite ? -1 : 1;
+
+        int startCol = isWhite ? 1 : board.getBoardWidth();
+        int endCol = isWhite ? board.getBoardWidth() + 1:  0;
+        int stepCol = isWhite ? 1 : -1;
+
+        for (int i = startRow; i != endRow; i += stepRow) {
 
             /*
-            Row: First line
+            Row: Part 1
              */
             printBoardLine(out, startSquareType);
 
             /*
-            Row: Second line
+            Row: Part 2
              */
-            SquareType squareType = startSquareType;
+            squareType = startSquareType;
 
             setBorder(out);
             printSquare(out, Integer.toString(i));
 
-            for (int j = BOARD_SIZE_IN_SQUARES - 2; j > 0; j--) {
+            for (int j = startCol; j != endCol; j += stepCol) {
                 String character;
                 ChessPiece piece = board.getPiece(new ChessPosition(i, j));
                 if (squareType == SquareType.LIGHT) {
@@ -80,7 +107,6 @@ public class ChessBoardMaker {
                 }
 
 
-
                 if (piece == null) {
                     character = " ";
                     printSquare(out, character);
@@ -90,21 +116,22 @@ public class ChessBoardMaker {
                     } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                         setDarkTeam(out);
                     }
-                    character = String.valueOf(piece.getPieceType().name().charAt(0));
+                    if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                        character = "N";
+                    } else {
+                        character = String.valueOf(piece.getPieceType().name().charAt(0));
+                    }
                     printSquare(out, character);
                 }
 
-//                squareCharacters.add(character);
+
             }
 
-//            squareCharacters.add(Integer.toString(i));
+
             setBorder(out);
             printSquare(out, Integer.toString(i));
             printNewLine(out);
 
-            /*
-            Row: Third line
-             */
             printBoardLine(out, startSquareType);
             if (startSquareType == SquareType.LIGHT) {
                 setLightBackground(out);
@@ -115,22 +142,8 @@ public class ChessBoardMaker {
             }
 
 
+
         }
-
-
-        /*
-        Footer
-         */
-        printHeader(out, headers);
-
-
-//        squareCharacters.addAll(headers);
-
-
-
-
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
     }
 
 
@@ -172,11 +185,16 @@ public class ChessBoardMaker {
         printNewLine(out);
     }
 
-    private static void printHeader(PrintStream out, ArrayList<String> headers) {
+    private static void printHeader(PrintStream out, ArrayList<String> headers, boolean isWhite) {
+        int start = isWhite ? 0 : headers.size() - 1;
+        int end = isWhite ? headers.size() : -1;
+        int step = isWhite ? 1 : -1;
+
+
         printHeaderEmptyLine(out);
         setBorder(out);
-        for (String header : headers) {
-            printSquare(out, header);
+        for (int i = start; i != end; i += step) {
+            printSquare(out, headers.get(i));
         }
         printNewLine(out);
         printHeaderEmptyLine(out);

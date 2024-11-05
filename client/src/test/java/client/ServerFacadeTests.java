@@ -161,7 +161,8 @@ public class ServerFacadeTests {
     void makeChessBoardTest() throws ResponseException{
         ListGamesResult gamesResult = facade.listGames(new ListGamesRequest("f9be96ce-effc-4d26-b7f2-f1332f543895"));
         GameData gameData = new ArrayList<>(gamesResult.games()).getFirst();
-        ChessBoardMaker.boardMaker(gameData);
+        ChessBoardMaker.boardMaker(gameData, "WHITE");
+        ChessBoardMaker.boardMaker(gameData, "BLACK");
 
 
     }
