@@ -2,7 +2,7 @@ package dataaccess;
 
 import exception.ResponseException;
 import model.UserData;
-import service.BadRequestException;
+import exception.BadRequestException;
 
 import java.util.Collection;
 import java.util.HashMap;

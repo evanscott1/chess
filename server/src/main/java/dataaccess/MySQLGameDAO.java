@@ -3,7 +3,7 @@ package dataaccess;
 
 import exception.ResponseException;
 import model.GameData;
-import service.BadRequestException;
+import exception.BadRequestException;
 
 import java.util.Collection;
 

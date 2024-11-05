@@ -3,7 +3,7 @@ package dataaccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.BadRequestException;
+import exception.BadRequestException;
 
 import java.util.ArrayList;
 import java.util.Collection;

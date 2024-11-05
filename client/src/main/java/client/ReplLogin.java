@@ -22,7 +22,7 @@ public class ReplLogin {
         this.server = server;
     }
 
-    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
+    public ReplResponse evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
             case "create" -> create(params);
             case "list" -> listGames();
@@ -61,16 +61,25 @@ public class ReplLogin {
         return new ReplResponse(State.LOGGEDIN, buffer.toString());
     }
 
-    public ReplResponse joinGame(String... params) throws ResponseException {
+    public ReplResponse joinGame(String... params) throws Exception {
         if (params.length == 2) {
-            int listID = Integer.parseInt(params[0]);
-            if (gamesList.containsKey(listID)) {
-                JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
-                JoinGameResult result = server.joinGame(request);
-                outputChessBoard(listID, params[1].toUpperCase());
-                return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
+            int listID;
+            try {
+                listID = Integer.parseInt(params[0]);
+
+                if (gamesList.containsKey(listID)) {
+
+                    JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
+                    JoinGameResult result = server.joinGame(request);
+                    outputChessBoard(listID, params[1].toUpperCase());
+                    return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
+                }
+                throw new ResponseException(400, "Not a valid ID. Please enter command 'list' and select a game ID.");
+            } catch (ResponseException e) {
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                throw new Exception("Something went wrong1");
             }
-            throw new ResponseException(400, "Not a valid ID.");
         }
         throw new ResponseException(400, "Expected: join <ID> [WHITE|BLACK]");
     }

@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import exception.ForbiddenException;
 import exception.ResponseException;
 
 import server.ServerFacade;
@@ -51,7 +52,7 @@ public class ChessClient {
                 return null;
             }
 
-        } catch (ResponseException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
@@ -72,16 +73,27 @@ public class ChessClient {
 
     public String register(String... params) throws ResponseException {
         if (params.length == 3) {
-            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
-            RegisterResult result = server.register(request);
-            state = State.LOGGEDIN;
-            replLogin.setAuthToken(result.authToken());
-            replPlay.setAuthToken(result.authToken());
-            replObserve.setAuthToken(result.authToken());
-            authToken = result.authToken();
-            return String.format("You signed in as %s.", result.username());
+            try {
+                RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+                RegisterResult result = server.register(request);
+                state = State.LOGGEDIN;
+                replLogin.setAuthToken(result.authToken());
+                replPlay.setAuthToken(result.authToken());
+                replObserve.setAuthToken(result.authToken());
+                authToken = result.authToken();
+                return String.format("You signed in as %s.", result.username());
+            } catch (ResponseException e) {
+                if (e.statusCode() == 403) {
+                    throw new ForbiddenException("Username already taken.");
+                }
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                return "Could not register user.";
+            }
+
+
         }
-        throw new ResponseException(400, "Expected: register <username> <password> <email>");
+        return "Expected: register <username> <password> <email>";
     }
 
     private String login(String... params) throws ResponseException {
@@ -93,7 +105,7 @@ public class ChessClient {
             replPlay.setAuthToken(result.authToken());
             replObserve.setAuthToken(result.authToken());
             authToken = result.authToken();
-            return String.format("You signed in as %s.", result);
+            return String.format("You signed in as %s.", result.username());
         }
         throw new ResponseException(400, "Expected: login <username> <password>");
     }

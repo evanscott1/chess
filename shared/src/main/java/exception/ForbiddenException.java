@@ -1,6 +1,4 @@
-package service;
-
-import exception.ResponseException;
+package exception;
 
 /**
  * Indicates there was an unauthorized access attempt. 403 error
