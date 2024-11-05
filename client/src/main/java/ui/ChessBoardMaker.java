@@ -39,6 +39,10 @@ public class ChessBoardMaker {
         ArrayList<String> squareCharacters = new ArrayList<>();
         out.print(ERASE_SCREEN);
 
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
+        out.println();
+
 
         ArrayList<String> headers = new ArrayList<>(List.of(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
 
@@ -65,7 +69,8 @@ public class ChessBoardMaker {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
         out.println();
-        out.println();
+
+        out.print("\u001B[0m");
     }
 
     private static void printBody(PrintStream out, ChessBoard board, boolean isWhite) {

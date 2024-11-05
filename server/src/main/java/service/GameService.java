@@ -25,7 +25,7 @@ public class GameService {
         this.gameDataAccess = gameDataAccess;
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException, ResponseException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
         checkUserAuth(createGameRequest.authToken());
         if (createGameRequest.gameName().isEmpty()) {
             throw new BadRequestException("Create game request has empty required fields");
@@ -35,7 +35,7 @@ public class GameService {
         return new CreateGameResult(gameData.gameID());
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, ResponseException {
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
         checkUserAuth(joinGameRequest.authToken());
 
         if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == 0) {
