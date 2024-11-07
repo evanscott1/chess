@@ -24,7 +24,12 @@ public class Repl {
 
             try {
                 result = clientChess.eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if (result.equals("quit")) {
+                    System.out.print(SET_TEXT_COLOR_BLUE + "quitting...");
+                } else {
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
+                }
+
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);

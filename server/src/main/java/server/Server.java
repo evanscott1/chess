@@ -17,13 +17,13 @@ import userservicerecords.*;
 public class Server {
 
     //Change server access type here.
-//    public static UserDataAccess userDataAccess = new MySQLUserDAO();
-//    public static AuthDataAccess authDataAccess = new MySQLAuthDAO();
-//    public static GameDataAccess gameDataAccess = new MySQLGameDAO();
+    public static UserDataAccess userDataAccess = new MySQLUserDAO();
+    public static AuthDataAccess authDataAccess = new MySQLAuthDAO();
+    public static GameDataAccess gameDataAccess = new MySQLGameDAO();
 
-    public static UserDataAccess userDataAccess = new MemoryUserDAO();
-    public static AuthDataAccess authDataAccess = new MemoryAuthDAO();
-    public static GameDataAccess gameDataAccess = new MemoryGameDAO();
+//    public static UserDataAccess userDataAccess = new MemoryUserDAO();
+//    public static AuthDataAccess authDataAccess = new MemoryAuthDAO();
+//    public static GameDataAccess gameDataAccess = new MemoryGameDAO();
 
     public static UserService userService = new UserService(userDataAccess, authDataAccess);
     public static GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);

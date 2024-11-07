@@ -67,8 +67,18 @@ public class ReplLogin {
             StringBuilder buffer = new StringBuilder();
             for (GameData gameData : result.games()) {
                 int listID = nextGameListID++;
+                String whiteU = "";
+                String blackU = "";
                 gamesList.put(listID, gameData.gameID());
-                buffer.append(String.format("%s. %s\n", listID, gameData.gameName()));
+
+                if (gameData.whiteUsername() != null) {
+                    whiteU = gameData.whiteUsername();
+                }
+                if(gameData.blackUsername() != null) {
+                    blackU = gameData.blackUsername();
+                }
+                buffer.append(String.format("%s. %s: WhiteUsername: %s, BlackUsername: %s\n",
+                        listID, gameData.gameName(), whiteU, blackU));
             }
             return new ReplResponse(State.LOGGEDIN, buffer.toString());
         } catch (ResponseException e) {
