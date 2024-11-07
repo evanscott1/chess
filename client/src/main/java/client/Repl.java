@@ -13,7 +13,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to chess.");
+        System.out.println("♕ Welcome to chess ♕");
         System.out.print(clientChess.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -24,7 +24,12 @@ public class Repl {
 
             try {
                 result = clientChess.eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if (result.equals("quit")) {
+                    System.out.print(SET_TEXT_COLOR_BLUE + "quitting...");
+                } else {
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
+                }
+
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);

@@ -1,5 +1,7 @@
 package client;
 
+import exception.BadRequestException;
+import exception.ForbiddenException;
 import exception.ResponseException;
 import gameservicerecords.*;
 import model.GameData;
@@ -7,6 +9,8 @@ import server.ServerFacade;
 import ui.ChessBoardMaker;
 import userservicerecords.LogoutRequest;
 import userservicerecords.LogoutResult;
+import userservicerecords.RegisterRequest;
+import userservicerecords.RegisterResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +26,7 @@ public class ReplLogin {
         this.server = server;
     }
 
-    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
+    public ReplResponse evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
             case "create" -> create(params);
             case "list" -> listGames();
@@ -38,63 +42,117 @@ public class ReplLogin {
         this.authToken = authToken;
     }
 
-    private ReplResponse create(String... params) throws ResponseException {
+    private ReplResponse create(String... params) throws Exception {
         if (params.length == 1) {
-            CreateGameRequest request = new CreateGameRequest(authToken, params[0]);
-            CreateGameResult result = server.createGame(request);
-            return new ReplResponse(State.LOGGEDIN, String.format("Created game. Name: %s.", params[0]));
+            try {
+                CreateGameRequest request = new CreateGameRequest(authToken, params[0]);
+                CreateGameResult result = server.createGame(request);
+                return new ReplResponse(State.LOGGEDIN, String.format("Created game. Name: %s.", params[0]));
+            } catch (ResponseException e) {
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                throw new Exception("There was an error while trying to create game.");
+            }
+
         }
-        throw new ResponseException(400, "Expected: create <NAME>");
+        throw new BadRequestException("Expected: create <NAME>");
     }
 
-    private ReplResponse listGames() throws ResponseException {
-        ListGamesRequest request = new ListGamesRequest(authToken);
-        ListGamesResult result = server.listGames(request);
-        gamesList.clear();
-        nextGameListID = 1;
-        StringBuilder buffer = new StringBuilder();
-        for (GameData gameData : result.games()) {
-            int listID = nextGameListID++;
-            gamesList.put(listID, gameData.gameID());
-            buffer.append(String.format("%s. %s\n", listID, gameData.gameName()));
+    private ReplResponse listGames() throws Exception {
+        try {
+            ListGamesRequest request = new ListGamesRequest(authToken);
+            ListGamesResult result = server.listGames(request);
+            gamesList.clear();
+            nextGameListID = 1;
+            StringBuilder buffer = new StringBuilder();
+            for (GameData gameData : result.games()) {
+                int listID = nextGameListID++;
+                String whiteU = "";
+                String blackU = "";
+                gamesList.put(listID, gameData.gameID());
+
+                if (gameData.whiteUsername() != null) {
+                    whiteU = gameData.whiteUsername();
+                }
+                if(gameData.blackUsername() != null) {
+                    blackU = gameData.blackUsername();
+                }
+                buffer.append(String.format("%s. %s: WhiteUsername: %s, BlackUsername: %s\n",
+                        listID, gameData.gameName(), whiteU, blackU));
+            }
+            return new ReplResponse(State.LOGGEDIN, buffer.toString());
+        } catch (ResponseException e) {
+            if (e.statusCode() == 403) {
+                throw new ForbiddenException("Username already taken.");
+            }
+            ExceptionHandler.handleResponseException(e.statusCode());
+        } catch (Exception e) {
+            throw new Exception("There was an error while trying to list games.");
         }
-        return new ReplResponse(State.LOGGEDIN, buffer.toString());
+        throw new RuntimeException("Something went wrong. You may need to restart Chess.");
     }
 
-    public ReplResponse joinGame(String... params) throws ResponseException {
+    public ReplResponse joinGame(String... params) throws Exception {
         if (params.length == 2) {
-            int listID = Integer.parseInt(params[0]);
-            if (gamesList.containsKey(listID)) {
-                JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
-                JoinGameResult result = server.joinGame(request);
-                outputChessBoard(listID, params[1].toUpperCase());
-                return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
+            int listID;
+            try {
+                listID = Integer.parseInt(params[0]);
+
+                if (gamesList.containsKey(listID)) {
+
+                    JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
+                    JoinGameResult result = server.joinGame(request);
+                    outputChessBoard(listID, params[1].toUpperCase());
+                    return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
+                }
+                throw new BadRequestException("Not a valid ID. Please enter command 'list' and select a game ID.");
+            } catch (ResponseException e) {
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                throw new Exception("There was an error while trying to join game.");
             }
-            throw new ResponseException(400, "Not a valid ID.");
         }
-        throw new ResponseException(400, "Expected: join <ID> [WHITE|BLACK]");
+        throw new BadRequestException("Expected: join <ID> [WHITE|BLACK]");
     }
 
-    public ReplResponse observeGame(String... params) throws ResponseException {
+    public ReplResponse observeGame(String... params) throws Exception {
         if (params.length == 1) {
-            int listID = Integer.parseInt(params[0]);
-            if (gamesList.containsKey(listID)) {
-                outputChessBoard(listID, "WHITE");
-                return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
+            try {
+                int listID = Integer.parseInt(params[0]);
+                if (gamesList.containsKey(listID)) {
+                    outputChessBoard(listID, "WHITE");
+                    return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
+
+                }
+                throw new BadRequestException("Not a valid ID. Please enter command 'list' and select a game ID.");
+            } catch (ResponseException e) {
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                throw new Exception("There was an error while trying to observe game.");
             }
-            throw new ResponseException(400, "Not a valid ID.");
+
         }
         throw new ResponseException(400, "Expected: join <ID> [WHITE|BLACK]");
     }
 
-    private ReplResponse logout() throws ResponseException {
-        LogoutRequest request = new LogoutRequest(authToken);
-        LogoutResult result = server.logout(request);
-        authToken = null;
-        return new ReplResponse(State.LOGGEDOUT, "User logged out");
+    private ReplResponse logout() throws Exception {
+        try {
+            LogoutRequest request = new LogoutRequest(authToken);
+            LogoutResult result = server.logout(request);
+            authToken = null;
+            return new ReplResponse(State.LOGGEDOUT, "User logged out");
+        } catch (ResponseException e) {
+            if (e.statusCode() == 403) {
+                throw new ForbiddenException("Username already taken.");
+            }
+            ExceptionHandler.handleResponseException(e.statusCode());
+        } catch (Exception e) {
+            throw new Exception("There was an error while trying to log out.");
+        }
+        throw new RuntimeException("Something went wrong. You may need to restart Chess.");
     }
 
-    private ReplResponse quitGame() throws ResponseException {
+    private ReplResponse quitGame() throws Exception {
         logout();
         return new ReplResponse(State.LOGGEDOUT, "quit");
     }
@@ -103,7 +161,7 @@ public class ReplLogin {
         return new ReplResponse(State.LOGGEDIN, """
                     - create <NAME> - a game
                     - list - games
-                    - join <ID> [WHITE|BLACK]
+                    - join <ID> [WHITE|BLACK] - must enter 'list' to get game ID
                     - observe <ID> - a game
                     - logout - when you are done
                     - quit - playing chess

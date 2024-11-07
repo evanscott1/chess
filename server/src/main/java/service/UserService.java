@@ -2,7 +2,10 @@ package service;
 
 import dataaccess.AuthDataAccess;
 import dataaccess.UserDataAccess;
+import exception.BadRequestException;
+import exception.ForbiddenException;
 import exception.ResponseException;
+import exception.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
@@ -22,11 +25,15 @@ public class UserService {
     }
 
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
-        UserData u = userDataAccess.getUserData(registerRequest.username());
+
+
 
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new BadRequestException("Register request has empty required fields");
         }
+
+        UserData u = userDataAccess.getUserData(registerRequest.username());
+
 
         if (u != null) {
             throw new ForbiddenException("Username already exists");

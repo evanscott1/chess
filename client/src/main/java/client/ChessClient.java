@@ -2,6 +2,8 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import exception.BadRequestException;
+import exception.ForbiddenException;
 import exception.ResponseException;
 
 import server.ServerFacade;
@@ -48,10 +50,10 @@ public class ChessClient {
                 return processReplResponse(replObserve.evalMenu(cmd, params));
             } else {
                 assert false;
-                return null;
+                throw new RuntimeException("Please restart chess.");
             }
 
-        } catch (ResponseException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
@@ -61,7 +63,7 @@ public class ChessClient {
         return response.message();
     }
 
-    private String evalMenu(String cmd, String... params) throws ResponseException{
+    private String evalMenu(String cmd, String... params) throws Exception{
         return switch (cmd) {
             case "register" -> register(params);
             case "login" -> login(params);
@@ -70,32 +72,54 @@ public class ChessClient {
         };
     }
 
-    public String register(String... params) throws ResponseException {
+    public String register(String... params) throws Exception {
         if (params.length == 3) {
-            RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
-            RegisterResult result = server.register(request);
-            state = State.LOGGEDIN;
-            replLogin.setAuthToken(result.authToken());
-            replPlay.setAuthToken(result.authToken());
-            replObserve.setAuthToken(result.authToken());
-            authToken = result.authToken();
-            return String.format("You signed in as %s.", result.username());
+            try {
+                RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+                RegisterResult result = server.register(request);
+                state = State.LOGGEDIN;
+                replLogin.setAuthToken(result.authToken());
+                replPlay.setAuthToken(result.authToken());
+                replObserve.setAuthToken(result.authToken());
+                authToken = result.authToken();
+                return String.format("You signed in as %s.", result.username());
+            } catch (ResponseException e) {
+                if (e.statusCode() == 403) {
+                    throw new ForbiddenException("Username already taken.");
+                }
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                throw new Exception("There was an error while trying to register.");
+            }
+
+
         }
-        throw new ResponseException(400, "Expected: register <username> <password> <email>");
+        throw new BadRequestException("Expected: register <username> <password> <email>");
     }
 
-    private String login(String... params) throws ResponseException {
+    private String login(String... params) throws Exception {
         if (params.length == 2) {
-            LoginRequest request = new LoginRequest(params[0], params[1]);
-            LoginResult result = server.login(request);
-            state = State.LOGGEDIN;
-            replLogin.setAuthToken(result.authToken());
-            replPlay.setAuthToken(result.authToken());
-            replObserve.setAuthToken(result.authToken());
-            authToken = result.authToken();
-            return String.format("You signed in as %s.", result);
+            try {
+                LoginRequest request = new LoginRequest(params[0], params[1]);
+                LoginResult result = server.login(request);
+                state = State.LOGGEDIN;
+                replLogin.setAuthToken(result.authToken());
+                replPlay.setAuthToken(result.authToken());
+                replObserve.setAuthToken(result.authToken());
+                this.authToken = result.authToken();
+                return String.format("You signed in as %s.", result.username());
+            } catch (ResponseException e) {
+                if (e.statusCode() == 401) {
+                    throw new ForbiddenException("Please check that your username and password are entered correctly.");
+                }
+                ExceptionHandler.handleResponseException(e.statusCode());
+            } catch (Exception e) {
+                throw new Exception("There was an error while trying to login.");
+            }
+
+
         }
-        throw new ResponseException(400, "Expected: login <username> <password>");
+        throw new BadRequestException("Expected: login <username> <password>");
     }
 
     public String help() {
