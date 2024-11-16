@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import model.GameData;
 
 import java.io.PrintStream;
@@ -31,10 +28,14 @@ public class ChessBoardMaker {
 //    private static final GameData gameData = null;
 
 
-    public static void boardMaker(GameData gameData, String teamColor) {
+    public static void boardMaker(GameData gameData, String teamColor, String... params) {
         ChessBoard board = gameData.game().getBoard();
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         boolean isWhite = Objects.equals(teamColor, "WHITE");
+        ArrayList<ChessMove> validMoves;
+        ArrayList<ChessPosition> validPositions = new ArrayList<>();
+        ChessPosition startPosition = null;
+
 
         ArrayList<String> squareCharacters = new ArrayList<>();
         out.print(ERASE_SCREEN);
@@ -44,7 +45,18 @@ public class ChessBoardMaker {
         out.println();
 
 
-        ArrayList<String> headers = new ArrayList<>(List.of(" ", "a", "b", "c", "d", "e", "f", "g", "h", " "));
+        ArrayList<String> headers = new ArrayList<>(List.of("a", "b", "c", "d", "e", "f", "g", "h"));
+
+        if (params.length == 2) {
+            startPosition = findStartPosition(headers, params);
+            PieceMovesCalculator calculator = new PieceMovesCalculator(board, startPosition);
+            validMoves = calculator.calculateMoves();
+
+            for (ChessMove move : validMoves) {
+                validPositions.add(move.getEndPosition());
+            }
+        }
+
 
 
         /*
@@ -57,7 +69,7 @@ public class ChessBoardMaker {
          */
         startSquareType = SquareType.LIGHT;
 
-        printBody(out, board, isWhite);
+        printBody(out, board, isWhite, validPositions, startPosition);
 
 
         /*
@@ -73,7 +85,7 @@ public class ChessBoardMaker {
         out.print("\u001B[0m");
     }
 
-    private static void printBody(PrintStream out, ChessBoard board, boolean isWhite) {
+    private static void printBody(PrintStream out, ChessBoard board, boolean isWhite, ArrayList<ChessPosition> validPositions, ChessPosition startPosition) {
 
         SquareType squareType;
 
@@ -86,60 +98,83 @@ public class ChessBoardMaker {
         int stepCol = isWhite ? 1 : -1;
 
         for (int i = startRow; i != endRow; i += stepRow) {
+            //Every row prints 3 lines.
+            for (int part = 1; part < 4; part++) {
+                boolean isEmptyRow = false;
 
-            /*
-            Row: Part 1
-             */
-            printBoardLine(out, startSquareType);
+                if (part == 1 || part == 3) {
+                    isEmptyRow = true;
+                }
 
-            /*
-            Row: Part 2
-             */
-            squareType = startSquareType;
+                squareType = startSquareType;
 
-            setBorder(out);
-            printSquare(out, Integer.toString(i));
 
-            for (int j = startCol; j != endCol; j += stepCol) {
-                String character;
-                ChessPiece piece = board.getPiece(new ChessPosition(i, j));
-                if (squareType == SquareType.LIGHT) {
-                    setLightBackground(out);
-                    squareType = SquareType.DARK;
+                setBorder(out);
+                if(isEmptyRow) {
+                    printSquare(out, " ");
                 } else {
-                    setDarkBackground(out);
-                    squareType = SquareType.LIGHT;
+                    printSquare(out, Integer.toString(i));
                 }
 
 
-                if (piece == null) {
-                    character = " ";
-                    printSquare(out, character);
-                } else {
-                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        setLightTeam(out);
-                    } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                        setDarkTeam(out);
+
+                for (int j = startCol; j != endCol; j += stepCol) {
+                    String character;
+                    ChessPosition currentPos = new ChessPosition(i, j);
+
+                    boolean isValidPos = false;
+
+
+                    for (ChessPosition pos : validPositions) {
+                        if (currentPos.getRow() == pos.getRow() && currentPos.getColumn() == pos.getColumn()) {
+                            isValidPos = true;
+                            break;
+                        }
+
                     }
-                    if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                        character = "N";
+                    boolean isStartPos = false;
+                    if (startPosition != null) {
+                        isStartPos = currentPos.getRow() == startPosition.getRow() && currentPos.getColumn() == startPosition.getColumn();
+                    }
+
+
+                    squareType = setBodyBackground(squareType, out, isValidPos, isStartPos);
+
+
+                    ChessPiece piece = board.getPiece(currentPos);
+                    if (piece == null || isEmptyRow) {
+                        character = " ";
+                        printSquare(out, character);
                     } else {
-                        character = String.valueOf(piece.getPieceType().name().charAt(0));
+                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            setLightTeam(out);
+                        } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                            setDarkTeam(out);
+                        }
+                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                            character = "N";
+                        } else {
+                            character = String.valueOf(piece.getPieceType().name().charAt(0));
+                        }
+                        printSquare(out, character);
                     }
-                    printSquare(out, character);
+
+
                 }
-
-
-            }
 
             /*
             Row: Part 3
              */
-            setBorder(out);
-            printSquare(out, Integer.toString(i));
-            printNewLine(out);
+                setBorder(out);
+                if(isEmptyRow) {
+                    printSquare(out, " ");
+                } else {
+                    printSquare(out, Integer.toString(i));
+                }
+                printNewLine(out);
 
-            printBoardLine(out, startSquareType);
+
+            }
             if (startSquareType == SquareType.LIGHT) {
                 setLightBackground(out);
                 startSquareType = SquareType.DARK;
@@ -149,6 +184,40 @@ public class ChessBoardMaker {
             }
 
         }
+    }
+
+    private static SquareType setBodyBackground(SquareType squareType, PrintStream out, boolean isValidPos, boolean isStartPosition) {
+
+        if (squareType == SquareType.LIGHT) {
+            setLightBackground(out);
+            if (isValidPos) {
+                setValidLightBackground(out);
+            } else if (isStartPosition) {
+                setStartPositionBackground(out);
+            }
+            squareType = SquareType.DARK;
+        } else {
+            setDarkBackground(out);
+            if (isValidPos) {
+                setValidDarkBackground(out);
+            }  else if (isStartPosition) {
+                setStartPositionBackground(out);
+            }
+            squareType = SquareType.LIGHT;
+        }
+        return squareType;
+    }
+
+    private static ChessPosition findStartPosition(ArrayList<String> headers, String... params) {
+        int count = 1;
+        for (String header : headers) {
+            if (header.equals(params[1])) {
+                break;
+            }
+            count++;
+        }
+
+        return new ChessPosition(Integer.parseInt(params[0]), count);
     }
 
 
@@ -198,9 +267,11 @@ public class ChessBoardMaker {
 
         printHeaderEmptyLine(out);
         setBorder(out);
+        printSquare(out, " ");
         for (int i = start; i != end; i += step) {
             printSquare(out, headers.get(i));
         }
+        printSquare(out, " ");
         printNewLine(out);
         printHeaderEmptyLine(out);
     }
@@ -226,6 +297,13 @@ public class ChessBoardMaker {
     private static void setDarkBackground(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
     }
+
+    private static void setValidLightBackground(PrintStream out) { out.print(SET_BG_COLOR_GREEN);}
+
+    private static void setValidDarkBackground(PrintStream out) { out.print(SET_BG_COLOR_DARK_GREEN);}
+
+    private static void setStartPositionBackground(PrintStream out) { out.print(SET_BG_COLOR_YELLOW);}
+
     private static void setLightTeam(PrintStream out) {
         out.print(SET_TEXT_COLOR_RED);
     }

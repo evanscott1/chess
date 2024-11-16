@@ -13,7 +13,7 @@ public class PieceMovesCalculator {
     private ChessPiece.PieceType promotion = null;
     private boolean endIsOppTeam = false;
 
-    PieceMovesCalculator(ChessBoard board, ChessPosition start) {
+    public PieceMovesCalculator(ChessBoard board, ChessPosition start) {
         this.board = board;
         this.start = start;
     }

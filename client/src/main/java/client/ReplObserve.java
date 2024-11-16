@@ -27,7 +27,7 @@ public class ReplObserve extends ReplBase {
     private ReplResponse help() {
         return new ReplResponse(State.OBSERVATION, """
                     - redraw - outputs current board
-                    - highlight <position> - possible moves of a piece
+                    - highlight <num> <alpha> - possible moves of a piece
                     - leave - a game
                     - quit - playing chess
                     - help - with possible commands

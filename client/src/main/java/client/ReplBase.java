@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessPosition;
 import exception.ForbiddenException;
 import exception.ResponseException;
 import gameservicerecords.ListGamesRequest;
@@ -33,14 +34,13 @@ public abstract class ReplBase {
     }
 
     protected String highlightLegalMoves(String... params) throws ResponseException{
-        
-        outputChessBoard(listID, teamColor);
+        outputChessBoard(listID, teamColor, params);
 
         return "";
     }
 
     protected String redrawChessBoard() throws ResponseException{
-        outputChessBoard(listID, teamColor);
+        outputChessBoard(listID, teamColor, "");
         return "";
     }
 
@@ -74,9 +74,9 @@ public abstract class ReplBase {
         return new ReplResponse(State.LOGGEDOUT, "quit");
     }
 
-    protected void outputChessBoard(int listID, String teamColor) throws ResponseException {
+    protected void outputChessBoard(int listID, String teamColor, String... params) throws ResponseException {
         ListGamesResult gamesListResult = server.listGames(new ListGamesRequest(authToken));
         GameData gameData = new ArrayList<>(gamesListResult.games()).get(listID - 1);
-        ChessBoardMaker.boardMaker(gameData, teamColor);
+        ChessBoardMaker.boardMaker(gameData, teamColor, params);
     }
 }
