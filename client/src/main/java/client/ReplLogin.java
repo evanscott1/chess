@@ -15,7 +15,7 @@ import userservicerecords.RegisterResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ReplLogin {
+public class ReplLogin extends ReplBase {
 
     private ServerFacade server;
     private String authToken = null;
@@ -23,8 +23,9 @@ public class ReplLogin {
     private int nextGameListID = 1;
 
     public ReplLogin(ServerFacade server) throws ResponseException {
-        this.server = server;
+        super(server);
     }
+
 
     public ReplResponse evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
@@ -38,9 +39,6 @@ public class ReplLogin {
         };
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
 
     private ReplResponse create(String... params) throws Exception {
         if (params.length == 1) {
@@ -135,27 +133,7 @@ public class ReplLogin {
         throw new ResponseException(400, "Expected: join <ID> [WHITE|BLACK]");
     }
 
-    private ReplResponse logout() throws Exception {
-        try {
-            LogoutRequest request = new LogoutRequest(authToken);
-            LogoutResult result = server.logout(request);
-            authToken = null;
-            return new ReplResponse(State.LOGGEDOUT, "User logged out");
-        } catch (ResponseException e) {
-            if (e.statusCode() == 403) {
-                throw new ForbiddenException("Username already taken.");
-            }
-            ExceptionHandler.handleResponseException(e.statusCode());
-        } catch (Exception e) {
-            throw new Exception("There was an error while trying to log out.");
-        }
-        throw new RuntimeException("Something went wrong. You may need to restart Chess.");
-    }
 
-    private ReplResponse quitGame() throws Exception {
-        logout();
-        return new ReplResponse(State.LOGGEDOUT, "quit");
-    }
 
     private ReplResponse help() {
         return new ReplResponse(State.LOGGEDIN, """
@@ -169,10 +147,5 @@ public class ReplLogin {
                     """);
     }
 
-    private void outputChessBoard(int listID, String teamColor) throws ResponseException{
-        ListGamesResult gamesListResult = server.listGames(new ListGamesRequest(authToken));
-        GameData gameData = new ArrayList<>(gamesListResult.games()).get(listID - 1);
-        ChessBoardMaker.boardMaker(gameData, teamColor);
-    }
 
 }

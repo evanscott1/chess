@@ -4,20 +4,23 @@ import exception.ResponseException;
 import server.ServerFacade;
 import ui.ChessBoardMaker;
 
-public class ReplPlay {
+public class ReplPlay extends ReplBase{
 
-    private ServerFacade server;
-    private String authToken = null;
+
     private int gameID = 0;
 
     public ReplPlay(ServerFacade server) throws ResponseException {
-        this.server = server;
+        super(server);
     }
 
-    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
+
+    public ReplResponse evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
             case "move" -> makeMove(params);
+            case "redraw" -> redrawChessBoard();
+            case "highlight" -> highlightLegalMoves();
             case "leave" -> leaveGame();
+            case "resign" -> resignGame();
             case "quit" -> quitGame();
             default -> help();
         };
@@ -27,28 +30,23 @@ public class ReplPlay {
         this.gameID = gameID;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
 
     private ReplResponse makeMove(String... params) throws ResponseException {
-
-
         return new ReplResponse(State.INPLAY, "Not available.");
     }
 
-    private ReplResponse leaveGame() throws ResponseException {
-        return new ReplResponse(State.LOGGEDIN, "User left game.");
-    }
 
-    private ReplResponse quitGame() {
-        return new ReplResponse(null, "quit");
+    private ReplResponse resignGame() {
+        return null;
     }
 
     private ReplResponse help() {
         return new ReplResponse(State.INPLAY, """
                     - move <startposition> <endposition> - to make a chess move
+                    - redraw - outputs current board
+                    - highlight <position> - possible moves of a piece
                     - leave - a game
+                    - resign - forfeit the game
                     - quit - playing chess
                     - help - with possible commands
                     """);

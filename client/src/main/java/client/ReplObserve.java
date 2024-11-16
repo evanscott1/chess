@@ -3,38 +3,33 @@ package client;
 import exception.ResponseException;
 import server.ServerFacade;
 
-public class ReplObserve {
+public class ReplObserve extends ReplBase {
 
     private ServerFacade server;
     private String authToken;
 
     public ReplObserve(ServerFacade server) throws ResponseException {
-        this.server = server;
+        super(server);
     }
 
-    public ReplResponse evalMenu(String cmd, String... params) throws ResponseException {
+
+    public ReplResponse evalMenu(String cmd, String... params) throws Exception {
 
         return switch (cmd) {
+            case "redraw" -> redrawChessBoard();
+            case "highlight" -> highlightLegalMoves();
             case "leave" -> leaveGame();
             case "quit" -> quitGame();
             default -> help();
         };
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
 
-    private ReplResponse leaveGame() {
-        return new ReplResponse(State.LOGGEDIN, "Leave");
-    }
-
-    private ReplResponse quitGame() {
-        return new ReplResponse(null, "quit");
-    }
 
     private ReplResponse help() {
         return new ReplResponse(State.OBSERVATION, """
+                    - redraw - outputs current board
+                    - highlight <position> - possible moves of a piece
                     - leave - a game
                     - quit - playing chess
                     - help - with possible commands
