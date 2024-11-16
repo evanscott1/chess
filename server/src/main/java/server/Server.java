@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import gameservicerecords.*;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -25,11 +27,25 @@ public class Server {
     public static GameService gameService = new GameService(userDataAccess, authDataAccess, gameDataAccess);
     public static ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
 
+    private final WebSocketHandler webSocketHandler;
+
+    public Server() {
+        webSocketHandler = new WebSocketHandler() {
+            @Override
+            public void configure(WebSocketServletFactory webSocketServletFactory) {
+
+            }
+        };
+    }
+
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        //Register web socket here.
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clearApplication);
