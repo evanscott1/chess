@@ -7,8 +7,6 @@ import ui.ChessBoardMaker;
 
 public class ReplPlay extends ReplBase{
 
-    String teamColor;
-
 
     public ReplPlay(ServerFacade server) throws ResponseException {
         super(server);
@@ -18,8 +16,8 @@ public class ReplPlay extends ReplBase{
     public ReplResponse evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
             case "move" -> makeMove(params);
-            case "redraw" -> redrawChessBoard();
-            case "highlight" -> highlightLegalMoves();
+            case "redraw" -> new ReplResponse(State.INPLAY, redrawChessBoard());
+            case "highlight" -> new ReplResponse(State.INPLAY, highlightLegalMoves(params));
             case "leave" -> leaveGame();
             case "resign" -> resignGame();
             case "quit" -> quitGame();
@@ -29,11 +27,6 @@ public class ReplPlay extends ReplBase{
 
     public void setTeamColor(String color) {
         this.teamColor = color;
-    }
-
-    private ReplResponse redrawChessBoard() throws ResponseException{
-        outputChessBoard(listID, teamColor);
-        return new ReplResponse(State.OBSERVATION, "");
     }
 
 

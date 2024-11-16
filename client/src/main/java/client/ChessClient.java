@@ -17,9 +17,6 @@ public class ChessClient {
     private final String serverUrl;
     private State state = State.LOGGEDOUT;
     private ReplLogin replLogin;
-    private ReplPlay replPlay;
-    private ReplObserve replObserve;
-
     private String authToken = null;
 
     public ChessClient(String serverUrl) {
@@ -27,8 +24,6 @@ public class ChessClient {
         this.serverUrl = serverUrl;
         try {
             replLogin = new ReplLogin(this.server);
-            replPlay = new ReplPlay(this.server);
-            replObserve = new ReplObserve(this.server);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -75,8 +70,6 @@ public class ChessClient {
                 RegisterResult result = server.register(request);
                 state = State.LOGGEDIN;
                 replLogin.setAuthToken(result.authToken());
-                replPlay.setAuthToken(result.authToken());
-                replObserve.setAuthToken(result.authToken());
                 authToken = result.authToken();
                 return String.format("You signed in as %s.", result.username());
             } catch (ResponseException e) {
@@ -100,8 +93,6 @@ public class ChessClient {
                 LoginResult result = server.login(request);
                 state = State.LOGGEDIN;
                 replLogin.setAuthToken(result.authToken());
-                replPlay.setAuthToken(result.authToken());
-                replObserve.setAuthToken(result.authToken());
                 this.authToken = result.authToken();
                 return String.format("You signed in as %s.", result.username());
             } catch (ResponseException e) {

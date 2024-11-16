@@ -5,28 +5,22 @@ import server.ServerFacade;
 
 public class ReplObserve extends ReplBase {
 
-    private ServerFacade server;
-    private String authToken;
 
     public ReplObserve(ServerFacade server) throws ResponseException {
         super(server);
+        teamColor = "WHITE";
     }
 
 
     public ReplResponse evalMenu(String cmd, String... params) throws Exception {
 
         return switch (cmd) {
-            case "redraw" -> redrawChessBoard();
-            case "highlight" -> highlightLegalMoves();
+            case "redraw" -> new ReplResponse(State.OBSERVATION, redrawChessBoard());
+            case "highlight" -> new ReplResponse(State.OBSERVATION, highlightLegalMoves(params));
             case "leave" -> leaveGame();
             case "quit" -> quitGame();
             default -> help();
         };
-    }
-
-    private ReplResponse redrawChessBoard() throws ResponseException{
-        outputChessBoard(listID, "WHITE");
-        return new ReplResponse(State.OBSERVATION, "");
     }
 
 

@@ -38,9 +38,9 @@ public class ReplLogin extends ReplBase {
             if (state == State.LOGGEDIN) {
                 return evalMenu(cmd, params);
             } else if (state == State.INPLAY) {
-                return new ReplResponse(State.LOGGEDIN, processReplResponse(replPlay.evalMenu(cmd, params)));
+                return updateLoginState(replPlay.evalMenu(cmd, params));
             } else if (state == State.OBSERVATION) {
-                return new ReplResponse(State.LOGGEDIN, processReplResponse(replObserve.evalMenu(cmd, params)));
+                return updateLoginState(replObserve.evalMenu(cmd, params));
             } else {
                 assert false;
                 throw new RuntimeException("There was a problem with chess.");
@@ -50,19 +50,19 @@ public class ReplLogin extends ReplBase {
 
     public ReplResponse evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
-            case "create" -> create(params);
-            case "list" -> listGames();
-            case "join" -> joinGame(params);
-            case "observe" -> observeGame(params);
+            case "create" -> updateLoginState(create(params));
+            case "list" -> updateLoginState(listGames());
+            case "join" -> updateLoginState(joinGame(params));
+            case "observe" -> updateLoginState(observeGame(params));
             case "logout" -> logout();
             case "quit" -> quitGame();
             default -> help();
         };
     }
 
-    private String processReplResponse(ReplResponse res) {
+    private ReplResponse updateLoginState(ReplResponse res) {
         state = res.state();
-        return res.message();
+        return new ReplResponse(State.LOGGEDIN, res.message());
     }
 
 
@@ -160,6 +160,13 @@ public class ReplLogin extends ReplBase {
 
         }
         throw new ResponseException(400, "Expected: join <ID> [WHITE|BLACK]");
+    }
+
+    @Override
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+        replPlay.setAuthToken(authToken);
+        replObserve.setAuthToken(authToken);
     }
 
 

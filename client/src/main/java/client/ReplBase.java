@@ -17,6 +17,7 @@ import java.util.HashMap;
 public abstract class ReplBase {
 
     protected int listID = 0;
+    protected String teamColor;
     protected ServerFacade server;
     protected String authToken = null;
     protected HashMap<Integer, Integer> gamesList = new HashMap<>();
@@ -31,8 +32,16 @@ public abstract class ReplBase {
         this.authToken = authToken;
     }
 
-    protected ReplResponse highlightLegalMoves() {
-        return null;
+    protected String highlightLegalMoves(String... params) throws ResponseException{
+        
+        outputChessBoard(listID, teamColor);
+
+        return "";
+    }
+
+    protected String redrawChessBoard() throws ResponseException{
+        outputChessBoard(listID, teamColor);
+        return "";
     }
 
     public void setListID(int gameID) {
