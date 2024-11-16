@@ -13,17 +13,38 @@ import userservicerecords.RegisterRequest;
 import userservicerecords.RegisterResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ReplLogin extends ReplBase {
 
-    private ServerFacade server;
-    private String authToken = null;
-    private HashMap<Integer, Integer> gamesList = new HashMap<>();
-    private int nextGameListID = 1;
+    private State state = State.LOGGEDIN;
+    private ReplPlay replPlay;
+    private ReplObserve replObserve;
+
 
     public ReplLogin(ServerFacade server) throws ResponseException {
         super(server);
+
+        try {
+            replPlay = new ReplPlay(this.server);
+            replObserve = new ReplObserve(this.server);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public ReplResponse eval(String cmd, String... params) throws  Exception {
+            if (state == State.LOGGEDIN) {
+                return evalMenu(cmd, params);
+            } else if (state == State.INPLAY) {
+                return new ReplResponse(State.LOGGEDIN, processReplResponse(replPlay.evalMenu(cmd, params)));
+            } else if (state == State.OBSERVATION) {
+                return new ReplResponse(State.LOGGEDIN, processReplResponse(replObserve.evalMenu(cmd, params)));
+            } else {
+                assert false;
+                throw new RuntimeException("There was a problem with chess.");
+            }
     }
 
 
@@ -37,6 +58,11 @@ public class ReplLogin extends ReplBase {
             case "quit" -> quitGame();
             default -> help();
         };
+    }
+
+    private String processReplResponse(ReplResponse res) {
+        state = res.state();
+        return res.message();
     }
 
 
@@ -97,10 +123,12 @@ public class ReplLogin extends ReplBase {
                 listID = Integer.parseInt(params[0]);
 
                 if (gamesList.containsKey(listID)) {
-
-                    JoinGameRequest request = new JoinGameRequest(authToken, params[1].toUpperCase(), gamesList.get(listID));
+                    String teamColor = params[1].toUpperCase();
+                    JoinGameRequest request = new JoinGameRequest(authToken, teamColor, gamesList.get(listID));
                     JoinGameResult result = server.joinGame(request);
-                    outputChessBoard(listID, params[1].toUpperCase());
+                    replPlay.setListID(listID);
+                    replPlay.setTeamColor(teamColor);
+                    outputChessBoard(listID, teamColor);
                     return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
                 }
                 throw new BadRequestException("Not a valid ID. Please enter command 'list' and select a game ID.");
@@ -118,6 +146,7 @@ public class ReplLogin extends ReplBase {
             try {
                 int listID = Integer.parseInt(params[0]);
                 if (gamesList.containsKey(listID)) {
+                    replObserve.setListID(listID);
                     outputChessBoard(listID, "WHITE");
                     return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
 

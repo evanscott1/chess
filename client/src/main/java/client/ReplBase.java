@@ -16,10 +16,11 @@ import java.util.HashMap;
 
 public abstract class ReplBase {
 
-    private ServerFacade server;
-    private String authToken = null;
-    private HashMap<Integer, Integer> gamesList = new HashMap<>();
-    private int nextGameListID = 1;
+    protected int listID = 0;
+    protected ServerFacade server;
+    protected String authToken = null;
+    protected HashMap<Integer, Integer> gamesList = new HashMap<>();
+    protected int nextGameListID = 1;
 
 
     public ReplBase(ServerFacade server) throws ResponseException {
@@ -30,12 +31,12 @@ public abstract class ReplBase {
         this.authToken = authToken;
     }
 
-    protected ReplResponse redrawChessBoard() {
+    protected ReplResponse highlightLegalMoves() {
         return null;
     }
 
-    protected ReplResponse highlightLegalMoves() {
-        return null;
+    public void setListID(int gameID) {
+        this.listID = gameID;
     }
 
     protected ReplResponse leaveGame() {

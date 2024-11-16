@@ -43,14 +43,10 @@ public class ChessClient {
             if(state == State.LOGGEDOUT) {
                 return evalMenu(cmd, params);
             } else if (state == State.LOGGEDIN) {
-                return processReplResponse(replLogin.evalMenu(cmd, params));
-            } else if (state == State.INPLAY) {
-                return processReplResponse(replPlay.evalMenu(cmd, params));
-            } else if (state == State.OBSERVATION) {
-                return processReplResponse(replObserve.evalMenu(cmd, params));
+                return processReplResponse(replLogin.eval(cmd, params));
             } else {
                 assert false;
-                throw new RuntimeException("Please restart chess.");
+                throw new RuntimeException("There was a problem with chess.");
             }
 
         } catch (Exception ex) {

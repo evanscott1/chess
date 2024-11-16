@@ -24,6 +24,10 @@ public class ReplObserve extends ReplBase {
         };
     }
 
+    private ReplResponse redrawChessBoard() throws ResponseException{
+        outputChessBoard(listID, "WHITE");
+        return new ReplResponse(State.OBSERVATION, "");
+    }
 
 
     private ReplResponse help() {

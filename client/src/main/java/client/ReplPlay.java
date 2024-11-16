@@ -1,13 +1,14 @@
 package client;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import server.ServerFacade;
 import ui.ChessBoardMaker;
 
 public class ReplPlay extends ReplBase{
 
+    String teamColor;
 
-    private int gameID = 0;
 
     public ReplPlay(ServerFacade server) throws ResponseException {
         super(server);
@@ -26,8 +27,13 @@ public class ReplPlay extends ReplBase{
         };
     }
 
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
+    public void setTeamColor(String color) {
+        this.teamColor = color;
+    }
+
+    private ReplResponse redrawChessBoard() throws ResponseException{
+        outputChessBoard(listID, teamColor);
+        return new ReplResponse(State.OBSERVATION, "");
     }
 
 
