@@ -1,6 +1,8 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import com.google.gson.Gson;
 import exception.BadRequestException;
 import exception.ForbiddenException;
@@ -19,11 +21,11 @@ public class ChessClient {
     private ReplLogin replLogin;
     private String authToken = null;
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         try {
-            replLogin = new ReplLogin(this.server);
+            replLogin = new ReplLogin(this.server, serverUrl, notificationHandler);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -70,6 +72,7 @@ public class ChessClient {
                 RegisterResult result = server.register(request);
                 state = State.LOGGEDIN;
                 replLogin.setAuthToken(result.authToken());
+                replLogin.setUsername(params[0]);
                 authToken = result.authToken();
                 return String.format("You signed in as %s.", result.username());
             } catch (ResponseException e) {

@@ -21,12 +21,17 @@ public abstract class ReplBase {
     protected String teamColor;
     protected ServerFacade server;
     protected String authToken = null;
+    protected String username;
     protected HashMap<Integer, Integer> gamesList = new HashMap<>();
     protected int nextGameListID = 1;
 
 
     public ReplBase(ServerFacade server) throws ResponseException {
         this.server = server;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setAuthToken(String authToken) {

@@ -1,5 +1,7 @@
 package client;
 
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import exception.BadRequestException;
 import exception.ForbiddenException;
 import exception.ResponseException;
@@ -21,11 +23,15 @@ public class ReplLogin extends ReplBase {
     private State state = State.LOGGEDIN;
     private ReplPlay replPlay;
     private ReplObserve replObserve;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
+    private String serverURL;
 
 
-    public ReplLogin(ServerFacade server) throws ResponseException {
+    public ReplLogin(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
         super(server);
-
+        this.serverURL = serverURL;
+        this.notificationHandler = notificationHandler;
         try {
             replPlay = new ReplPlay(this.server);
             replObserve = new ReplObserve(this.server);
@@ -147,7 +153,10 @@ public class ReplLogin extends ReplBase {
                 int listID = Integer.parseInt(params[0]);
                 if (gamesList.containsKey(listID)) {
                     replObserve.setListID(listID);
+                    replObserve.setUsername(username);
                     outputChessBoard(listID, "WHITE");
+                    ws = new WebSocketFacade(serverURL, notificationHandler);
+                    ws.connectGame(username, listID);
                     return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
 
                 }

@@ -4,8 +4,9 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exception.ResponseException;
 import gameservicerecords.*;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
+
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -30,12 +31,7 @@ public class Server {
     private final WebSocketHandler webSocketHandler;
 
     public Server() {
-        webSocketHandler = new WebSocketHandler() {
-            @Override
-            public void configure(WebSocketServletFactory webSocketServletFactory) {
-
-            }
-        };
+        webSocketHandler = new WebSocketHandler();
     }
 
 
