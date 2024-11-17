@@ -1,7 +1,10 @@
 package server.websocket;
 
+import org.eclipse.jetty.websocket.api.Session;
+import websocket.commands.ConnectCommand;
+
 public class ResignService extends BaseService {
-    public ResignService(ConnectionManager connections) {
-        super(connections);
+    public ResignService(GameConnectionManager gameConnectionManager) {
+        super(gameConnectionManager);
     }
 }

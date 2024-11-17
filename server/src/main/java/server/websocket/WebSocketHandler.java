@@ -30,46 +30,61 @@ public class WebSocketHandler {
     private final LeaveService leaveService = new LeaveService(gameConnectionManager);
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, ResponseException {
+    public void onMessage(Session session, String message) throws IOException{
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case UserGameCommand.CommandType.CONNECT -> connect(message, session);
-            case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(command.getAuthToken(), session);
-            case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), session);
-            case UserGameCommand.CommandType.RESIGN -> resign(command.getAuthToken(), session);
+            case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(message, session);
+            case UserGameCommand.CommandType.LEAVE -> leave(message, session);
+            case UserGameCommand.CommandType.RESIGN -> resign(message, session);
         }
     }
 
-    private void connect(String message, Session session) throws IOException, ResponseException {
+    private void connect(String message, Session session) throws IOException {
+
         ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
-        connectService.connect(connectCommand, session);
+        try {
+            connectService.connect(connectCommand, session);
+        } catch (ResponseException e) {
+            errorHandler(e.getMessage(), session);
+        }
+
     }
 
-    private void makeMove(String authToken, Session session) throws IOException {
+    private void makeMove(String message, Session session) throws IOException {
+
+
+        ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
         try {
-            Server.gameService.checkUserAuth(connectCommand.getAuthToken());
+            connectService.connect(connectCommand, session);
         } catch (ResponseException e) {
-            throw new RuntimeException(e);
+            errorHandler(e.getMessage(), session);
         }
     }
 
-    private void leave(String authToken, Session session) throws IOException {
+    private void leave(String message, Session session) throws IOException {
+        ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
         try {
-            Server.gameService.checkUserAuth(connectCommand.getAuthToken());
+            connectService.connect(connectCommand, session);
         } catch (ResponseException e) {
-            throw new RuntimeException(e);
+            errorHandler(e.getMessage(), session);
         }
     }
 
-    private void resign(String authToken, Session session) throws IOException {
+    private void resign(String message, Session session) throws IOException {
+        ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
         try {
-            Server.gameService.checkUserAuth(connectCommand.getAuthToken());
+            connectService.connect(connectCommand, session);
         } catch (ResponseException e) {
-            throw new RuntimeException(e);
+            errorHandler(e.getMessage(), session);
         }
     }
 
+    private void errorHandler(String message, Session session)  throws IOException{
+        ErrorMessage errorMessage = new ErrorMessage(String.format("Error: %s", message));
 
+        new Connection("", session).send(new Gson().toJson(errorMessage));
+    }
 
 
 //    private void exit(String visitorName) throws IOException {
