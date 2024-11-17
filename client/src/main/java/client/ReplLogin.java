@@ -13,6 +13,7 @@ import userservicerecords.LogoutRequest;
 import userservicerecords.LogoutResult;
 import userservicerecords.RegisterRequest;
 import userservicerecords.RegisterResult;
+import websocket.commands.ConnectCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,8 +156,11 @@ public class ReplLogin extends ReplBase {
                     replObserve.setListID(listID);
                     replObserve.setUsername(username);
                     outputChessBoard(listID, "WHITE");
+
+                    ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.OBSERVER);
+                    connectCommand.setUsername(username);
                     ws = new WebSocketFacade(serverURL, notificationHandler);
-                    ws.connectGame(username, listID);
+                    ws.connectGame(connectCommand);
                     return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
 
                 }

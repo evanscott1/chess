@@ -69,7 +69,7 @@ public class GameService {
         return new ListGamesResult(gameDataAccess.listGameDatas());
     }
 
-    private void checkUserAuth(String authToken) throws ResponseException {
+    public void checkUserAuth(String authToken) throws ResponseException {
         AuthData authData = authDataAccess.getAuthData(authToken);
 
         if (authData == null) {
