@@ -9,6 +9,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
 import websocket.commands.ConnectCommand;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -54,9 +56,9 @@ public class WebSocketHandler {
     private void makeMove(String message, Session session) throws IOException {
 
 
-        ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
+        MakeMoveCommand makeMoveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
         try {
-            connectService.connect(connectCommand, session);
+            makeMoveService.makeMove(makeMoveCommand, session);
         } catch (ResponseException e) {
             errorHandler(e.getMessage(), session);
         }
@@ -65,16 +67,16 @@ public class WebSocketHandler {
     private void leave(String message, Session session) throws IOException {
         ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
         try {
-            connectService.connect(connectCommand, session);
+            leaveService.leave(connectCommand, session);
         } catch (ResponseException e) {
             errorHandler(e.getMessage(), session);
         }
     }
 
     private void resign(String message, Session session) throws IOException {
-        ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
+        ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
         try {
-            connectService.connect(connectCommand, session);
+            resignService.resign(resignCommand, session);
         } catch (ResponseException e) {
             errorHandler(e.getMessage(), session);
         }
