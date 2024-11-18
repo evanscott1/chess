@@ -25,7 +25,7 @@ public class LeaveService extends BaseService {
 
 
         int gameID = connectCommand.getGameID();
-        connectionManager = gameConnectionManager.get(gameID);
+        connectionManager = gameConnectionManager.getConnectionManager(gameID);
         connectionManager.remove(connectCommand.getUsername());
 
 

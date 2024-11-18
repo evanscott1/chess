@@ -3,6 +3,7 @@ package server.websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import server.Server;
 import websocket.commands.ConnectCommand;
 import websocket.messages.ErrorMessage;
@@ -23,7 +24,8 @@ public class ConnectService extends BaseService {
         ConnectionManager connectionManager;
 
             Server.gameService.checkUserAuth(connectCommand.getAuthToken());
-
+            AuthData authData = Server.authDataAccess.getAuthData(connectCommand.getAuthToken());
+            connectCommand.setUsername(authData.username());
 
             int gameID = connectCommand.getGameID();
             if (gameConnectionManager.getConnectionManager(gameID) == null) {
@@ -35,7 +37,7 @@ public class ConnectService extends BaseService {
 
             String loadGameNotification = String.format("You joined game %s as %s.", connectCommand.getGameID(), connectCommand.getJoinType());
             ChessGame game = Server.gameDataAccess.getGameData(gameID).game();
-            LoadGameMessage loadGameMessage = new LoadGameMessage(loadGameNotification, game);
+            LoadGameMessage loadGameMessage = new LoadGameMessage(null, game);
             connectionManager.get(connectCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
 
 
