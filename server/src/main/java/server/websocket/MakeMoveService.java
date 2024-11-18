@@ -5,6 +5,7 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import exception.ForbiddenException;
 import exception.ResponseException;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
@@ -27,7 +28,8 @@ public class MakeMoveService extends BaseService {
         ConnectionManager connectionManager;
 
         Server.gameService.checkUserAuth(makeMoveCommand.getAuthToken());
-
+        AuthData authData = Server.authDataAccess.getAuthData(makeMoveCommand.getAuthToken());
+        makeMoveCommand.setUsername(authData.username());
 
         int gameID = makeMoveCommand.getGameID();
         if(gameConnectionManager.isFinished(gameID)) {
@@ -35,12 +37,31 @@ public class MakeMoveService extends BaseService {
         } else {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
 
-            ChessGame game = Server.gameDataAccess.getGameData(gameID).game();
-            try {
-                game.makeMove(makeMoveCommand.getMove());
-            } catch (InvalidMoveException e) {
-                throw new ForbiddenException("Invalid chess move.");
+            GameData gameData = Server.gameDataAccess.getGameData(gameID);
+            ChessGame game = gameData.game();
+
+            String turnColor = game.getTeamTurn().toString();
+            String currentPlayer = "";
+            if (turnColor.equals("WHITE")) {
+                currentPlayer = gameData.whiteUsername();
+            } else if (turnColor.equals("BLACK")) {
+                currentPlayer = gameData.blackUsername();
             }
+
+
+            if (!currentPlayer.equals(makeMoveCommand.getUsername())) {
+                throw new ForbiddenException("Cannot make move.");
+            }
+
+                try {
+                    game.makeMove(makeMoveCommand.getMove());
+                } catch (InvalidMoveException e) {
+                    throw new ForbiddenException("Invalid chess move.");
+                }
+
+
+
+
         }
 
 
@@ -52,14 +73,14 @@ public class MakeMoveService extends BaseService {
 
         String loadGameNotification = String.format("You made move %s to %s.", makeMoveCommand.getMove().getStartPosition().toString(),
                 makeMoveCommand.getMove().getEndPosition().toString());
-        LoadGameMessage loadGameMessage = new LoadGameMessage(loadGameNotification, gameData.game());
+        LoadGameMessage loadGameMessage = new LoadGameMessage(null, gameData.game());
         connectionManager.get(makeMoveCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
 
         loadGameNotification = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
                 makeMoveCommand.getMove().getStartPosition().toString(),
                 makeMoveCommand.getMove().getEndPosition().toString());
-        loadGameMessage = new LoadGameMessage(loadGameNotification, gameData.game());
-        connectionManager.get(makeMoveCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
+        loadGameMessage = new LoadGameMessage(null, gameData.game());
+        connectionManager.broadcast(makeMoveCommand.getUsername(), loadGameMessage);
 
         String notificationMessage = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
                 makeMoveCommand.getMove().getStartPosition().toString(),

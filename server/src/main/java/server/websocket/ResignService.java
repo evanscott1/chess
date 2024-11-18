@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ForbiddenException;
 import exception.ResponseException;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
 import websocket.commands.ConnectCommand;
@@ -23,7 +24,8 @@ public class ResignService extends BaseService {
         ConnectionManager connectionManager;
 
         Server.gameService.checkUserAuth(resignCommand.getAuthToken());
-
+        AuthData authData = Server.authDataAccess.getAuthData(resignCommand.getAuthToken());
+        resignCommand.setUsername(authData.username());
 
         int gameID = resignCommand.getGameID();
 
@@ -37,9 +39,6 @@ public class ResignService extends BaseService {
             String notificationMessage = String.format("%s resigned the game.", resignCommand.getUsername());
             connectionManager.broadcast(resignCommand.getUsername(), new NotificationMessage(notificationMessage));
         }
-
-
-
 
     }
 }

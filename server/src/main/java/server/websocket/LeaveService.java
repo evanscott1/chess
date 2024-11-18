@@ -3,6 +3,7 @@ package server.websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
 import websocket.commands.ConnectCommand;
@@ -17,21 +18,20 @@ public class LeaveService extends BaseService {
         super(gameConnectionManager);
     }
 
-    public void leave(ConnectCommand connectCommand, Session session) throws IOException, ResponseException {
+    public void leave(LeaveCommand leaveCommand, Session session) throws IOException, ResponseException {
 
         ConnectionManager connectionManager;
 
-        Server.gameService.checkUserAuth(connectCommand.getAuthToken());
+        Server.gameService.checkUserAuth(leaveCommand.getAuthToken());
+        AuthData authData = Server.authDataAccess.getAuthData(leaveCommand.getAuthToken());
+        leaveCommand.setUsername(authData.username());
 
-
-        int gameID = connectCommand.getGameID();
+        int gameID = leaveCommand.getGameID();
         connectionManager = gameConnectionManager.getConnectionManager(gameID);
-        connectionManager.remove(connectCommand.getUsername());
+        connectionManager.remove(leaveCommand.getUsername());
 
-
-
-        String notificationMessage = String.format("%s left the game.", connectCommand.getUsername());
-        connectionManager.broadcast(connectCommand.getUsername(), new NotificationMessage(notificationMessage));
+        String notificationMessage = String.format("%s left the game.", leaveCommand.getUsername());
+        connectionManager.broadcast(leaveCommand.getUsername(), new NotificationMessage(notificationMessage));
 
 
     }

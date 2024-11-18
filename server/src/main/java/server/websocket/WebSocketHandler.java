@@ -8,10 +8,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
-import websocket.commands.ConnectCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.ResignCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -65,9 +62,9 @@ public class WebSocketHandler {
     }
 
     private void leave(String message, Session session) throws IOException {
-        ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
+        LeaveCommand leaveCommand = new Gson().fromJson(message, LeaveCommand.class);
         try {
-            leaveService.leave(connectCommand, session);
+            leaveService.leave(leaveCommand, session);
         } catch (ResponseException e) {
             errorHandler(e.getMessage(), session);
         }

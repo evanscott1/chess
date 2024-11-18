@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import exception.BadRequestException;
 import exception.ResponseException;
 import model.AuthData;
 import server.Server;
@@ -27,7 +28,16 @@ public class ConnectService extends BaseService {
             AuthData authData = Server.authDataAccess.getAuthData(connectCommand.getAuthToken());
             connectCommand.setUsername(authData.username());
 
-            int gameID = connectCommand.getGameID();
+            ChessGame game;
+        int gameID = connectCommand.getGameID();
+            if (Server.gameDataAccess.getGameData(gameID) !=null) {
+                game = Server.gameDataAccess.getGameData(gameID).game();
+            } else {
+                throw new BadRequestException("GameID does not exist");
+            }
+
+
+
             if (gameConnectionManager.getConnectionManager(gameID) == null) {
                 gameConnectionManager.addConnectionManager(gameID, new ConnectionManager());
             }
@@ -36,7 +46,7 @@ public class ConnectService extends BaseService {
 
 
             String loadGameNotification = String.format("You joined game %s as %s.", connectCommand.getGameID(), connectCommand.getJoinType());
-            ChessGame game = Server.gameDataAccess.getGameData(gameID).game();
+
             LoadGameMessage loadGameMessage = new LoadGameMessage(null, game);
             connectionManager.get(connectCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
 
