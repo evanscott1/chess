@@ -5,11 +5,9 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import exception.ForbiddenException;
 import exception.ResponseException;
-import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
-import websocket.commands.ConnectCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -32,7 +30,7 @@ public class MakeMoveService extends BaseService {
 
 
         int gameID = makeMoveCommand.getGameID();
-        if(gameConnectionManager.getConnectionManager(gameID) == null) {
+        if (gameConnectionManager.getConnectionManager(gameID) == null) {
             throw new ForbiddenException("Game finished.");
         } else {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
@@ -45,18 +43,18 @@ public class MakeMoveService extends BaseService {
             }
 
 
-                try {
-                    game.makeMove(makeMoveCommand.getMove());
-                } catch (InvalidMoveException e) {
-                    throw new ForbiddenException("Invalid chess move.");
-                }
-                Server.gameDataAccess.updateGameData(gameData);
+            try {
+                game.makeMove(makeMoveCommand.getMove());
+            } catch (InvalidMoveException e) {
+                throw new ForbiddenException("Invalid chess move.");
+            }
+            Server.gameDataAccess.updateGameData(gameData);
 
-                if (game.isInCheckmate(game.getTeamTurn())) {
-                    gameConnectionManager.removeConnectionManager(gameID);
-                } else if (game.isInStalemate(game.getTeamTurn())) {
-                    gameConnectionManager.removeConnectionManager(gameID);
-                }
+            if (game.isInCheckmate(game.getTeamTurn())) {
+                gameConnectionManager.removeConnectionManager(gameID);
+            } else if (game.isInStalemate(game.getTeamTurn())) {
+                gameConnectionManager.removeConnectionManager(gameID);
+            }
 
 
             String loadGameNotification = String.format("You made move %s to %s.", makeMoveCommand.getMove().getStartPosition().toString(),
@@ -77,13 +75,7 @@ public class MakeMoveService extends BaseService {
         }
 
 
-
-
 //        GameData gameData = Server.gameDataAccess.updateGameData(Server.gameDataAccess.getGameData(gameID));
-
-
-
-
 
 
     }

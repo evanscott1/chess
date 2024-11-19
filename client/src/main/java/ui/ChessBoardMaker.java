@@ -8,10 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static ui.EscapeSequences.*;
 
 public class ChessBoardMaker {
@@ -85,7 +82,8 @@ public class ChessBoardMaker {
         out.print("\u001B[0m");
     }
 
-    private static void printBody(PrintStream out, ChessBoard board, boolean isWhite, ArrayList<ChessPosition> validPositions, ChessPosition startPosition) {
+    private static void printBody(PrintStream out, ChessBoard board, boolean isWhite, ArrayList<ChessPosition> validPositions,
+                                  ChessPosition startPosition) {
 
         SquareType squareType;
 
@@ -94,28 +92,23 @@ public class ChessBoardMaker {
         int stepRow = isWhite ? -1 : 1;
 
         int startCol = isWhite ? 1 : board.getBoardWidth();
-        int endCol = isWhite ? board.getBoardWidth() + 1:  0;
+        int endCol = isWhite ? board.getBoardWidth() + 1 : 0;
         int stepCol = isWhite ? 1 : -1;
 
         for (int i = startRow; i != endRow; i += stepRow) {
             //Every row prints 3 lines.
             for (int part = 1; part < 4; part++) {
-                boolean isEmptyRow = false;
-
-                if (part == 1 || part == 3) {
-                    isEmptyRow = true;
-                }
+                boolean isEmptyRow = part == 1 || part == 3;
 
                 squareType = startSquareType;
 
 
                 setBorder(out);
-                if(isEmptyRow) {
+                if (isEmptyRow) {
                     printSquare(out, " ");
                 } else {
                     printSquare(out, Integer.toString(i));
                 }
-
 
 
                 for (int j = startCol; j != endCol; j += stepCol) {
@@ -151,7 +144,7 @@ public class ChessBoardMaker {
                         } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                             setDarkTeam(out);
                         }
-                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
                             character = "N";
                         } else {
                             character = String.valueOf(piece.getPieceType().name().charAt(0));
@@ -166,7 +159,7 @@ public class ChessBoardMaker {
             Row: Part 3
              */
                 setBorder(out);
-                if(isEmptyRow) {
+                if (isEmptyRow) {
                     printSquare(out, " ");
                 } else {
                     printSquare(out, Integer.toString(i));
@@ -200,7 +193,7 @@ public class ChessBoardMaker {
             setDarkBackground(out);
             if (isValidPos) {
                 setValidDarkBackground(out);
-            }  else if (isStartPosition) {
+            } else if (isStartPosition) {
                 setStartPositionBackground(out);
             }
             squareType = SquareType.LIGHT;
@@ -221,7 +214,6 @@ public class ChessBoardMaker {
     }
 
 
-
     private static void printSquare(PrintStream out, String character) {
         int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
         int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
@@ -233,7 +225,7 @@ public class ChessBoardMaker {
 
     private static void printHeaderEmptyLine(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
-        for (int i = 0; i < BOARD_SIZE_IN_SQUARES; i++){
+        for (int i = 0; i < BOARD_SIZE_IN_SQUARES; i++) {
             printSquare(out, " ");
         }
         out.print(SET_BG_COLOR_BLACK);
@@ -298,11 +290,17 @@ public class ChessBoardMaker {
         out.print(SET_BG_COLOR_BLACK);
     }
 
-    private static void setValidLightBackground(PrintStream out) { out.print(SET_BG_COLOR_GREEN);}
+    private static void setValidLightBackground(PrintStream out) {
+        out.print(SET_BG_COLOR_GREEN);
+    }
 
-    private static void setValidDarkBackground(PrintStream out) { out.print(SET_BG_COLOR_DARK_GREEN);}
+    private static void setValidDarkBackground(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREEN);
+    }
 
-    private static void setStartPositionBackground(PrintStream out) { out.print(SET_BG_COLOR_YELLOW);}
+    private static void setStartPositionBackground(PrintStream out) {
+        out.print(SET_BG_COLOR_YELLOW);
+    }
 
     private static void setLightTeam(PrintStream out) {
         out.print(SET_TEXT_COLOR_RED);

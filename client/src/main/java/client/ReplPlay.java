@@ -1,11 +1,9 @@
 package client;
 
-import chess.ChessGame;
 import exception.ResponseException;
 import server.ServerFacade;
-import ui.ChessBoardMaker;
 
-public class ReplPlay extends ReplBase{
+public class ReplPlay extends ReplBase {
 
 
     public ReplPlay(ServerFacade server) throws ResponseException {
@@ -41,14 +39,14 @@ public class ReplPlay extends ReplBase{
 
     private ReplResponse help() {
         return new ReplResponse(State.INPLAY, """
-                    - move <startposition> <endposition> - to make a chess move
-                    - redraw - outputs current board
-                    - highlight <position> - possible moves of a piece
-                    - leave - a game
-                    - resign - forfeit the game
-                    - quit - playing chess
-                    - help - with possible commands
-                    """);
+                - move <startposition> <endposition> - to make a chess move
+                - redraw - outputs current board
+                - highlight <position> - possible moves of a piece
+                - leave - a game
+                - resign - forfeit the game
+                - quit - playing chess
+                - help - with possible commands
+                """);
     }
 
 }

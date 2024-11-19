@@ -1,16 +1,11 @@
 package server.websocket;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ForbiddenException;
 import exception.ResponseException;
-import model.AuthData;
-import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
-import websocket.commands.ConnectCommand;
 import websocket.commands.ResignCommand;
-import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
@@ -29,7 +24,7 @@ public class ResignService extends BaseService {
 
         int gameID = resignCommand.getGameID();
 
-        if(gameConnectionManager.getConnectionManager(gameID) == null) {
+        if (gameConnectionManager.getConnectionManager(gameID) == null) {
             throw new ForbiddenException("Game finished.");
         } else {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);

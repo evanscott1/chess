@@ -1,15 +1,14 @@
 package client;
 
-import chess.ChessGame;
 import client.websocket.NotificationHandler;
-import client.websocket.WebSocketFacade;
-import com.google.gson.Gson;
 import exception.BadRequestException;
 import exception.ForbiddenException;
 import exception.ResponseException;
-
 import server.ServerFacade;
-import userservicerecords.*;
+import userservicerecords.LoginRequest;
+import userservicerecords.LoginResult;
+import userservicerecords.RegisterRequest;
+import userservicerecords.RegisterResult;
 
 import java.util.Arrays;
 
@@ -18,7 +17,7 @@ public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.LOGGEDOUT;
-    private ReplLogin replLogin;
+    private final ReplLogin replLogin;
     private String authToken = null;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
@@ -37,7 +36,7 @@ public class ChessClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
-            if(state == State.LOGGEDOUT) {
+            if (state == State.LOGGEDOUT) {
                 return evalMenu(cmd, params);
             } else if (state == State.LOGGEDIN) {
                 return processReplResponse(replLogin.eval(cmd, params));
@@ -56,7 +55,7 @@ public class ChessClient {
         return response.message();
     }
 
-    private String evalMenu(String cmd, String... params) throws Exception{
+    private String evalMenu(String cmd, String... params) throws Exception {
         return switch (cmd) {
             case "register" -> register(params);
             case "login" -> login(params);
@@ -113,12 +112,12 @@ public class ChessClient {
     }
 
     public String help() {
-            return """
-                    - register <username> <password> <email> - to create an account
-                    - login <username> <password> - to play chess
-                    - quit - playing chess
-                    = help - with possible commands
-                    """;
+        return """
+                - register <username> <password> <email> - to create an account
+                - login <username> <password> - to play chess
+                - quit - playing chess
+                = help - with possible commands
+                """;
     }
 
 

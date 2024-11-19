@@ -8,25 +8,16 @@ import exception.ResponseException;
 import gameservicerecords.*;
 import model.GameData;
 import server.ServerFacade;
-import ui.ChessBoardMaker;
-import userservicerecords.LogoutRequest;
-import userservicerecords.LogoutResult;
-import userservicerecords.RegisterRequest;
-import userservicerecords.RegisterResult;
 import websocket.commands.ConnectCommand;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class ReplLogin extends ReplBase {
 
     private State state = State.LOGGEDIN;
-    private ReplPlay replPlay;
-    private ReplObserve replObserve;
+    private final ReplPlay replPlay;
+    private final ReplObserve replObserve;
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
-    private String serverURL;
+    private final String serverURL;
 
 
     public ReplLogin(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
@@ -41,17 +32,17 @@ public class ReplLogin extends ReplBase {
         }
     }
 
-    public ReplResponse eval(String cmd, String... params) throws  Exception {
-            if (state == State.LOGGEDIN) {
-                return evalMenu(cmd, params);
-            } else if (state == State.INPLAY) {
-                return updateLoginState(replPlay.evalMenu(cmd, params));
-            } else if (state == State.OBSERVATION) {
-                return updateLoginState(replObserve.evalMenu(cmd, params));
-            } else {
-                assert false;
-                throw new RuntimeException("There was a problem with chess.");
-            }
+    public ReplResponse eval(String cmd, String... params) throws Exception {
+        if (state == State.LOGGEDIN) {
+            return evalMenu(cmd, params);
+        } else if (state == State.INPLAY) {
+            return updateLoginState(replPlay.evalMenu(cmd, params));
+        } else if (state == State.OBSERVATION) {
+            return updateLoginState(replObserve.evalMenu(cmd, params));
+        } else {
+            assert false;
+            throw new RuntimeException("There was a problem with chess.");
+        }
     }
 
 
@@ -105,7 +96,7 @@ public class ReplLogin extends ReplBase {
                 if (gameData.whiteUsername() != null) {
                     whiteU = gameData.whiteUsername();
                 }
-                if(gameData.blackUsername() != null) {
+                if (gameData.blackUsername() != null) {
                     blackU = gameData.blackUsername();
                 }
                 buffer.append(String.format("%s. %s: WhiteUsername: %s, BlackUsername: %s\n",
@@ -183,17 +174,16 @@ public class ReplLogin extends ReplBase {
     }
 
 
-
     private ReplResponse help() {
         return new ReplResponse(State.LOGGEDIN, """
-                    - create <NAME> - a game
-                    - list - games
-                    - join <ID> [WHITE|BLACK] - must enter 'list' to get game ID
-                    - observe <ID> - a game
-                    - logout - when you are done
-                    - quit - playing chess
-                    - help - with possible commands
-                    """);
+                - create <NAME> - a game
+                - list - games
+                - join <ID> [WHITE|BLACK] - must enter 'list' to get game ID
+                - observe <ID> - a game
+                - logout - when you are done
+                - quit - playing chess
+                - help - with possible commands
+                """);
     }
 
 

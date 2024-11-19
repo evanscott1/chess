@@ -1,22 +1,14 @@
 package server.websocket;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import exception.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import server.Server;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
-
-import static server.Server.gameDataAccess;
 
 
 @WebSocket
@@ -29,7 +21,7 @@ public class WebSocketHandler {
     private final LeaveService leaveService = new LeaveService(gameConnectionManager);
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException{
+    public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case UserGameCommand.CommandType.CONNECT -> connect(message, session);
@@ -79,7 +71,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void errorHandler(String message, Session session)  throws IOException{
+    private void errorHandler(String message, Session session) throws IOException {
         ErrorMessage errorMessage = new ErrorMessage(String.format("Error: %s", message));
 
         new Connection("", session).send(new Gson().toJson(errorMessage));

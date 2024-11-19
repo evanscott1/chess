@@ -1,6 +1,5 @@
 package client;
 
-import chess.ChessPosition;
 import exception.ForbiddenException;
 import exception.ResponseException;
 import gameservicerecords.ListGamesRequest;
@@ -38,13 +37,13 @@ public abstract class ReplBase {
         this.authToken = authToken;
     }
 
-    protected String highlightLegalMoves(String... params) throws ResponseException{
+    protected String highlightLegalMoves(String... params) throws ResponseException {
         outputChessBoard(listID, teamColor, params);
 
         return "";
     }
 
-    protected String redrawChessBoard() throws ResponseException{
+    protected String redrawChessBoard() throws ResponseException {
         outputChessBoard(listID, teamColor, "");
         return "";
     }

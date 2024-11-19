@@ -2,7 +2,6 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ public class ConnectionManager {
     }
 
     public Connection get(String username) {
-        return  connections.get(username);
+        return connections.get(username);
     }
 
     public void remove(String username) {

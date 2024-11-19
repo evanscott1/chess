@@ -39,9 +39,7 @@ public class BaseService {
         }
 
         if (gameData.blackUsername() != null) {
-            if (gameData.blackUsername().equals(username)) {
-                return true;
-            }
+            return gameData.blackUsername().equals(username);
         }
         return false;
     }

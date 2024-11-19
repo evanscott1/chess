@@ -1,15 +1,11 @@
 package server.websocket;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
-import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
-import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
@@ -56,8 +52,6 @@ public class LeaveService extends BaseService {
 
 
     }
-
-
 
 
 }

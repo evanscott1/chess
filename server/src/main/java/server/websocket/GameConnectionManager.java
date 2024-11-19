@@ -1,7 +1,5 @@
 package server.websocket;
 
-import org.eclipse.jetty.websocket.api.Session;
-
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +20,7 @@ public class GameConnectionManager {
         return games.get(gameID);
     }
 
-    public void  removeConnectionManager(int gameID) {
+    public void removeConnectionManager(int gameID) {
         games.remove(gameID);
         finishedGames.add(gameID);
     }

@@ -2,10 +2,8 @@ package client;
 
 
 import client.websocket.NotificationHandler;
-import ui.EscapeSequences;
 import websocket.messages.ServerMessage;
 
-import javax.management.NotificationFilter;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
