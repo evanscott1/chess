@@ -31,4 +31,9 @@ public class GameConnectionManager {
         return finishedGames.contains(gameID);
     }
 
+    public void clear() {
+        games.clear();
+        finishedGames.clear();
+    }
+
 }

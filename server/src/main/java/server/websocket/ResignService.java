@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import exception.ForbiddenException;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
 import websocket.commands.ConnectCommand;
@@ -24,20 +25,29 @@ public class ResignService extends BaseService {
         ConnectionManager connectionManager;
 
         Server.gameService.checkUserAuth(resignCommand.getAuthToken());
-        AuthData authData = Server.authDataAccess.getAuthData(resignCommand.getAuthToken());
-        resignCommand.setUsername(authData.username());
+        ServiceHelper.setUserGameCommandUsername(resignCommand);
 
         int gameID = resignCommand.getGameID();
 
-        if(gameConnectionManager.isFinished(gameID)) {
+        if(gameConnectionManager.getConnectionManager(gameID) == null) {
             throw new ForbiddenException("Game finished.");
         } else {
-            gameConnectionManager.removeConnectionManager(gameID);
-
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
 
-            String notificationMessage = String.format("%s resigned the game.", resignCommand.getUsername());
-            connectionManager.broadcast(resignCommand.getUsername(), new NotificationMessage(notificationMessage));
+
+            if (!ServiceHelper.isPlayer(gameID, resignCommand.getUsername())) {
+                throw new ForbiddenException("Cannot make move.");
+            }
+
+
+            String message = "You resigned.";
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connectionManager.get(resignCommand.getUsername()).send(new Gson().toJson(notificationMessage));
+
+            message = String.format("%s resigned the game.", resignCommand.getUsername());
+            connectionManager.broadcast(resignCommand.getUsername(), new NotificationMessage(message));
+
+            gameConnectionManager.removeConnectionManager(gameID);
         }
 
     }

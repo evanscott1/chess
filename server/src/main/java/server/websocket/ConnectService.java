@@ -41,6 +41,8 @@ public class ConnectService extends BaseService {
             if (gameConnectionManager.getConnectionManager(gameID) == null) {
                 gameConnectionManager.addConnectionManager(gameID, new ConnectionManager());
             }
+
+
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
             connectionManager.add(connectCommand.getUsername(), session);
 

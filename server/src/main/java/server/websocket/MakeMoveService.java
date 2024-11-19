@@ -28,8 +28,8 @@ public class MakeMoveService extends BaseService {
         ConnectionManager connectionManager;
 
         Server.gameService.checkUserAuth(makeMoveCommand.getAuthToken());
-        AuthData authData = Server.authDataAccess.getAuthData(makeMoveCommand.getAuthToken());
-        makeMoveCommand.setUsername(authData.username());
+        ServiceHelper.setUserGameCommandUsername(makeMoveCommand);
+
 
         int gameID = makeMoveCommand.getGameID();
         if(gameConnectionManager.isFinished(gameID)) {
@@ -40,16 +40,7 @@ public class MakeMoveService extends BaseService {
             GameData gameData = Server.gameDataAccess.getGameData(gameID);
             ChessGame game = gameData.game();
 
-            String turnColor = game.getTeamTurn().toString();
-            String currentPlayer = "";
-            if (turnColor.equals("WHITE")) {
-                currentPlayer = gameData.whiteUsername();
-            } else if (turnColor.equals("BLACK")) {
-                currentPlayer = gameData.blackUsername();
-            }
-
-
-            if (!currentPlayer.equals(makeMoveCommand.getUsername())) {
+            if (!ServiceHelper.isPlayerTurn(gameID, makeMoveCommand.getUsername())) {
                 throw new ForbiddenException("Cannot make move.");
             }
 
@@ -58,8 +49,6 @@ public class MakeMoveService extends BaseService {
                 } catch (InvalidMoveException e) {
                     throw new ForbiddenException("Invalid chess move.");
                 }
-
-
 
 
         }

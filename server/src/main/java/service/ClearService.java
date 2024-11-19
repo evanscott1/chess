@@ -24,7 +24,8 @@ public class ClearService {
         authDataAccess.deleteAllAuthDatas();
         gameDataAccess.deleteAllGameDatas();
         userDataAccess.deleteAllUserDatas();
-        ;
+
+
 
         return new ClearResult();
     }
