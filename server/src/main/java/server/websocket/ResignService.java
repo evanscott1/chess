@@ -36,7 +36,7 @@ public class ResignService extends BaseService {
 
 
             if (!isPlayer(gameID, resignCommand.getUsername())) {
-                throw new ForbiddenException("Cannot make move.");
+                throw new ForbiddenException("Cannot resign as observer.");
             }
 
 

@@ -39,7 +39,8 @@ public class LeaveService extends BaseService {
                 if (gameData.whiteUsername().equals(leaveCommand.getUsername())) {
                     gameData = gameData.setWhiteUsername(null);
                 }
-            } else if (gameData.blackUsername() != null) {
+            }
+            if (gameData.blackUsername() != null) {
                 if (gameData.blackUsername().equals(leaveCommand.getUsername())) {
                     gameData = gameData.setBlackUsername(null);
                 }
