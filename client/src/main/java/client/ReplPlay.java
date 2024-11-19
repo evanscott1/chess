@@ -5,8 +5,12 @@ import chess.ChessPosition;
 import client.websocket.WebSocketFacade;
 import exception.ResponseException;
 import server.ServerFacade;
+import ui.ChessBoardMaker;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReplPlay extends ReplBase {
 
@@ -36,17 +40,21 @@ public class ReplPlay extends ReplBase {
 
     private ReplResponse makeMove(String... params) throws ResponseException {
 
-        ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
-        ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
+        if (params.length == 4) {
+        ArrayList<String> headers = new ArrayList<>(List.of("a", "b", "c", "d", "e", "f", "g", "h"));
+        ChessPosition startPosition = ChessBoardMaker.findStartPosition(headers, params[0], params[1]);
+        ChessPosition endPosition = ChessBoardMaker.findStartPosition(headers, params[2], params[3]);
         ChessMove move = new ChessMove(startPosition, endPosition, null);
 
         MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, listID, move);
         makeMoveCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL);
+        ws = new WebSocketFacade(serverURL, teamColor);
         ws.makeMove(makeMoveCommand);
 
 
         return new ReplResponse(State.INPLAY, "");
+        }
+        throw new ResponseException(400, "Expected: move <startNum> <startAlpha> <endNum> <endAlpha>");
     }
 
 
@@ -54,7 +62,7 @@ public class ReplPlay extends ReplBase {
 
         ResignCommand resignCommand = new ResignCommand(authToken, listID);
         resignCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL);
+        ws = new WebSocketFacade(serverURL, teamColor);
         ws.resign(resignCommand);
 
         return new ReplResponse(State.LOGGEDIN, "");
@@ -62,9 +70,9 @@ public class ReplPlay extends ReplBase {
 
     private ReplResponse help() {
         return new ReplResponse(State.INPLAY, """
-                - move <startposition> <endposition> - to make a chess move
+                - move <startNum> <startAlpha> <endNum> <endAlpha> - to make a chess move
                 - redraw - outputs current board
-                - highlight <position> - possible moves of a piece
+                - highlight <num> <alpha> - possible moves of a piece
                 - leave - a game
                 - resign - forfeit the game
                 - quit - playing chess

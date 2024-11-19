@@ -123,12 +123,11 @@ public class ReplLogin extends ReplBase {
 
                     ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.PLAYER);
                     connectCommand.setUsername(username);
-                    ws = new WebSocketFacade(serverURL);
+                    ws = new WebSocketFacade(serverURL, teamColor);
                     ws.connectGame(connectCommand);
 
                     replPlay.setListID(listID);
                     replPlay.setTeamColor(teamColor);
-                    outputChessBoard(listID, teamColor);
                     return new ReplResponse(State.INPLAY, String.format("Joined game %s.", listID));
                 }
                 throw new BadRequestException("Not a valid ID. Please enter command 'list' and select a game ID.");
@@ -148,11 +147,10 @@ public class ReplLogin extends ReplBase {
                 if (gamesList.containsKey(listID)) {
                     replObserve.setListID(listID);
                     replObserve.setUsername(username);
-                    outputChessBoard(listID, "WHITE");
 
                     ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.OBSERVER);
                     connectCommand.setUsername(username);
-                    ws = new WebSocketFacade(serverURL);
+                    ws = new WebSocketFacade(serverURL, "WHITE");
                     ws.connectGame(connectCommand);
 
                     return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));

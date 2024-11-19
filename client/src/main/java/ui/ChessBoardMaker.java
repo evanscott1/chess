@@ -211,7 +211,7 @@ public class ChessBoardMaker {
         return squareType;
     }
 
-    private static ChessPosition findStartPosition(ArrayList<String> headers, String... params) {
+    public static ChessPosition findStartPosition(ArrayList<String> headers, String... params) {
         int count = 1;
         for (String header : headers) {
             if (header.equals(params[1])) {

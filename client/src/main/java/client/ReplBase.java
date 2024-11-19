@@ -42,9 +42,13 @@ public abstract class ReplBase {
     }
 
     protected String highlightLegalMoves(String... params) throws ResponseException {
+        if (params.length == 2) {
         outputChessBoard(listID, teamColor, params);
 
         return "";
+
+        }
+        throw new ResponseException(400, "Expected: highlight <num> <alpha>");
     }
 
     protected String redrawChessBoard() throws ResponseException {
@@ -60,10 +64,10 @@ public abstract class ReplBase {
 
         LeaveCommand leaveCommand = new LeaveCommand(authToken, listID);
         leaveCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL);
+        ws = new WebSocketFacade(serverURL, teamColor);
         ws.leave(leaveCommand);
 
-        return new ReplResponse(State.INPLAY, "Left game.");
+        return new ReplResponse(State.LOGGEDIN, "Left game.");
     }
 
     protected ReplResponse logout() throws Exception {

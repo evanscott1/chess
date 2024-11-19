@@ -21,7 +21,7 @@ public class WebSocketFacade extends Endpoint {
 
 
 
-    public WebSocketFacade(String url) throws ResponseException {
+    public WebSocketFacade(String url, String teamColor) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -34,7 +34,7 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    serverMessageHandler(message);
+                    serverMessageHandler(message, teamColor);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

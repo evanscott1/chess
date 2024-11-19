@@ -18,12 +18,12 @@ import static ui.EscapeSequences.*;
 
 public class ServerMessageHandler {
 
-    public static void serverMessageHandler(String message) {
+    public static void serverMessageHandler(String message, String teamColor) {
         ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
         switch (serverMessage.getServerMessageType()) {
             case ServerMessage.ServerMessageType.NOTIFICATION -> notification(message);
-            case ServerMessage.ServerMessageType.LOAD_GAME -> loadGame(message);
+            case ServerMessage.ServerMessageType.LOAD_GAME -> loadGame(message, teamColor);
             case ServerMessage.ServerMessageType.ERROR -> error(message);
         }
 
@@ -34,10 +34,9 @@ public class ServerMessageHandler {
         notify(notificationMessage.getMessage());
     }
 
-    private static void loadGame(String message) {
+    private static void loadGame(String message, String teamColor) {
         LoadGameMessage loadGameMessage = new Gson().fromJson(message,  LoadGameMessage.class);
-        ChessBoardMaker.boardMaker(loadGameMessage.getGame(), "WHITE");
-        notify(loadGameMessage.getMessage());
+        ChessBoardMaker.boardMaker(loadGameMessage.getGame(), teamColor);
     }
 
     private static void error(String message) {

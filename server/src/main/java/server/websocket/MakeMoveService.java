@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import exception.ForbiddenException;
@@ -13,6 +14,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MakeMoveService extends BaseService {
 
@@ -57,26 +60,40 @@ public class MakeMoveService extends BaseService {
             }
 
 
-            String loadGameNotification = String.format("You made move %s to %s.", makeMoveCommand.getMove().getStartPosition().toString(),
-                    makeMoveCommand.getMove().getEndPosition().toString());
+
+            String loadGameNotification = String.format("You made move %s to %s.",
+                    chessPositionToString(makeMoveCommand.getMove().getStartPosition()),
+                    chessPositionToString(makeMoveCommand.getMove().getEndPosition()));
             LoadGameMessage loadGameMessage = new LoadGameMessage(null, gameData.game());
             connectionManager.get(makeMoveCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
 
             loadGameNotification = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
-                    makeMoveCommand.getMove().getStartPosition().toString(),
-                    makeMoveCommand.getMove().getEndPosition().toString());
+                    chessPositionToString(makeMoveCommand.getMove().getStartPosition()),
+                    chessPositionToString(makeMoveCommand.getMove().getEndPosition()));
             loadGameMessage = new LoadGameMessage(null, gameData.game());
             connectionManager.broadcast(makeMoveCommand.getUsername(), loadGameMessage);
 
             String notificationMessage = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
-                    makeMoveCommand.getMove().getStartPosition().toString(),
-                    makeMoveCommand.getMove().getEndPosition().toString());
+                    chessPositionToString(makeMoveCommand.getMove().getStartPosition()),
+                    chessPositionToString(makeMoveCommand.getMove().getEndPosition()));
             connectionManager.broadcast(makeMoveCommand.getUsername(), new NotificationMessage(notificationMessage));
         }
 
 
-//        GameData gameData = Server.gameDataAccess.updateGameData(Server.gameDataAccess.getGameData(gameID));
+
+
+
 
 
     }
-}
+
+    private String chessPositionToString(ChessPosition pos) {
+
+        ArrayList<String> headers = new ArrayList<>(List.of("a", "b", "c", "d", "e", "f", "g", "h"));
+
+            return pos.getRow() + headers.get(pos.getColumn() - 1);
+
+        }
+
+    }
+
