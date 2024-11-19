@@ -1,17 +1,15 @@
 package client;
 
-import client.websocket.NotificationHandler;
 import exception.ResponseException;
 import server.ServerFacade;
 
 public class ReplObserve extends ReplBase {
 
 
-    public ReplObserve(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
+    public ReplObserve(ServerFacade server, String serverURL) throws ResponseException {
         super(server);
         teamColor = "WHITE";
         this.serverURL = serverURL;
-        this.notificationHandler = notificationHandler;
     }
 
 

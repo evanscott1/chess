@@ -1,6 +1,5 @@
 package client;
 
-import client.websocket.NotificationHandler;
 import exception.BadRequestException;
 import exception.ForbiddenException;
 import exception.ResponseException;
@@ -20,11 +19,11 @@ public class ChessClient {
     private final ReplLogin replLogin;
     private String authToken = null;
 
-    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
+    public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         try {
-            replLogin = new ReplLogin(this.server, serverUrl, notificationHandler);
+            replLogin = new ReplLogin(this.server, serverUrl);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }

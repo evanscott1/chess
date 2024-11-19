@@ -25,8 +25,8 @@ public class ChessBoardMaker {
 //    private static final GameData gameData = null;
 
 
-    public static void boardMaker(GameData gameData, String teamColor, String... params) {
-        ChessBoard board = gameData.game().getBoard();
+    public static void boardMaker(ChessGame game, String teamColor, String... params) {
+        ChessBoard board = game.getBoard();
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         boolean isWhite = Objects.equals(teamColor, "WHITE");
         ArrayList<ChessMove> validMoves;

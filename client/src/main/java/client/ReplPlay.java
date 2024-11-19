@@ -2,21 +2,18 @@ package client;
 
 import chess.ChessMove;
 import chess.ChessPosition;
-import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import exception.ResponseException;
 import server.ServerFacade;
-import websocket.commands.ConnectCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
 
 public class ReplPlay extends ReplBase {
 
 
-    public ReplPlay(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
+    public ReplPlay(ServerFacade server, String serverURL) throws ResponseException {
         super(server);
         this.serverURL = serverURL;
-        this.notificationHandler = notificationHandler;
     }
 
 
@@ -45,10 +42,11 @@ public class ReplPlay extends ReplBase {
 
         MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, listID, move);
         makeMoveCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL, notificationHandler);
+        ws = new WebSocketFacade(serverURL);
         ws.makeMove(makeMoveCommand);
 
-        return new ReplResponse(State.INPLAY, "Made move.");
+
+        return new ReplResponse(State.INPLAY, "");
     }
 
 
@@ -56,10 +54,10 @@ public class ReplPlay extends ReplBase {
 
         ResignCommand resignCommand = new ResignCommand(authToken, listID);
         resignCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL, notificationHandler);
+        ws = new WebSocketFacade(serverURL);
         ws.resign(resignCommand);
 
-        return new ReplResponse(State.LOGGEDIN, "Resigned.");
+        return new ReplResponse(State.LOGGEDIN, "");
     }
 
     private ReplResponse help() {

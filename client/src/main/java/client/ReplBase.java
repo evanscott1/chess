@@ -1,6 +1,5 @@
 package client;
 
-import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import exception.ForbiddenException;
 import exception.ResponseException;
@@ -12,7 +11,6 @@ import ui.ChessBoardMaker;
 import userservicerecords.LogoutRequest;
 import userservicerecords.LogoutResult;
 import websocket.commands.LeaveCommand;
-import websocket.commands.MakeMoveCommand;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +26,6 @@ public abstract class ReplBase {
     protected HashMap<Integer, Integer> gamesList = new HashMap<>();
     protected int nextGameListID = 1;
     protected WebSocketFacade ws;
-    protected NotificationHandler notificationHandler;
     protected String serverURL;
 
 
@@ -63,10 +60,10 @@ public abstract class ReplBase {
 
         LeaveCommand leaveCommand = new LeaveCommand(authToken, listID);
         leaveCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL, notificationHandler);
+        ws = new WebSocketFacade(serverURL);
         ws.leave(leaveCommand);
 
-        return new ReplResponse(State.INPLAY, "Made move.");
+        return new ReplResponse(State.INPLAY, "Left game.");
     }
 
     protected ReplResponse logout() throws Exception {
@@ -94,6 +91,6 @@ public abstract class ReplBase {
     protected void outputChessBoard(int listID, String teamColor, String... params) throws ResponseException {
         ListGamesResult gamesListResult = server.listGames(new ListGamesRequest(authToken));
         GameData gameData = new ArrayList<>(gamesListResult.games()).get(listID - 1);
-        ChessBoardMaker.boardMaker(gameData, teamColor, params);
+        ChessBoardMaker.boardMaker(gameData.game(), teamColor, params);
     }
 }

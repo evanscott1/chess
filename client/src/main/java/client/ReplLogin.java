@@ -1,6 +1,5 @@
 package client;
 
-import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import exception.BadRequestException;
 import exception.ForbiddenException;
@@ -18,13 +17,12 @@ public class ReplLogin extends ReplBase {
 
 
 
-    public ReplLogin(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
+    public ReplLogin(ServerFacade server, String serverURL) throws ResponseException {
         super(server);
         this.serverURL = serverURL;
-        this.notificationHandler = notificationHandler;
         try {
-            replPlay = new ReplPlay(this.server, serverURL, notificationHandler);
-            replObserve = new ReplObserve(this.server, serverURL, notificationHandler);
+            replPlay = new ReplPlay(this.server, serverURL);
+            replObserve = new ReplObserve(this.server, serverURL);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -123,9 +121,9 @@ public class ReplLogin extends ReplBase {
                     JoinGameRequest request = new JoinGameRequest(authToken, teamColor, gamesList.get(listID));
                     JoinGameResult result = server.joinGame(request);
 
-                    ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.OBSERVER);
+                    ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.PLAYER);
                     connectCommand.setUsername(username);
-                    ws = new WebSocketFacade(serverURL, notificationHandler);
+                    ws = new WebSocketFacade(serverURL);
                     ws.connectGame(connectCommand);
 
                     replPlay.setListID(listID);
@@ -154,8 +152,9 @@ public class ReplLogin extends ReplBase {
 
                     ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.OBSERVER);
                     connectCommand.setUsername(username);
-                    ws = new WebSocketFacade(serverURL, notificationHandler);
+                    ws = new WebSocketFacade(serverURL);
                     ws.connectGame(connectCommand);
+
                     return new ReplResponse(State.OBSERVATION, String.format("Joined game %s as an observer", listID));
 
                 }
