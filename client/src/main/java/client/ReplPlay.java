@@ -65,7 +65,7 @@ public class ReplPlay extends ReplBase {
         ws = new WebSocketFacade(serverURL, teamColor);
         ws.resign(resignCommand);
 
-        return new ReplResponse(State.LOGGEDIN, "");
+        return new ReplResponse(State.INPLAY, "");
     }
 
     private ReplResponse help() {

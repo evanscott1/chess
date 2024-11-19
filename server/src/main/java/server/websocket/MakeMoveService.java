@@ -33,7 +33,7 @@ public class MakeMoveService extends BaseService {
 
 
         int gameID = makeMoveCommand.getGameID();
-        if (gameConnectionManager.getConnectionManager(gameID) == null) {
+        if (gameConnectionManager.isFinishedGame(gameID)) {
             throw new ForbiddenException("Game finished.");
         } else {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
@@ -73,9 +73,11 @@ public class MakeMoveService extends BaseService {
 
 
             if (game.isInCheckmate(game.getTeamTurn())) {
+                gameConnectionManager.markGameFinished(gameID);
                 connectionManager.broadcast("", new NotificationMessage(
                         String.format("%s is in checkmate", game.getTeamTurn().toString())));
             } else if (game.isInStalemate(game.getTeamTurn())) {
+                gameConnectionManager.markGameFinished(gameID);
                 connectionManager.broadcast("", new NotificationMessage(
                         String.format("%s is in stalemate", game.getTeamTurn().toString())));
             } else if (game.isInCheck(game.getTeamTurn())) {

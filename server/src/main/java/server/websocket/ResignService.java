@@ -24,7 +24,7 @@ public class ResignService extends BaseService {
 
         int gameID = resignCommand.getGameID();
 
-        if (gameConnectionManager.getConnectionManager(gameID) == null) {
+        if (gameConnectionManager.isFinishedGame(gameID)) {
             throw new ForbiddenException("Game finished.");
         } else {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
@@ -34,6 +34,7 @@ public class ResignService extends BaseService {
                 throw new ForbiddenException("Cannot resign as observer.");
             }
 
+            gameConnectionManager.markGameFinished(gameID);
 
             String message = "You resigned.";
             NotificationMessage notificationMessage = new NotificationMessage(message);
