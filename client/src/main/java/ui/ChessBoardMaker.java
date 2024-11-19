@@ -258,10 +258,7 @@ public class ChessBoardMaker {
         printNewLine(out);
         printHeaderEmptyLine(out);
     }
-
-    private static void printEmptySquare(PrintStream out) {
-        printSquare(out, " ");
-    }
+    
 
     private static void printNewLine(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
