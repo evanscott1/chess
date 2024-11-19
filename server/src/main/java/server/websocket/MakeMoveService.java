@@ -53,14 +53,6 @@ public class MakeMoveService extends BaseService {
             }
             Server.gameDataAccess.updateGameData(gameData);
 
-            if (game.isInCheckmate(game.getTeamTurn())) {
-                gameConnectionManager.removeConnectionManager(gameID);
-            } else if (game.isInStalemate(game.getTeamTurn())) {
-                gameConnectionManager.removeConnectionManager(gameID);
-            }
-
-
-
             String loadGameNotification = String.format("You made move %s to %s.",
                     chessPositionToString(makeMoveCommand.getMove().getStartPosition()),
                     chessPositionToString(makeMoveCommand.getMove().getEndPosition()));
@@ -77,13 +69,23 @@ public class MakeMoveService extends BaseService {
                     chessPositionToString(makeMoveCommand.getMove().getStartPosition()),
                     chessPositionToString(makeMoveCommand.getMove().getEndPosition()));
             connectionManager.broadcast(makeMoveCommand.getUsername(), new NotificationMessage(notificationMessage));
+
+
+
+            if (game.isInCheckmate(game.getTeamTurn())) {
+                connectionManager.broadcast("", new NotificationMessage(
+                        String.format("%s is in checkmate", game.getTeamTurn().toString())));
+            } else if (game.isInStalemate(game.getTeamTurn())) {
+                connectionManager.broadcast("", new NotificationMessage(
+                        String.format("%s is in stalemate", game.getTeamTurn().toString())));
+            } else if (game.isInCheck(game.getTeamTurn())) {
+                connectionManager.broadcast("", new NotificationMessage(
+                        String.format("%s is in check", game.getTeamTurn().toString())));
+            }
+
+
+
         }
-
-
-
-
-
-
 
     }
 
@@ -94,6 +96,10 @@ public class MakeMoveService extends BaseService {
             return pos.getRow() + headers.get(pos.getColumn() - 1);
 
         }
+
+    private ChessGame.TeamColor oppositeTeamColor(ChessGame.TeamColor teamColor) {
+        return teamColor.equals(ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+    }
 
     }
 

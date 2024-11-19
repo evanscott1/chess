@@ -117,7 +117,7 @@ public class ChessBoardMaker {
                     String character = null;
                     ChessPosition currentPos = new ChessPosition(i, j);
 
-                    boolean isValidPos = false;
+                    boolean isValidPos;
 
                     isValidPos = isValidPosition(validPositions, currentPos);
 
@@ -183,10 +183,13 @@ public class ChessBoardMaker {
 
 
     private static boolean isValidPosition(ArrayList<ChessPosition> validPositions, ChessPosition currentPos) {
+        boolean valid = false;
         for (ChessPosition pos : validPositions) {
-            return currentPos.getRow() == pos.getRow() && currentPos.getColumn() == pos.getColumn();
+            if (currentPos.getRow() == pos.getRow() && currentPos.getColumn() == pos.getColumn()) {
+                valid = true;
+            }
         }
-        return false;
+        return valid;
     }
 
     private static SquareType setBodyBackground(SquareType squareType, PrintStream out, boolean isValidPos, boolean isStartPosition) {

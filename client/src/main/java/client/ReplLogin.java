@@ -121,8 +121,7 @@ public class ReplLogin extends ReplBase {
                     JoinGameRequest request = new JoinGameRequest(authToken, teamColor, gamesList.get(listID));
                     JoinGameResult result = server.joinGame(request);
 
-                    ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.PLAYER);
-                    connectCommand.setUsername(username);
+                    ConnectCommand connectCommand = getConnectCommand(teamColor, listID);
                     ws = new WebSocketFacade(serverURL, teamColor);
                     ws.connectGame(connectCommand);
 
@@ -138,6 +137,20 @@ public class ReplLogin extends ReplBase {
             }
         }
         throw new BadRequestException("Expected: join <ID> [WHITE|BLACK]");
+    }
+
+    private ConnectCommand getConnectCommand(String teamColor, int listID) {
+        ConnectCommand connectCommand;
+        if (teamColor.equals("WHITE")) {
+            connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.WHITE);
+        } else if (teamColor.equals("BLACK")) {
+            connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.BLACK);
+        } else {
+            throw new RuntimeException();
+        }
+
+        connectCommand.setUsername(username);
+        return connectCommand;
     }
 
     public ReplResponse observeGame(String... params) throws Exception {

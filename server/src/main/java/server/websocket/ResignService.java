@@ -42,7 +42,6 @@ public class ResignService extends BaseService {
             message = String.format("%s resigned the game.", resignCommand.getUsername());
             connectionManager.broadcast(resignCommand.getUsername(), new NotificationMessage(message));
 
-            gameConnectionManager.removeConnectionManager(gameID);
         }
 
     }

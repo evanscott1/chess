@@ -6,7 +6,8 @@ public class ConnectCommand extends UserGameCommand {
 
     public enum JoinType {
         OBSERVER,
-        PLAYER
+        WHITE,
+        BLACK
     }
 
     public ConnectCommand(String authToken, Integer gameID, JoinType joinType) {
