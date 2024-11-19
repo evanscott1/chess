@@ -25,7 +25,7 @@ public class ResignService extends BaseService {
         ConnectionManager connectionManager;
 
         Server.gameService.checkUserAuth(resignCommand.getAuthToken());
-        ServiceHelper.setUserGameCommandUsername(resignCommand);
+        setUserGameCommandUsername(resignCommand);
 
         int gameID = resignCommand.getGameID();
 
@@ -35,7 +35,7 @@ public class ResignService extends BaseService {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
 
 
-            if (!ServiceHelper.isPlayer(gameID, resignCommand.getUsername())) {
+            if (!isPlayer(gameID, resignCommand.getUsername())) {
                 throw new ForbiddenException("Cannot make move.");
             }
 

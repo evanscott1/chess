@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import server.Server;
 import websocket.commands.ConnectCommand;
@@ -29,6 +30,25 @@ public class LeaveService extends BaseService {
         int gameID = leaveCommand.getGameID();
         connectionManager = gameConnectionManager.getConnectionManager(gameID);
         connectionManager.remove(leaveCommand.getUsername());
+
+        GameData gameData = Server.gameDataAccess.getGameData(gameID);
+
+
+        if (isPlayer(gameID, leaveCommand.getUsername())) {
+            if (gameData.whiteUsername() != null) {
+                if (gameData.whiteUsername().equals(leaveCommand.getUsername())) {
+                    gameData = gameData.setWhiteUsername(null);
+                }
+            } else if (gameData.blackUsername() != null) {
+                if (gameData.blackUsername().equals(leaveCommand.getUsername())) {
+                    gameData = gameData.setBlackUsername(null);
+                }
+            }
+
+        }
+
+
+        Server.gameDataAccess.updateGameData(gameData);
 
         String notificationMessage = String.format("%s left the game.", leaveCommand.getUsername());
         connectionManager.broadcast(leaveCommand.getUsername(), new NotificationMessage(notificationMessage));

@@ -28,7 +28,7 @@ public class MakeMoveService extends BaseService {
         ConnectionManager connectionManager;
 
         Server.gameService.checkUserAuth(makeMoveCommand.getAuthToken());
-        ServiceHelper.setUserGameCommandUsername(makeMoveCommand);
+        setUserGameCommandUsername(makeMoveCommand);
 
 
         int gameID = makeMoveCommand.getGameID();
@@ -40,41 +40,50 @@ public class MakeMoveService extends BaseService {
             GameData gameData = Server.gameDataAccess.getGameData(gameID);
             ChessGame game = gameData.game();
 
-            if (!ServiceHelper.isPlayerTurn(gameID, makeMoveCommand.getUsername())) {
+            if (!isPlayerTurn(gameID, makeMoveCommand.getUsername())) {
                 throw new ForbiddenException("Cannot make move.");
             }
+
 
                 try {
                     game.makeMove(makeMoveCommand.getMove());
                 } catch (InvalidMoveException e) {
                     throw new ForbiddenException("Invalid chess move.");
                 }
+                Server.gameDataAccess.updateGameData(gameData);
+
+                if (game.isInCheckmate(game.getTeamTurn())) {
+                    gameConnectionManager.removeConnectionManager(gameID);
+                } else if (game.isInStalemate(game.getTeamTurn())) {
+                    gameConnectionManager.removeConnectionManager(gameID);
+                }
 
 
+            String loadGameNotification = String.format("You made move %s to %s.", makeMoveCommand.getMove().getStartPosition().toString(),
+                    makeMoveCommand.getMove().getEndPosition().toString());
+            LoadGameMessage loadGameMessage = new LoadGameMessage(null, gameData.game());
+            connectionManager.get(makeMoveCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
+
+            loadGameNotification = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
+                    makeMoveCommand.getMove().getStartPosition().toString(),
+                    makeMoveCommand.getMove().getEndPosition().toString());
+            loadGameMessage = new LoadGameMessage(null, gameData.game());
+            connectionManager.broadcast(makeMoveCommand.getUsername(), loadGameMessage);
+
+            String notificationMessage = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
+                    makeMoveCommand.getMove().getStartPosition().toString(),
+                    makeMoveCommand.getMove().getEndPosition().toString());
+            connectionManager.broadcast(makeMoveCommand.getUsername(), new NotificationMessage(notificationMessage));
         }
 
 
 
 
-        GameData gameData = Server.gameDataAccess.updateGameData(Server.gameDataAccess.getGameData(gameID));
+//        GameData gameData = Server.gameDataAccess.updateGameData(Server.gameDataAccess.getGameData(gameID));
 
 
 
-        String loadGameNotification = String.format("You made move %s to %s.", makeMoveCommand.getMove().getStartPosition().toString(),
-                makeMoveCommand.getMove().getEndPosition().toString());
-        LoadGameMessage loadGameMessage = new LoadGameMessage(null, gameData.game());
-        connectionManager.get(makeMoveCommand.getUsername()).send(new Gson().toJson(loadGameMessage));
 
-        loadGameNotification = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
-                makeMoveCommand.getMove().getStartPosition().toString(),
-                makeMoveCommand.getMove().getEndPosition().toString());
-        loadGameMessage = new LoadGameMessage(null, gameData.game());
-        connectionManager.broadcast(makeMoveCommand.getUsername(), loadGameMessage);
-
-        String notificationMessage = String.format("%s made move %s to %s.", makeMoveCommand.getUsername(),
-                makeMoveCommand.getMove().getStartPosition().toString(),
-                makeMoveCommand.getMove().getEndPosition().toString());
-        connectionManager.broadcast(makeMoveCommand.getUsername(), new NotificationMessage(notificationMessage));
 
 
     }
