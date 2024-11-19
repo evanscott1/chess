@@ -29,14 +29,14 @@ public class UserService {
 
 
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
-            throw new BadRequestException("Register request has empty required fields");
+            throw new BadRequestException("Error: Register request has empty required fields");
         }
 
         UserData u = userDataAccess.getUserData(registerRequest.username());
 
 
         if (u != null) {
-            throw new ForbiddenException("Username already exists");
+            throw new ForbiddenException("Error: Username already exists");
         }
 
         String hashedPassword = hashStringBCrypt(registerRequest.password());
@@ -52,11 +52,11 @@ public class UserService {
         UserData u = userDataAccess.getUserData(loginRequest.username());
 
         if (u == null) {
-            throw new UnauthorizedException("User not found");
+            throw new UnauthorizedException("Error: User not found");
         }
 
         if (!verifyUser(loginRequest.password(), u.password())) {
-            throw new UnauthorizedException("User password does not match");
+            throw new UnauthorizedException("Error: User password does not match");
         }
 
         AuthData authData = authDataAccess.addAuthData(new AuthData(UUID.randomUUID().toString(), loginRequest.username()));
@@ -68,7 +68,7 @@ public class UserService {
         AuthData authData = authDataAccess.getAuthData(logoutRequest.authToken());
 
         if (authData == null) {
-            throw new UnauthorizedException("User not logged in");
+            throw new UnauthorizedException("Error: User not logged in");
         }
 
         authDataAccess.deleteAuthData(logoutRequest.authToken());

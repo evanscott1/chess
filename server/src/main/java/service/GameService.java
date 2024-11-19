@@ -28,7 +28,7 @@ public class GameService {
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
         checkUserAuth(createGameRequest.authToken());
         if (createGameRequest.gameName().isEmpty()) {
-            throw new BadRequestException("Create game request has empty required fields");
+            throw new BadRequestException("Error: Create game request has empty required fields");
         }
         GameData gameData = gameDataAccess.addGameData(new GameData(0, null, null, createGameRequest.gameName(), new ChessGame()));
 
@@ -39,7 +39,7 @@ public class GameService {
         checkUserAuth(joinGameRequest.authToken());
 
         if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == 0) {
-            throw new BadRequestException("Join game request has empty required fields");
+            throw new BadRequestException("Error: Join game request has empty required fields");
         }
 
         String username = authDataAccess.getAuthData(joinGameRequest.authToken()).username();
@@ -49,16 +49,16 @@ public class GameService {
 
         if (joinGameRequest.playerColor().equals("WHITE")) {
             if (gameData.whiteUsername() != null) {
-                throw new ForbiddenException("Game color already taken");
+                throw new ForbiddenException("Error: Game color already taken");
             }
             gameData = gameData.setWhiteUsername(username);
         } else if (joinGameRequest.playerColor().equals("BLACK")) {
             if (gameData.blackUsername() != null) {
-                throw new ForbiddenException("Game color already taken");
+                throw new ForbiddenException("Error: Game color already taken");
             }
             gameData = gameData.setBlackUsername(username);
         } else {
-            throw new BadRequestException("Game color not valid");
+            throw new BadRequestException("Error: Game color not valid");
         }
         gameDataAccess.updateGameData(gameData);
         return new JoinGameResult();
@@ -73,7 +73,7 @@ public class GameService {
         AuthData authData = authDataAccess.getAuthData(authToken);
 
         if (authData == null) {
-            throw new UnauthorizedException("User not logged in");
+            throw new UnauthorizedException("Error: User not logged in");
         }
     }
 }
