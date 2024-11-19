@@ -98,6 +98,8 @@ public class ChessBoardMaker {
         for (int i = startRow; i != endRow; i += stepRow) {
             //Every row prints 3 lines.
             for (int part = 1; part < 4; part++) {
+
+
                 boolean isEmptyRow = part == 1 || part == 3;
 
                 squareType = startSquareType;
@@ -112,19 +114,14 @@ public class ChessBoardMaker {
 
 
                 for (int j = startCol; j != endCol; j += stepCol) {
-                    String character;
+                    String character = null;
                     ChessPosition currentPos = new ChessPosition(i, j);
 
                     boolean isValidPos = false;
 
+                    isValidPos = isValidPosition(validPositions, currentPos);
 
-                    for (ChessPosition pos : validPositions) {
-                        if (currentPos.getRow() == pos.getRow() && currentPos.getColumn() == pos.getColumn()) {
-                            isValidPos = true;
-                            break;
-                        }
 
-                    }
                     boolean isStartPos = false;
                     if (startPosition != null) {
                         isStartPos = currentPos.getRow() == startPosition.getRow() && currentPos.getColumn() == startPosition.getColumn();
@@ -135,22 +132,8 @@ public class ChessBoardMaker {
 
 
                     ChessPiece piece = board.getPiece(currentPos);
-                    if (piece == null || isEmptyRow) {
-                        character = " ";
-                        printSquare(out, character);
-                    } else {
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            setLightTeam(out);
-                        } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                            setDarkTeam(out);
-                        }
-                        if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                            character = "N";
-                        } else {
-                            character = String.valueOf(piece.getPieceType().name().charAt(0));
-                        }
-                        printSquare(out, character);
-                    }
+
+                    printRowLineCharacter(out, piece, isEmptyRow, character);
 
 
                 }
@@ -177,6 +160,33 @@ public class ChessBoardMaker {
             }
 
         }
+    }
+
+    private static void printRowLineCharacter(PrintStream out, ChessPiece piece, boolean isEmptyRow, String character) {
+        if (piece == null || isEmptyRow) {
+            character = " ";
+            printSquare(out, character);
+        } else {
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                setLightTeam(out);
+            } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                setDarkTeam(out);
+            }
+            if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                character = "N";
+            } else {
+                character = String.valueOf(piece.getPieceType().name().charAt(0));
+            }
+            printSquare(out, character);
+        }
+    }
+
+
+    private static boolean isValidPosition(ArrayList<ChessPosition> validPositions, ChessPosition currentPos) {
+        for (ChessPosition pos : validPositions) {
+            return currentPos.getRow() == pos.getRow() && currentPos.getColumn() == pos.getColumn();
+        }
+        return false;
     }
 
     private static SquareType setBodyBackground(SquareType squareType, PrintStream out, boolean isValidPos, boolean isStartPosition) {
@@ -230,25 +240,6 @@ public class ChessBoardMaker {
         }
         out.print(SET_BG_COLOR_BLACK);
         out.println();
-    }
-
-    private static void printBoardLine(PrintStream out, SquareType sq) {
-        setBorder(out);
-        printEmptySquare(out);
-
-        for (int i = 0; i < BOARD_SIZE_IN_SQUARES - 2; i++) {
-            if (sq == SquareType.LIGHT) {
-                setLightBackground(out);
-                sq = SquareType.DARK;
-            } else if (sq == SquareType.DARK) {
-                setDarkBackground(out);
-                sq = SquareType.LIGHT;
-            }
-            printEmptySquare(out);
-        }
-        setBorder(out);
-        printEmptySquare(out);
-        printNewLine(out);
     }
 
     private static void printHeader(PrintStream out, ArrayList<String> headers, boolean isWhite) {

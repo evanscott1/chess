@@ -25,9 +25,6 @@ public class GameConnectionManager {
         finishedGames.add(gameID);
     }
 
-    public boolean isFinished(int gameID) {
-        return finishedGames.contains(gameID);
-    }
 
     public void clear() {
         games.clear();
