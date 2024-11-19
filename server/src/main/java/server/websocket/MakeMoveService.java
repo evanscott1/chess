@@ -32,7 +32,7 @@ public class MakeMoveService extends BaseService {
 
 
         int gameID = makeMoveCommand.getGameID();
-        if(gameConnectionManager.isFinished(gameID)) {
+        if(gameConnectionManager.getConnectionManager(gameID) == null) {
             throw new ForbiddenException("Game finished.");
         } else {
             connectionManager = gameConnectionManager.getConnectionManager(gameID);
