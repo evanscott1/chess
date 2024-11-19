@@ -3,6 +3,9 @@ package client.websocket;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.messages.NotificationMessage;
 
 import javax.websocket.*;
@@ -45,11 +48,36 @@ public class WebSocketFacade extends Endpoint {
 
     public void connectGame(ConnectCommand connectCommand) throws ResponseException {
         try {
-
             this.session.getBasicRemote().sendText(new Gson().toJson(connectCommand));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
     }
+
+    public void makeMove(MakeMoveCommand makeMoveCommand) throws ResponseException {
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(makeMoveCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void leave(LeaveCommand leaveCommand) throws ResponseException {
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(leaveCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void resign(ResignCommand resignCommand) throws ResponseException {
+        try {
+            this.session.getBasicRemote().sendText(new Gson().toJson(resignCommand));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+
 
 }

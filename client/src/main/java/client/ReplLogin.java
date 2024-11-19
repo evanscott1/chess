@@ -15,9 +15,7 @@ public class ReplLogin extends ReplBase {
     private State state = State.LOGGEDIN;
     private final ReplPlay replPlay;
     private final ReplObserve replObserve;
-    private final NotificationHandler notificationHandler;
-    private WebSocketFacade ws;
-    private final String serverURL;
+
 
 
     public ReplLogin(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
@@ -25,8 +23,8 @@ public class ReplLogin extends ReplBase {
         this.serverURL = serverURL;
         this.notificationHandler = notificationHandler;
         try {
-            replPlay = new ReplPlay(this.server);
-            replObserve = new ReplObserve(this.server);
+            replPlay = new ReplPlay(this.server, serverURL, notificationHandler);
+            replObserve = new ReplObserve(this.server, serverURL, notificationHandler);
         } catch (ResponseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -124,6 +122,12 @@ public class ReplLogin extends ReplBase {
                     String teamColor = params[1].toUpperCase();
                     JoinGameRequest request = new JoinGameRequest(authToken, teamColor, gamesList.get(listID));
                     JoinGameResult result = server.joinGame(request);
+
+                    ConnectCommand connectCommand = new ConnectCommand(authToken, listID, ConnectCommand.JoinType.OBSERVER);
+                    connectCommand.setUsername(username);
+                    ws = new WebSocketFacade(serverURL, notificationHandler);
+                    ws.connectGame(connectCommand);
+
                     replPlay.setListID(listID);
                     replPlay.setTeamColor(teamColor);
                     outputChessBoard(listID, teamColor);

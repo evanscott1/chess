@@ -1,13 +1,22 @@
 package client;
 
+import chess.ChessMove;
+import chess.ChessPosition;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import exception.ResponseException;
 import server.ServerFacade;
+import websocket.commands.ConnectCommand;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 
 public class ReplPlay extends ReplBase {
 
 
-    public ReplPlay(ServerFacade server) throws ResponseException {
+    public ReplPlay(ServerFacade server, String serverURL, NotificationHandler notificationHandler) throws ResponseException {
         super(server);
+        this.serverURL = serverURL;
+        this.notificationHandler = notificationHandler;
     }
 
 
@@ -29,12 +38,28 @@ public class ReplPlay extends ReplBase {
 
 
     private ReplResponse makeMove(String... params) throws ResponseException {
-        return new ReplResponse(State.INPLAY, "Not available.");
+
+        ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+        ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
+        ChessMove move = new ChessMove(startPosition, endPosition, null);
+
+        MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, listID, move);
+        makeMoveCommand.setUsername(username);
+        ws = new WebSocketFacade(serverURL, notificationHandler);
+        ws.makeMove(makeMoveCommand);
+
+        return new ReplResponse(State.INPLAY, "Made move.");
     }
 
 
-    private ReplResponse resignGame() {
-        return null;
+    private ReplResponse resignGame() throws ResponseException {
+
+        ResignCommand resignCommand = new ResignCommand(authToken, listID);
+        resignCommand.setUsername(username);
+        ws = new WebSocketFacade(serverURL, notificationHandler);
+        ws.resign(resignCommand);
+
+        return new ReplResponse(State.LOGGEDIN, "Resigned.");
     }
 
     private ReplResponse help() {
