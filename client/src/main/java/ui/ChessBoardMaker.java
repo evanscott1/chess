@@ -46,8 +46,7 @@ public class ChessBoardMaker {
 
         if (params.length == 2) {
             startPosition = findStartPosition(headers, params);
-            PieceMovesCalculator calculator = new PieceMovesCalculator(board, startPosition);
-            validMoves = calculator.calculateMoves();
+            validMoves = (ArrayList<ChessMove>) game.validMoves(startPosition);
 
             for (ChessMove move : validMoves) {
                 validPositions.add(move.getEndPosition());

@@ -11,8 +11,14 @@ import websocket.commands.ResignCommand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ReplPlay extends ReplBase {
+    public enum InPlayState {
+        RESIGN,
+        NULL
+    }
+    InPlayState inPlayState = InPlayState.NULL;
 
 
     public ReplPlay(ServerFacade server, String serverURL) throws ResponseException {
@@ -41,15 +47,20 @@ public class ReplPlay extends ReplBase {
     private ReplResponse makeMove(String... params) throws ResponseException {
 
         if (params.length == 4) {
-        ArrayList<String> headers = new ArrayList<>(List.of("a", "b", "c", "d", "e", "f", "g", "h"));
-        ChessPosition startPosition = ChessBoardMaker.findStartPosition(headers, params[0], params[1]);
-        ChessPosition endPosition = ChessBoardMaker.findStartPosition(headers, params[2], params[3]);
-        ChessMove move = new ChessMove(startPosition, endPosition, null);
+            try {
+                ArrayList<String> headers = new ArrayList<>(List.of("a", "b", "c", "d", "e", "f", "g", "h"));
+                ChessPosition startPosition = ChessBoardMaker.findStartPosition(headers, params[0], params[1]);
+                ChessPosition endPosition = ChessBoardMaker.findStartPosition(headers, params[2], params[3]);
+                ChessMove move = new ChessMove(startPosition, endPosition, null);
+                MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, listID, move);
+                makeMoveCommand.setUsername(username);
+                ws = new WebSocketFacade(serverURL, teamColor);
+                ws.makeMove(makeMoveCommand);
+            } catch (Exception e) {
+                throw new ResponseException(400, "Please check your move input.");
+            }
 
-        MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, listID, move);
-        makeMoveCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL, teamColor);
-        ws.makeMove(makeMoveCommand);
+
 
 
         return new ReplResponse(State.INPLAY, "");
@@ -59,11 +70,17 @@ public class ReplPlay extends ReplBase {
 
 
     private ReplResponse resignGame() throws ResponseException {
+        System.out.println("Confirm (Y/N):");
+        Scanner scanner = new Scanner(System.in);
 
-        ResignCommand resignCommand = new ResignCommand(authToken, listID);
-        resignCommand.setUsername(username);
-        ws = new WebSocketFacade(serverURL, teamColor);
-        ws.resign(resignCommand);
+        String line = scanner.nextLine();
+        if (line.toLowerCase().equals("y")) {
+            ResignCommand resignCommand = new ResignCommand(authToken, listID);
+            resignCommand.setUsername(username);
+            ws = new WebSocketFacade(serverURL, teamColor);
+            ws.resign(resignCommand);
+        }
+
 
         return new ReplResponse(State.INPLAY, "");
     }

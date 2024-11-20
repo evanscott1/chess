@@ -75,14 +75,14 @@ public class MakeMoveService extends BaseService {
             if (game.isInCheckmate(game.getTeamTurn())) {
                 gameConnectionManager.markGameFinished(gameID);
                 connectionManager.broadcast("", new NotificationMessage(
-                        String.format("%s is in checkmate", game.getTeamTurn().toString())));
+                        String.format("%s is in checkmate.", getTeamUsername(gameID, game.getTeamTurn()))));
             } else if (game.isInStalemate(game.getTeamTurn())) {
                 gameConnectionManager.markGameFinished(gameID);
                 connectionManager.broadcast("", new NotificationMessage(
-                        String.format("%s is in stalemate", game.getTeamTurn().toString())));
+                        String.format("%s is in stalemate.", "Game")));
             } else if (game.isInCheck(game.getTeamTurn())) {
                 connectionManager.broadcast("", new NotificationMessage(
-                        String.format("%s is in check", game.getTeamTurn().toString())));
+                        String.format("%s is in check.", getTeamUsername(gameID, game.getTeamTurn()))));
             }
 
 
@@ -99,8 +99,16 @@ public class MakeMoveService extends BaseService {
 
         }
 
-    private ChessGame.TeamColor oppositeTeamColor(ChessGame.TeamColor teamColor) {
-        return teamColor.equals(ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+    private String getTeamUsername(int gameID, ChessGame.TeamColor teamColor) throws ResponseException {
+        GameData gameData = Server.gameDataAccess.getGameData(gameID);
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            return gameData.whiteUsername();
+        } else if (teamColor == ChessGame.TeamColor.BLACK) {
+            return gameData.blackUsername();
+        } else {
+            throw new RuntimeException();
+        }
+
     }
 
     }
